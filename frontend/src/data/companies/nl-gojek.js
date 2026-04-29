@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Binary Tree Level Order Traversal","binary-tree-level-order-traversal",2,"Tree,Breadth-First Search,Binary Tree",12],["Simplify Path","simplify-path",2,"String,Stack",12],["Sliding Window Maximum","sliding-window-maximum",2,"Array,Queue,Sliding Window,Heap (Priority Queue),Monotonic Queue",12],["Convert an Array Into a 2D Array With Conditions","convert-an-array-into-a-2d-array-with-conditions",2,"Array,Hash Table",11],["3Sum","3sum",2,"Array,Two Pointers,Sorting",11]];

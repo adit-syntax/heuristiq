@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Brace Expansion","brace-expansion",2,"String,Backtracking,Breadth-First Search",12],["Find the Duplicate Number","find-the-duplicate-number",2,"Array,Two Pointers,Binary Search,Bit Manipulation",11],["LRU Cache","lru-cache",2,"Hash Table,Linked List,Design,Doubly-Linked List",11],["String to Integer (atoi)","string-to-integer-atoi",2,"String",12],["Group Anagrams","group-anagrams",2,"Array,Hash Table,String,Sorting",11]];

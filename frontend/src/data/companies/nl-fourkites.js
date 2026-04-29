@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Longest Subarray With Maximum Bitwise AND","longest-subarray-with-maximum-bitwise-and",2,"Array,Bit Manipulation,Brainteaser",12],["Longest Unequal Adjacent Groups Subsequence II","longest-unequal-adjacent-groups-subsequence-ii",2,"Array,String,Dynamic Programming",12],["Longest Unequal Adjacent Groups Subsequence I","longest-unequal-adjacent-groups-subsequence-i",1,"Array,String,Dynamic Programming,Greedy",12]];

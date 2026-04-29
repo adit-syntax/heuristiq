@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Minimum Number of Days to Make m Bouquets","minimum-number-of-days-to-make-m-bouquets",2,"Array,Binary Search",12],["Search in Rotated Sorted Array","search-in-rotated-sorted-array",2,"Array,Binary Search",10],["Minimize the Maximum Difference of Pairs","minimize-the-maximum-difference-of-pairs",2,"Array,Binary Search,Dynamic Programming,Greedy,Sorting",11],["Trapping Rain Water","trapping-rain-water",2,"Array,Two Pointers,Dynamic Programming,Stack,Monotonic Stack",3]];

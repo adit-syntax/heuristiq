@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Find Mirror Score of a String","find-mirror-score-of-a-string",2,"Hash Table,String,Stack,Simulation",21],["Zigzag Conversion","zigzag-conversion",2,"String",11],["Trapping Rain Water","trapping-rain-water",2,"Array,Two Pointers,Dynamic Programming,Stack,Monotonic Stack",11],["Best Time to Buy and Sell Stock","best-time-to-buy-and-sell-stock",1,"Array,Dynamic Programming",10],["Minimum Time Difference","minimum-time-difference",2,"Array,Math,String,Sorting",10]];

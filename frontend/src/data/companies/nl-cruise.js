@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Course Schedule","course-schedule",2,"Depth-First Search,Breadth-First Search,Graph,Topological Sort",19],["Merge Intervals","merge-intervals",2,"Array,Sorting",11],["Unique Paths II","unique-paths-ii",2,"Array,Dynamic Programming,Matrix",11],["Unique Paths III","unique-paths-iii",2,"Array,Backtracking,Bit Manipulation,Matrix",11],["LRU Cache","lru-cache",2,"Hash Table,Linked List,Design,Doubly-Linked List",10],["Synonymous Sentences","synonymous-sentences",2,"Array,Hash Table,String,Backtracking,Union Find",12]];

@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Smallest Missing Non-negative Integer After Operations","smallest-missing-non-negative-integer-after-operations",2,"Array,Hash Table,Math,Greedy",12],["Crawler Log Folder","crawler-log-folder",1,"Array,String,Stack",11],["Max Difference You Can Get From Changing an Integer","max-difference-you-can-get-from-changing-an-integer",2,"Math,Greedy",11],["Count Largest Group","count-largest-group",1,"Hash Table,Math",11],["Minimum Subsequence in Non-Increasing Order","minimum-subsequence-in-non-increasing-order",1,"Array,Greedy,Sorting",11]];

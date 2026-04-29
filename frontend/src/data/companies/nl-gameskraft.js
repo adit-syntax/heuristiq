@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Maximize Sum of Weights after Edge Removals","maximize-sum-of-weights-after-edge-removals",2,"Dynamic Programming,Tree,Depth-First Search",12],["IPO","ipo",2,"Array,Greedy,Sorting,Heap (Priority Queue)",8],["LFU Cache","lfu-cache",2,"Hash Table,Linked List,Design,Doubly-Linked List",8],["Sliding Window Maximum","sliding-window-maximum",2,"Array,Queue,Sliding Window,Heap (Priority Queue),Monotonic Queue",8]];

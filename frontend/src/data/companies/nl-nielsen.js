@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Group Anagrams","group-anagrams",2,"Array,Hash Table,String,Sorting",12],["Edit Distance","edit-distance",2,"String,Dynamic Programming",11],["Merge Intervals","merge-intervals",2,"Array,Sorting",11],["Longest Palindromic Substring","longest-palindromic-substring",2,"Two Pointers,String,Dynamic Programming",12],["Best Time to Buy and Sell Stock IV","best-time-to-buy-and-sell-stock-iv",2,"Array,Dynamic Programming",11],["Two Sum","two-sum",1,"Array,Hash Table",4]];

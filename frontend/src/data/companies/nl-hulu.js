@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Binary Tree Pruning","binary-tree-pruning",2,"Tree,Depth-First Search,Binary Tree",12],["Basic Calculator III","basic-calculator-iii",2,"Math,String,Stack,Recursion",12],["Sum of Two Integers","sum-of-two-integers",2,"Math,Bit Manipulation",12],["Number of Valid Subarrays","number-of-valid-subarrays",2,"Array,Stack,Monotonic Stack",12],["K-th Smallest in Lexicographical Order","k-th-smallest-in-lexicographical-order",2,"Trie",12]];

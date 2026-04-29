@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Minimum Cost to Make at Least One Valid Path in a Grid","minimum-cost-to-make-at-least-one-valid-path-in-a-grid",2,"Array,Breadth-First Search,Graph,Heap (Priority Queue),Matrix,Shortest Path",21],["Word Break","word-break",2,"Array,Hash Table,String,Dynamic Programming,Trie,Memoization",12],["House Robber","house-robber",2,"Array,Dynamic Programming",12],["Rabbits in Forest","rabbits-in-forest",2,"Array,Hash Table,Math,Greedy",4]];

@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Longest Common Prefix","longest-common-prefix",1,"String,Trie",11],["Minimum Array Changes to Make Differences Equal","minimum-array-changes-to-make-differences-equal",2,"Array,Hash Table,Prefix Sum",12],["Find the Number of Good Pairs II","find-the-number-of-good-pairs-ii",2,"Array,Hash Table",12],["Find the Number of Good Pairs I","find-the-number-of-good-pairs-i",1,"Array,Hash Table",12],["Two Sum","two-sum",1,"Array,Hash Table",3]];

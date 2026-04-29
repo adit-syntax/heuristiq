@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Construct String With Repeat Limit","construct-string-with-repeat-limit",2,"Hash Table,String,Greedy,Heap (Priority Queue),Counting",50],["Percentage of Users Attended a Contest","percentage-of-users-attended-a-contest",1,"Database",12],["Number of Ways to Paint N × 3 Grid","number-of-ways-to-paint-n-3-grid",2,"Dynamic Programming",12],["Valid Palindrome II","valid-palindrome-ii",1,"Two Pointers,String,Greedy",4]];

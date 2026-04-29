@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Path Sum IV","path-sum-iv",2,"Array,Hash Table,Tree,Depth-First Search,Binary Tree",12],["Split Concatenated Strings","split-concatenated-strings",2,"Array,String,Greedy",12],["Split Array with Equal Sum","split-array-with-equal-sum",2,"Array,Hash Table,Prefix Sum",12],["Valid Parenthesis String","valid-parenthesis-string",2,"String,Dynamic Programming,Stack,Greedy",12],["Longest Substring Without Repeating Characters","longest-substring-without-repeating-characters",2,"Hash Table,String,Sliding Window",11]];

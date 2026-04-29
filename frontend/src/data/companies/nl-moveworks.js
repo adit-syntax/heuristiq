@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Shortest Uncommon Substring in an Array","shortest-uncommon-substring-in-an-array",2,"Array,Hash Table,String,Trie",56],["Synonymous Sentences","synonymous-sentences",2,"Array,Hash Table,String,Backtracking,Union Find",56],["Text Justification","text-justification",2,"Array,String,Simulation",12],["Word Break II","word-break-ii",2,"Array,Hash Table,String,Dynamic Programming,Backtracking,Trie,Memoization",11],["Maximum Number of Removable Characters","maximum-number-of-removable-characters",2,"Array,Two Pointers,String,Binary Search",7]];

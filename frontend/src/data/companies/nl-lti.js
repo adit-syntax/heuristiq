@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Maximum White Tiles Covered by a Carpet","maximum-white-tiles-covered-by-a-carpet",2,"Array,Binary Search,Greedy,Sliding Window,Sorting,Prefix Sum",12],["Closest Subsequence Sum","closest-subsequence-sum",2,"Array,Two Pointers,Dynamic Programming,Bit Manipulation,Sorting,Bitmask",11],["Count Zero Request Servers","count-zero-request-servers",2,"Array,Hash Table,Sliding Window,Sorting",11],["Reverse Integer","reverse-integer",2,"Math",11]];

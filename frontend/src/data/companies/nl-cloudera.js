@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Best Time to Buy and Sell Stock","best-time-to-buy-and-sell-stock",1,"Array,Dynamic Programming",11],["Cheapest Flights Within K Stops","cheapest-flights-within-k-stops",2,"Dynamic Programming,Depth-First Search,Breadth-First Search,Graph,Heap (Priority Queue),Shortest Path",10],["Number Complement","number-complement",1,"Bit Manipulation",12],["Complement of Base 10 Integer","complement-of-base-10-integer",1,"Bit Manipulation",12],["Lexicographically Smallest Equivalent String","lexicographically-smallest-equivalent-string",2,"String,Union Find",10]];

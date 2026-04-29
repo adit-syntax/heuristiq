@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Two Sum","two-sum",1,"Array,Hash Table",29],["Number of Islands","number-of-islands",2,"Array,Depth-First Search,Breadth-First Search,Union Find,Matrix",3],["Longest Substring Without Repeating Characters","longest-substring-without-repeating-characters",2,"Hash Table,String,Sliding Window",20],["Symmetric Tree","symmetric-tree",1,"Tree,Depth-First Search,Breadth-First Search,Binary Tree",11]];

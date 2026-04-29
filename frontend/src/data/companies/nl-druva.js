@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Reorganize String","reorganize-string",2,"Hash Table,String,Greedy,Sorting,Heap (Priority Queue),Counting",11],["Search in Rotated Sorted Array","search-in-rotated-sorted-array",2,"Array,Binary Search",11],["Maximize Sum Of Array After K Negations","maximize-sum-of-array-after-k-negations",1,"Array,Greedy,Sorting",12],["Longest Increasing Subsequence","longest-increasing-subsequence",2,"Array,Binary Search,Dynamic Programming",11]];

@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Number of Operations to Make Network Connected","number-of-operations-to-make-network-connected",2,"Depth-First Search,Breadth-First Search,Union Find,Graph",12],["Minimum One Bit Operations to Make Integers Zero","minimum-one-bit-operations-to-make-integers-zero",2,"Dynamic Programming,Bit Manipulation,Memoization",10],["Maximal Score After Applying K Operations","maximal-score-after-applying-k-operations",2,"Array,Greedy,Heap (Priority Queue)",10],["Shortest Bridge","shortest-bridge",2,"Array,Depth-First Search,Breadth-First Search,Matrix",10]];

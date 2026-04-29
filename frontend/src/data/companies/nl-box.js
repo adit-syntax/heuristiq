@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Top K Frequent Words","top-k-frequent-words",2,"Array,Hash Table,String,Trie,Sorting,Heap (Priority Queue),Bucket Sort,Counting",54],["Number of 1 Bits","number-of-1-bits",1,"Divide and Conquer,Bit Manipulation",99],["Word Ladder","word-ladder",2,"Hash Table,String,Breadth-First Search",48],["Kth Largest Element in a Stream","kth-largest-element-in-a-stream",1,"Tree,Design,Binary Search Tree,Heap (Priority Queue),Binary Tree,Data Stream",8],["Event Emitter","event-emitter",2,"",8]];

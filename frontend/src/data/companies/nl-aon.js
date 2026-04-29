@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Classifying Triangles by Lengths","classifying-triangles-by-lengths",1,"Database",12],["Minimize OR of Remaining Elements Using Operations","minimize-or-of-remaining-elements-using-operations",2,"Array,Greedy,Bit Manipulation",12],["Construct the Minimum Bitwise Array II","construct-the-minimum-bitwise-array-ii",2,"Array,Bit Manipulation",12],["Construct the Minimum Bitwise Array I","construct-the-minimum-bitwise-array-i",1,"Array,Bit Manipulation",12]];

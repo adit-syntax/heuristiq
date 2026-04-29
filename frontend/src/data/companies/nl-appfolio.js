@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Shortest Path in a Grid with Obstacles Elimination","shortest-path-in-a-grid-with-obstacles-elimination",2,"Array,Breadth-First Search,Matrix",12],["LRU Cache","lru-cache",2,"Hash Table,Linked List,Design,Doubly-Linked List",4],["Insert Delete GetRandom O(1)","insert-delete-getrandom-o1",2,"Array,Hash Table,Math,Design,Randomized",12],["Logger Rate Limiter","logger-rate-limiter",1,"Hash Table,Design,Data Stream",4]];

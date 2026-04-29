@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Total Distance Traveled","total-distance-traveled",1,"Math,Simulation",12],["Camelcase Matching","camelcase-matching",2,"Array,Two Pointers,String,Trie,String Matching",11],["Group Anagrams","group-anagrams",2,"Array,Hash Table,String,Sorting",11],["Subtree of Another Tree","subtree-of-another-tree",1,"Tree,Depth-First Search,String Matching,Binary Tree,Hash Function",11],["Time Based Key-Value Store","time-based-key-value-store",2,"Hash Table,String,Binary Search,Design",4]];

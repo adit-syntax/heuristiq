@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["LRU Cache","lru-cache",2,"Hash Table,Linked List,Design,Doubly-Linked List",16],["Find Median from Data Stream","find-median-from-data-stream",2,"Two Pointers,Design,Sorting,Heap (Priority Queue),Data Stream",15],["Roman to Integer","roman-to-integer",1,"Hash Table,Math,String",11],["LFU Cache","lfu-cache",2,"Hash Table,Linked List,Design,Doubly-Linked List",11],["Reaching Points","reaching-points",2,"Math",12],["Maximum Swap","maximum-swap",2,"Math,Greedy",11],["Two Sum","two-sum",1,"Array,Hash Table",11]];

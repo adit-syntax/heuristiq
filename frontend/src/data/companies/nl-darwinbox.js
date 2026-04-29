@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Scramble String","scramble-string",2,"String,Dynamic Programming",12],["Spiral Matrix","spiral-matrix",2,"Array,Matrix,Simulation",9],["Minimum Size Subarray Sum","minimum-size-subarray-sum",2,"Array,Binary Search,Sliding Window,Prefix Sum",7],["Majority Element II","majority-element-ii",2,"Array,Hash Table,Sorting,Counting",7],["Number of Great Partitions","number-of-great-partitions",2,"Array,Dynamic Programming",7]];

@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Find the Original Typed String I","find-the-original-typed-string-i",1,"String",12],["Minimum Operations to Make Array Values Equal to K","minimum-operations-to-make-array-values-equal-to-k",1,"Array,Hash Table",12],["The Number of Good Subsets","the-number-of-good-subsets",2,"Array,Math,Dynamic Programming,Bit Manipulation,Bitmask",10],["Groups of Strings","groups-of-strings",2,"String,Bit Manipulation,Union Find",10]];

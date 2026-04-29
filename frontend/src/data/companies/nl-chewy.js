@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Top K Frequent Elements","top-k-frequent-elements",2,"Array,Hash Table,Divide and Conquer,Sorting,Heap (Priority Queue),Bucket Sort,Counting,Quickselect",21],["Design Tic-Tac-Toe","design-tic-tac-toe",2,"Array,Hash Table,Design,Matrix,Simulation",12],["Robot Bounded In Circle","robot-bounded-in-circle",2,"Math,String,Simulation",12],["Backspace String Compare","backspace-string-compare",1,"Two Pointers,String,Stack,Simulation",11],["Two Sum","two-sum",1,"Array,Hash Table",11]];

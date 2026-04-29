@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Capacity To Ship Packages Within D Days","capacity-to-ship-packages-within-d-days",2,"Array,Binary Search",11],["Get the Maximum Score","get-the-maximum-score",2,"Array,Two Pointers,Dynamic Programming,Greedy",12],["Find Array Given Subset Sums","find-array-given-subset-sums",2,"Array,Divide and Conquer",12],["Number of Ways to Wear Different Hats to Each Other","number-of-ways-to-wear-different-hats-to-each-other",2,"Array,Dynamic Programming,Bit Manipulation,Bitmask",12]];

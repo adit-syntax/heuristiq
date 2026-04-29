@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Happy Number","happy-number",1,"Hash Table,Math,Two Pointers",11],["Remove All Adjacent Duplicates in String II","remove-all-adjacent-duplicates-in-string-ii",2,"String,Stack",12],["Remove Duplicate Letters","remove-duplicate-letters",2,"String,Stack,Greedy,Monotonic Stack",12],["Smallest Subsequence of Distinct Characters","smallest-subsequence-of-distinct-characters",2,"String,Stack,Greedy,Monotonic Stack",12],["Increasing Triplet Subsequence","increasing-triplet-subsequence",2,"Array,Greedy",11]];

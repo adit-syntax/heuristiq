@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["LRU Cache","lru-cache",2,"Hash Table,Linked List,Design,Doubly-Linked List",92],["Number of Distinct Islands","number-of-distinct-islands",2,"Hash Table,Depth-First Search,Breadth-First Search,Union Find,Hash Function",11],["Diameter of Binary Tree","diameter-of-binary-tree",1,"Tree,Depth-First Search,Binary Tree",11],["Word Search II","word-search-ii",2,"Array,String,Backtracking,Trie,Matrix",3]];

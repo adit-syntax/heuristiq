@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Minimum Cost of Buying Candies With Discount","minimum-cost-of-buying-candies-with-discount",1,"Array,Greedy,Sorting",12],["Check If It Is a Good Array","check-if-it-is-a-good-array",2,"Array,Math,Number Theory",11],["LRU Cache","lru-cache",2,"Hash Table,Linked List,Design,Doubly-Linked List",4],["Count Primes","count-primes",2,"Array,Math,Enumeration,Number Theory",4],["Longest Common Prefix","longest-common-prefix",1,"String,Trie",4],["Valid Anagram","valid-anagram",1,"Hash Table,String,Sorting",4]];

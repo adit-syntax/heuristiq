@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Number of Islands","number-of-islands",2,"Array,Depth-First Search,Breadth-First Search,Union Find,Matrix",12],["Longest Substring Without Repeating Characters","longest-substring-without-repeating-characters",2,"Hash Table,String,Sliding Window",12],["Merge Two Sorted Lists","merge-two-sorted-lists",1,"Linked List,Recursion",12],["Reverse Words in a String","reverse-words-in-a-string",2,"Two Pointers,String",12]];

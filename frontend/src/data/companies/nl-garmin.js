@@ -1,0 +1,3 @@
+// Auto-generated from nextleet.com (2026-09-05).
+// Row: [title, leetCodeSlug, 0=easy 1=medium 2=hard, topicsCsv, frequencyPct]. Regenerate: node backend/scripts/scrapeNextleet.mjs
+export const QUESTIONS = [["Two Sum","two-sum",1,"Array,Hash Table",50],["Minimum Cost of Buying Candies With Discount","minimum-cost-of-buying-candies-with-discount",1,"Array,Greedy,Sorting",12],["Delete Columns to Make Sorted","delete-columns-to-make-sorted",1,"Array,String",11],["Best Time to Buy and Sell Stock","best-time-to-buy-and-sell-stock",1,"Array,Dynamic Programming",12],["Reverse String","reverse-string",1,"Two Pointers,String",11],["Palindrome Number","palindrome-number",1,"Math",4]];

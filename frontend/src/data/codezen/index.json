@@ -1,0 +1,69 @@
+[
+  {
+    "topic": "Binary Search",
+    "docs": [
+      {
+        "slug": "binary-search--binary-search-practice-problems",
+        "title": "Binary Search Practice Problems"
+      }
+    ]
+  },
+  {
+    "topic": "Bit Manipulation And Math",
+    "docs": [
+      {
+        "slug": "bit-manipulation-and-math--math",
+        "title": "Math"
+      },
+      {
+        "slug": "bit-manipulation-and-math--practice-problems-bitm",
+        "title": "Practice Problems (BITM)"
+      }
+    ]
+  },
+  {
+    "topic": "DP",
+    "docs": [
+      {
+        "slug": "dp--dp-problems-and-resources",
+        "title": "Dp Problems and resources"
+      }
+    ]
+  },
+  {
+    "topic": "Graph and Number Theory",
+    "docs": [
+      {
+        "slug": "graph-and-number-theory--graph-and-nt",
+        "title": "Graph and NT"
+      }
+    ]
+  },
+  {
+    "topic": "Greedy and sorting techniques",
+    "docs": [
+      {
+        "slug": "greedy-and-sorting-techniques--greedy-algorithm-sorting-techniques",
+        "title": "Greedy Algorithm & Sorting Techniques"
+      }
+    ]
+  },
+  {
+    "topic": "Prefix sum and difference Array",
+    "docs": [
+      {
+        "slug": "prefix-sum-and-difference-array--practice-problems",
+        "title": "Practice Problems"
+      }
+    ]
+  },
+  {
+    "topic": "Two Pointer & Sliding Window",
+    "docs": [
+      {
+        "slug": "two-pointer-sliding-window--practice-problem-set-two-pointers-and-sliding-window",
+        "title": "Practice Problem set (Two pointers and Sliding Window)"
+      }
+    ]
+  }
+]

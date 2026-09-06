@@ -84,6 +84,15 @@ const Brand = ({ onClick }) => (
   </button>
 );
 
+const extractInitials = (name) => {
+  const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return 'G';
+  if (parts.length === 1) {
+    return (parts[0].length > 1 ? parts[0].slice(0, 2) : parts[0]).toUpperCase();
+  }
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+};
+
 function AppContent() {
   const { user, isAuthenticated, isGuest, isFirebaseConfigured, logout, loading: authLoading } = useAuth();
   // The hash is the source of truth so a refresh or a shared link lands on the same tab.
@@ -230,15 +239,7 @@ function AppContent() {
   }
 
   const displayName = profileName || user?.name || user?.displayName || 'Guest';
-
-  const initials = useMemo(() => {
-    const parts = displayName.trim().split(/\s+/).filter(Boolean);
-    if (parts.length === 0) return 'G';
-    if (parts.length === 1) {
-      return (parts[0].length > 1 ? parts[0].slice(0, 2) : parts[0]).toUpperCase();
-    }
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-  }, [displayName]);
+  const initials = extractInitials(displayName);
 
   const navItem = (tab, onClick) => {
     const active = activeTab === tab.id;

@@ -102,43 +102,65 @@ sequenceDiagram
 
 ---
 
-## 🌟 Key Features
+## 🖥️ Interactive Product Tour & Feature Walkthrough
 
-### 1. 10 Curated Problem Sheets & Canonical Deduplication
-* **Striver A2Z DSA Sheet:** 455+ structured problems covering arrays to dynamic programming.
-* **Top Industry Collections:** Blind 75, NeetCode 150, CodeStoryWithMIK, Top Interview 150, CSES Problem Set, CP-31 (800–1600 rated), and SQL 50.
-* **Canonical Identity System (CID):** Cross-sheet deduplication ensures that solving "Two Sum" in Blind 75 automatically reflects as solved in Striver A2Z and NeetCode 150.
+### 1. 🎯 DSA Problem Sheets & Canonical Identity System (CID)
+Heuristiq bundles the most respected interview preparation sheets into a single, unified interface:
+* **10 Curated Sheet Collections:** Striver A2Z DSA Sheet (455+ questions), Blind 75, NeetCode 150, CodeStoryWithMIK, Top Interview 150, CSES Problem Set, CP-31 (800–1600 rated), and SQL 50.
+* **Canonical Deduplication (CID Engine):** Automatically links identical problems across different sheets. If you solve *"Two Sum"* in Blind 75, it is automatically marked as solved in Striver A2Z and NeetCode 150.
+* **Smart Filter Matrix:** Filter problems instantly by status (*Unsolved, Solved, Revision Starred*), topic categories (Arrays, DP, Graphs, Trees), and difficulty levels (*Easy, Medium, Hard*).
+* **Direct Lecture Embeds:** Click on any problem to watch curated YouTube editorial walkthroughs directly in an embedded video modal without leaving your workspace.
 
-### 2. 50+ Top Tech Companies Question Tracker
-* Real company-tagged question registries compiled for **Google, Amazon, Meta, Microsoft, Apple, Uber, Netflix, Bloomberg, Oracle, Salesforce, and 40+ others**.
-* Filter questions by company frequency, difficulty, and completion status.
+### 2. 🏢 Company-Targeted Question Vault (50+ Companies)
+Prepare specifically for your dream company with real interview frequency datasets:
+* **50+ Tech Giants:** Curated question registries for **Google, Amazon, Meta, Microsoft, Apple, Uber, Netflix, Bloomberg, Oracle, Salesforce, Walmart Labs, Cisco, and 40+ more**.
+* **Interview Frequency Scoring:** Identify top recurring questions based on real-world interview trends.
+* **Integrated In-App Solver:** Launch any company question into the Monaco Editor with a single click.
 
-### 3. In-App Monaco Code Runner
-* Integrated VS Code Monaco Editor supporting **C++, Java, Python, JavaScript, and C**.
-* Execute code directly against custom test inputs using the Wandbox sandbox runtime.
-* Code drafts autosave locally per question.
+### 3. ⚡ In-App Monaco Code Playground & Multi-Language Runner
+Never break your flow switching to external IDEs:
+* **Integrated VS Code Monaco Editor:** Full syntax highlighting, auto-completion, bracket matching, and indentation for **C++, Java, Python, JavaScript, and C**.
+* **Zero-Auth Remote Sandbox (Wandbox API):** Run your algorithms in a secure sandbox with custom `stdin` input and real-time `stdout`/`stderr` output with execution timings.
+* **Per-Question Draft Autosave:** Every draft you write is automatically saved to local storage and Firestore, so your solution is right there when you return.
 
-### 4. Interactive Algorithm Visualizer
-* Visual, step-by-step simulations for understanding inner algorithmic mechanics:
-  * **Sorting:** Bubble Sort, Selection Sort, Insertion Sort, Merge Sort, Quick Sort.
-  * **Searching:** Linear Search, Binary Search.
-  * **Pathfinding & Graphs:** Breadth-First Search (BFS) and Depth-First Search (DFS) on grid topologies.
-* Play, pause, step forward/backward, and adjust execution speed dynamically.
+### 4. 🔍 Interactive Algorithm Visualizer
+Build deep spatial intuition for how complex algorithms operate under the hood:
+* **Sorting Algorithms:** Step-by-step animations for Bubble Sort, Selection Sort, Insertion Sort, Merge Sort, and Quick Sort.
+* **Search Algorithms:** Linear Search and Binary Search visual comparisons.
+* **Graph & Grid Pathfinding:** Live 2D grid pathfinding simulations powered by Breadth-First Search (BFS) and Depth-First Search (DFS) with custom obstacles.
+* **Player Controls:** Play, pause, step forward/backward, and adjust simulation speeds dynamically.
 
-### 5. Multi-Board Whiteboard (Excalidraw)
-* Hand-drawn vector canvas for sketching tree traversals, graph cycles, system architectures, and memory layouts.
-* Available both as a dedicated workspace and as a **global floating canvas modal** accessible from any tab.
+### 5. 🎨 Dual-Mode Excalidraw Vector Whiteboard
+Sketch architectures, trace recursion trees, and diagram pointer layouts:
+* **Dedicated Whiteboard Tab:** Full-screen vector sketching canvas with multi-board tab support and autosave.
+* **Floating Quick-Draw Canvas:** Hit the floating whiteboard button from **any screen** (even while solving a question or looking at a chart) to bring up an overlay sketchpad without losing your current context.
 
-### 6. Analytics & Solve Streaks Dashboard
-* Comprehensive visual metrics: total questions solved, category completion breakdown, weekly activity bar charts, consistency calendars, and daily todos.
+### 6. 🏆 Contest Calendar & Live Contest Alert Banner
+Never miss a rating round again:
+* **Multi-Platform Contest Tracker:** Aggregates live and upcoming contests across **Codeforces, LeetCode, CodeChef, and AtCoder**.
+* **Global Countdown Banner:** A persistent, non-intrusive alert banner highlights active or imminent contests with live countdowns and one-click registration links.
 
-### 7. Contest Calendar & Live Tracker
-* Real-time schedule monitoring upcoming contests across **Codeforces, LeetCode, CodeChef, and AtCoder**.
-* Global sticky banner alerting developers to active or imminent contests with direct links.
+### 7. 📝 Central Notes Workspace & Study Journal
+Keep all your DSA wisdom, interview takeaways, and algorithmic templates in one place:
+* **Taggable & Searchable:** Create rich markdown notes organized with colored tags (e.g., `#patterns`, `#dp`, `#interview-prep`).
+* **Question-Linked Notes:** Attach personalized notes directly to any problem sheet question; review them directly from the problem table or within the notes hub.
 
-### 8. Keyboard-First Navigation & Global Search
-* Hit `Ctrl + K` (or `Cmd + K`) anywhere to summon the command palette.
-* Search instantaneously through all 1,000+ problems, roadmaps, and company registries with fuzzy matching.
+### 8. 👤 Developer Profile & Platform Handle Integration
+* **Coding Platform Hub:** Link and display your **LeetCode, Codeforces, and CodeChef** profiles.
+* **LeetCode Solve Synchronizer:** Automatically fetches recent accepted submissions using the public LeetCode GraphQL API and synchronizes your progress across your sheets.
+
+### 9. ☁️ Seamless Dual-Sync Architecture (Offline-First)
+* **Guest Mode:** Start practicing immediately without signing up. All data is saved instantly to browser `localStorage`.
+* **Authenticated Cloud Sync:** Sign in seamlessly with **Google OAuth** or Email/Password via Firebase. Your local data is debounced and synchronized to Cloud Firestore so you can switch devices effortlessly.
+
+### 10. 💬 Integrated User Feedback & Suggestion System
+* **In-App Feedback Pipeline:** Dedicated feedback channel allowing developers and recruiters to submit feature suggestions, report edge-case bugs, or request new problem sheets.
+* **Zero-Setup Email Delivery:** Powered by EmailJS directly from the client without requiring a backend mail server.
+* **Validation & Toast Alerts:** Includes client-side file size and attachment validation with interactive toast notifications.
+
+### 11. ⌨️ Global Command Palette (`Ctrl + K` / `Cmd + K`)
+* Press `Ctrl + K` anywhere in the app to open the spotlight command palette.
+* Fuzzy search through over 1,000+ problems, company questions, and learning roadmaps at lightning speed.
 
 ---
 

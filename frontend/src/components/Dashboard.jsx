@@ -18,6 +18,7 @@ import {
     Trash2,
     Info,
     X,
+    Sparkles,
 } from 'lucide-react';
 import DayDetails from './DayDetails';
 import NoteHistory from './NoteHistory';
@@ -27,6 +28,126 @@ import { useMemo, useState, useEffect, useRef } from 'react';
 import LiveContestBanner from './LiveContestBanner';
 import ContestReminderBanner from './ContestReminderBanner';
 import { getLocalDateKey, calculateStreak } from '../lib/dateUtils';
+
+const MOTIVATIONAL_QUOTES = [
+    {
+        text: "You have a right to your work, never to the fruits of it. Dedicate yourself fully to the craft.",
+        source: "Bhagavad Gita",
+        chapter: "2",
+        verse: "47",
+        author: "Lord Krishna",
+    },
+    {
+        text: "Excellence and mastery in action is true Yoga.",
+        source: "Bhagavad Gita",
+        chapter: "2",
+        verse: "50",
+        author: "Lord Krishna",
+    },
+    {
+        text: "For one who has conquered the mind, the mind is the best of friends.",
+        source: "Bhagavad Gita",
+        chapter: "6",
+        verse: "6",
+        author: "Lord Krishna",
+    },
+    {
+        text: "Through ceaseless practice and disciplined focus, the restless mind is mastered.",
+        source: "Bhagavad Gita",
+        chapter: "6",
+        verse: "35",
+        author: "Lord Krishna",
+    },
+    {
+        text: "Elevate yourself through your own mind; do not degrade yourself. You are your own greatest ally.",
+        source: "Bhagavad Gita",
+        chapter: "6",
+        verse: "5",
+        author: "Lord Krishna",
+    },
+    {
+        text: "No sincere effort on this path is ever lost or wasted.",
+        source: "Bhagavad Gita",
+        chapter: "2",
+        verse: "40",
+        author: "Lord Krishna",
+    },
+    {
+        text: "Arise, awake, and stop not until the goal is achieved.",
+        source: "Katha Upanishad",
+        chapter: "1.3",
+        verse: "14",
+        author: "Katha Upanishad",
+    },
+    {
+        text: "A person is shaped by their faith and focus. As you believe, so you become.",
+        source: "Bhagavad Gita",
+        chapter: "17",
+        verse: "3",
+        author: "Lord Krishna",
+    },
+    {
+        text: "There is nothing in this world as purifying as knowledge and disciplined understanding.",
+        source: "Bhagavad Gita",
+        chapter: "4",
+        verse: "38",
+        author: "Lord Krishna",
+    },
+    {
+        text: "Tasks are accomplished by determined effort alone, not by wishful thinking.",
+        source: "Hitopadesha",
+        chapter: "Prastavika",
+        verse: "36",
+        author: "Narayana Pandit",
+    },
+    {
+        text: "Remain balanced in both triumph and obstacle — equanimity is the mark of mastery.",
+        source: "Bhagavad Gita",
+        chapter: "2",
+        verse: "48",
+        author: "Lord Krishna",
+    },
+    {
+        text: "Whatever standard a dedicated practitioner sets by action, the world follows.",
+        source: "Bhagavad Gita",
+        chapter: "3",
+        verse: "21",
+        author: "Lord Krishna",
+    },
+    { text: "Consistency beats talent when talent stops solving.", source: "Daily Mindset", author: "Discipline" },
+    { text: "One problem a day keeps self-doubt away. Keep coding.", source: "DSA Prep", author: "Consistency" },
+    { text: "Every hard problem was once an unsolved puzzle. Break it down.", source: "Algorithm Insight", author: "Problem Solver" },
+    { text: "Today's struggle with DP is tomorrow's muscle memory.", source: "Daily Practice", author: "Mastery" },
+    { text: "Small daily solves compound into dream offers.", source: "Prep Philosophy", author: "Compounding" },
+    { text: "Don't count the problems, make every problem count.", source: "Daily Focus", author: "Action" },
+    { text: "Every accepted submission starts with a compiler error.", source: "Engineering Law", author: "Builder" },
+    { text: "Discipline will take you places where motivation won't.", source: "Mindset", author: "Jim Ryun" },
+    { text: "The best time to solve that pending question is right now.", source: "Action First", author: "Daily Focus" },
+    { text: "Debugging is just teaching yourself how to think clearly.", source: "Engineer's Law", author: "Craftsmanship" },
+    { text: "Mastery isn't born in big leaps—it's forged in daily problems.", source: "Practice", author: "Deep Work" },
+    { text: "Stay curious, stay relentless, and submit that green code.", source: "Heuristiq", author: "Code Life" },
+    { text: "One more problem today, one less hurdle in the interview.", source: "Interview Prep", author: "Daily Grind" },
+    { text: "Stack your skills, queue your goals, and eliminate bottlenecks.", source: "Data Structures", author: "DSA Discipline" },
+    { text: "Embrace the red test cases—they guide you straight to the green.", source: "Resilience", author: "Problem Solver" },
+    { text: "Algorithms are thoughts made tangible. Sharpen your blade.", source: "Craftsmanship", author: "Mastery" },
+    { text: "Every graph has a path forward. Keep traversing.", source: "Graph Theory", author: "Algorithm Insight" },
+    { text: "Push one more commit, solve one more problem. You've got this.", source: "Next Step", author: "Momentum" },
+];
+
+/** Formats source citation for motivational quote in very small text (purely in English) */
+const formatQuoteSource = (q) => {
+    if (!q) return '';
+    const parts = [];
+    if (q.source) {
+        let src = q.source;
+        if (q.chapter && q.verse) src += ` ${q.chapter}:${q.verse}`;
+        else if (q.chapter) src += ` Ch.${q.chapter}`;
+        else if (q.verse) src += ` v.${q.verse}`;
+        parts.push(src);
+    }
+    if (q.author) parts.push(q.author);
+    return parts.join(' • ');
+};
 
 const Stat = ({ value, label }) => (
     <div className="rounded-2xl border border-line bg-panel p-4">
@@ -316,6 +437,10 @@ const Dashboard = ({
     const [taskInput, setTaskInput] = useState('');
     const tasksSliderRef = useRef(null);
 
+    // Motivational quote randomized on every refresh / page load
+    const [quoteIndex, setQuoteIndex] = useState(() => Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length));
+    const currentQuote = MOTIVATIONAL_QUOTES[quoteIndex];
+
     const isToday = activeDate === todayStr;
     const activeDateObj = useMemo(() => {
         if (!activeDate) return new Date();
@@ -536,9 +661,31 @@ const Dashboard = ({
                     </span>
                     <LiveClock />
                 </div>
-                <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
-                    {getGreeting()}, <span className="text-accent-hi">{userName || 'User'}</span>
-                </h1>
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                    <h1 className="text-2xl font-bold tracking-tight sm:text-3xl shrink-0">
+                        {getGreeting()}, <span className="text-accent-hi">{userName || 'User'}</span>
+                    </h1>
+                    {currentQuote && (
+                        <div
+                            onClick={() => setQuoteIndex((prev) => (prev + 1) % MOTIVATIONAL_QUOTES.length)}
+                            title="Click for another motivational quote"
+                            className="group inline-flex flex-wrap items-center gap-1.5 rounded-full border border-line/50 bg-raised/30 px-3 py-0.5 text-fg/85 backdrop-blur-xs transition-all hover:border-accent/40 hover:bg-raised/60 hover:text-fg shadow-2xs select-none max-w-full"
+                        >
+                            <Sparkles className="size-3 shrink-0 text-accent-hi/80 transition-transform group-hover:rotate-12 group-hover:scale-110" />
+                            <span
+                                className="text-sm sm:text-base font-medium tracking-wide"
+                                style={{ fontFamily: "'Caveat', 'Dancing Script', 'Brush Script MT', 'Segoe Script', cursive" }}
+                            >
+                                "{currentQuote.text}"
+                            </span>
+                            {formatQuoteSource(currentQuote) && (
+                                <span className="text-[10px] text-subtle not-italic font-mono ml-0.5 opacity-75 group-hover:opacity-100 transition-opacity">
+                                    — {formatQuoteSource(currentQuote)}
+                                </span>
+                            )}
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* Stat strip */}

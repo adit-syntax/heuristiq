@@ -63,46 +63,48 @@ const CodeEditor = ({ storageKey = 'playground', theme = 'dark', heading = null,
     };
 
     return (
-        <div className={`flex flex-col gap-3 ${fill ? 'h-full min-h-0' : ''}`}>
+        <div className={`w-full max-w-full min-w-0 flex flex-col gap-2.5 sm:gap-3 ${fill ? 'h-full min-h-0' : ''}`}>
             {/* Toolbar */}
-            <div className="flex flex-wrap items-center gap-2">
-                {heading}
-                <select
-                    value={langId}
-                    onChange={(e) => changeLanguage(e.target.value)}
-                    className="cursor-pointer rounded-xl border border-line bg-raised/60 px-3 py-2 text-sm text-fg transition-colors focus:border-accent focus:outline-none"
-                >
-                    {LANGUAGES.map((l) => <option key={l.id} value={l.id}>{l.label}</option>)}
-                </select>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                    {heading}
+                    <select
+                        value={langId}
+                        onChange={(e) => changeLanguage(e.target.value)}
+                        className="cursor-pointer rounded-xl border border-line bg-raised/60 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-fg transition-colors focus:border-accent focus:outline-none"
+                    >
+                        {LANGUAGES.map((l) => <option key={l.id} value={l.id}>{l.label}</option>)}
+                    </select>
 
-                <button
-                    onClick={handleRun}
-                    disabled={running || loading}
-                    className="flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                    {running ? <Loader2 className="size-4 animate-spin" /> : <Play className="size-4" />}
-                    {running ? 'Running' : 'Run'}
-                </button>
+                    <button
+                        onClick={handleRun}
+                        disabled={running || loading}
+                        className="flex items-center gap-1.5 sm:gap-2 rounded-xl bg-emerald-500 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-white transition-colors hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                        {running ? <Loader2 className="size-3.5 sm:size-4 animate-spin" /> : <Play className="size-3.5 sm:size-4" />}
+                        {running ? 'Running' : 'Run'}
+                    </button>
 
-                <button
-                    onClick={reset}
-                    title="Reset to template"
-                    className="flex size-9 items-center justify-center rounded-xl border border-line bg-raised/60 text-muted transition-colors hover:text-fg"
-                >
-                    <RotateCcw className="size-4" />
-                </button>
+                    <button
+                        onClick={reset}
+                        title="Reset to template"
+                        className="flex size-8 sm:size-9 items-center justify-center rounded-xl border border-line bg-raised/60 text-muted transition-colors hover:text-fg"
+                    >
+                        <RotateCcw className="size-3.5 sm:size-4" />
+                    </button>
+                </div>
 
-                <div className="ml-auto flex items-center gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2 ml-auto">
                     <button
                         onClick={() => setShowEngineInfo(true)}
                         title="Execution Engine & Automatic Fallback Details"
-                        className="group flex items-center gap-1.5 rounded-xl border border-line bg-raised/60 px-2.5 py-2 text-xs font-medium text-subtle transition-colors hover:border-accent/40 hover:bg-accent/10 hover:text-accent-hi"
+                        className="group flex items-center gap-1.5 rounded-xl border border-line bg-raised/60 px-2 sm:px-2.5 py-1.5 sm:py-2 text-[11px] sm:text-xs font-medium text-subtle transition-colors hover:border-accent/40 hover:bg-accent/10 hover:text-accent-hi"
                     >
-                        <Cpu className="size-3.5 text-accent-hi" />
+                        <Cpu className="size-3 sm:size-3.5 text-accent-hi" />
                         <span className="hidden sm:inline">Engine:</span>
                         <span className="font-semibold text-fg group-hover:text-accent-hi">Judge0</span>
-                        <span className="hidden sm:inline text-faint">·</span>
-                        <span className="hidden sm:inline text-emerald-400">Fallback Ready</span>
+                        <span className="hidden md:inline text-faint">·</span>
+                        <span className="hidden md:inline text-emerald-400">Fallback Ready</span>
                         <Info className="size-3 text-subtle group-hover:text-accent-hi" />
                     </button>
                     <SyncBadge status={status} loading={loading} />
@@ -110,8 +112,8 @@ const CodeEditor = ({ storageKey = 'playground', theme = 'dark', heading = null,
             </div>
 
             {/* Editor - fixed height inline, flexible when filling a panel */}
-            <div className={`overflow-hidden rounded-xl border border-line bg-panel
-                ${fill ? 'min-h-[220px] flex-1' : compact ? 'h-[38vh] sm:h-[45vh] min-h-[240px]' : 'h-[42vh] sm:h-[55vh] min-h-[260px]'}`}>
+            <div className={`w-full max-w-full min-w-0 overflow-hidden rounded-xl border border-line bg-panel
+                ${fill ? 'min-h-[220px] flex-1' : compact ? 'h-[36vh] sm:h-[45vh] min-h-[220px]' : 'h-[42vh] sm:h-[55vh] min-h-[260px]'}`}>
                 <Editor
                     language={lang.monaco}
                     theme={theme === 'dark' ? 'vs-dark' : 'light'}
@@ -120,36 +122,44 @@ const CodeEditor = ({ storageKey = 'playground', theme = 'dark', heading = null,
                     loading={<div className="p-4 text-sm text-subtle">Loading editor...</div>}
                     options={{
                         minimap: { enabled: false },
-                        fontSize: 14,
+                        fontSize: typeof window !== 'undefined' && window.innerWidth < 640 ? 13 : 14,
                         fontLigatures: true,
                         fontFamily: '"JetBrains Mono", monospace',
                         tabSize: 4,
                         scrollBeyondLastLine: false,
                         automaticLayout: true,
                         wordWrap: 'on',
+                        wrappingStrategy: 'advanced',
                         padding: { top: 12 },
+                        lineNumbersMinChars: 3,
+                        glyphMargin: false,
+                        overviewRulerLanes: 0,
+                        scrollbar: {
+                            verticalScrollbarSize: 8,
+                            horizontalScrollbarSize: 8,
+                        },
                     }}
                 />
             </div>
 
             {/* Stdin + output */}
-            <div className={`grid gap-3 ${fill ? 'shrink-0' : ''} grid-cols-1 md:grid-cols-2`}>
-                <div>
+            <div className={`grid w-full max-w-full min-w-0 gap-3 ${fill ? 'shrink-0' : ''} grid-cols-1 md:grid-cols-2`}>
+                <div className="w-full min-w-0">
                     <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-subtle">Input (stdin)</label>
                     <textarea
                         value={stdin}
                         onChange={(e) => setStdin(e.target.value)}
                         placeholder="Test input passed to your program..."
                         spellCheck="false"
-                        className="h-24 w-full resize-none rounded-xl border border-line bg-app/60 p-3 font-mono text-sm text-fg placeholder:text-faint focus:border-accent focus:outline-none sm:h-28"
+                        className="h-24 w-full resize-none rounded-xl border border-line bg-app/60 p-3 font-mono text-xs sm:text-sm text-fg placeholder:text-faint focus:border-accent focus:outline-none sm:h-28"
                     />
                 </div>
-                <div>
+                <div className="w-full min-w-0">
                     <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-subtle">
                         <Terminal className="size-3.5" /> Output
                     </label>
                     <pre
-                        className={`h-24 w-full overflow-auto whitespace-pre-wrap rounded-xl border p-3 font-mono text-sm sm:h-28
+                        className={`h-24 w-full overflow-auto whitespace-pre-wrap break-all rounded-xl border p-3 font-mono text-xs sm:text-sm sm:h-28
                             ${result?.error ? 'border-rose-500/30 bg-app/60 text-rose-400' : 'border-line bg-app/60 text-fg'}`}
                     >
                         {running ? 'Running...' : result ? (result.error ? `${result.error}\n${result.output}` : result.output) : 'Run your code to see output.'}
@@ -164,7 +174,7 @@ const CodeEditor = ({ storageKey = 'playground', theme = 'dark', heading = null,
                     onClick={() => setShowEngineInfo(false)}
                 >
                     <div
-                        className="w-full max-w-md rounded-2xl border border-line bg-panel p-5 sm:p-6 shadow-2xl"
+                        className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-line bg-panel p-5 sm:p-6 shadow-2xl"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="flex items-start justify-between gap-3 border-b border-line pb-4">

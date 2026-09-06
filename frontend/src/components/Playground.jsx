@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SquareCode, PictureInPicture2, Pin, Cpu } from 'lucide-react';
+import { SquareCode, PictureInPicture2, Pin } from 'lucide-react';
 import CodeEditor from './CodeEditor';
 import FloatingPanel from './FloatingPanel';
 
@@ -11,29 +11,21 @@ const Playground = ({ theme }) => {
     const editor = <CodeEditor storageKey="playground" theme={theme} />;
 
     return (
-        <div className="space-y-5 px-1 sm:px-0">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-3.5">
-                    <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-accent-hi to-accent-deep shadow-lg shadow-accent/20 sm:size-14">
-                        <SquareCode className="size-6 text-white sm:size-7" />
+        <div className="w-full max-w-full min-w-0 space-y-4 sm:space-y-5 px-1 sm:px-0">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                    <div className="flex size-11 sm:size-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-accent-hi to-accent-deep shadow-lg shadow-accent/20">
+                        <SquareCode className="size-5 sm:size-7 text-white" />
                     </div>
-                    <div>
-                        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Code Playground</h1>
-                        <p className="text-sm text-subtle sm:text-base">Write, run and keep scratch code. C++, Python, Java, JS and C.</p>
-                        <div className="mt-1 flex items-center gap-1.5">
-                            <span className="inline-flex items-center gap-1.5 rounded-md border border-line/60 bg-raised/50 px-2 py-0.5 text-[11px] font-medium text-subtle">
-                                <Cpu className="size-3 text-accent-hi" />
-                                <span>Engine: <strong className="font-semibold text-fg">Judge0 CE</strong></span>
-                                <span className="text-faint">·</span>
-                                <span className="text-emerald-400">Automatic Wandbox Fallback</span>
-                            </span>
-                        </div>
+                    <div className="min-w-0 flex-1">
+                        <h1 className="text-xl sm:text-3xl font-bold tracking-tight text-fg truncate sm:whitespace-normal">Code Playground</h1>
+                        <p className="text-xs sm:text-base text-subtle truncate sm:whitespace-normal">Write, run and keep scratch code. C++, Python, Java, JS and C.</p>
                     </div>
                 </div>
                 <button
                     onClick={() => setFloating((v) => !v)}
                     title={floating ? 'Dock the editor back into the page' : 'Pop the editor out - drag and resize anywhere'}
-                    className="flex items-center gap-2 rounded-xl border border-line bg-panel px-4 py-2.5 text-sm font-medium text-muted transition-colors hover:bg-raised hover:text-fg"
+                    className="self-start sm:self-auto flex items-center gap-2 rounded-xl border border-line bg-panel px-3.5 py-2 text-xs sm:text-sm font-medium text-muted transition-colors hover:bg-raised hover:text-fg shrink-0"
                 >
                     {floating ? <Pin className="size-4" /> : <PictureInPicture2 className="size-4" />}
                     {floating ? 'Dock editor' : 'Float editor'}
@@ -44,10 +36,10 @@ const Playground = ({ theme }) => {
                 <FloatingPanel
                     title="Code Playground"
                     icon={<SquareCode className="size-4 shrink-0 text-accent-hi" />}
-                    initialWidth={860}
-                    initialHeight={620}
-                    minW={480}
-                    minH={360}
+                    initialWidth={typeof window !== 'undefined' ? Math.min(860, window.innerWidth - 16) : 860}
+                    initialHeight={typeof window !== 'undefined' ? Math.min(620, window.innerHeight - 80) : 620}
+                    minW={300}
+                    minH={240}
                     keepAspect={false}
                     allowOffscreen
                     onClose={() => setFloating(false)}

@@ -142,14 +142,27 @@ function AppContent() {
 
   // Sidebar avatar: mirrors the Profile page's doc (Firestore or local).
   const [avatarUrl, setAvatarUrl] = useState('');
+  const [profileName, setProfileName] = useState('');
+  const [avatarError, setAvatarError] = useState(false);
+
   useEffect(() => {
     let live = true;
     const read = async () => {
       try {
         const p = JSON.parse(localStorage.getItem(`preptracker-profile-${user?.id || 'guest'}`) || 'null');
-        if (live && p?.avatar) { setAvatarUrl(p.avatar); return; }
+        if (live) {
+          if (p?.avatar) { setAvatarUrl(p.avatar); setAvatarError(false); }
+          else { setAvatarUrl(user?.photoURL || ''); setAvatarError(false); }
+          if (p?.name) setProfileName(p.name);
+          else setProfileName(user?.name || user?.displayName || '');
+          return;
+        }
       } catch { /* ignore */ }
-      if (live) setAvatarUrl(user?.photoURL || '');
+      if (live) {
+        setAvatarUrl(user?.photoURL || '');
+        setAvatarError(false);
+        setProfileName(user?.name || user?.displayName || '');
+      }
     };
     read();
     return () => { live = false; };
@@ -216,7 +229,16 @@ function AppContent() {
     return <Landing />;
   }
 
-  const initials = (user?.name || 'G').split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+  const displayName = profileName || user?.name || user?.displayName || 'Guest';
+
+  const initials = useMemo(() => {
+    const parts = displayName.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return 'G';
+    if (parts.length === 1) {
+      return (parts[0].length > 1 ? parts[0].slice(0, 2) : parts[0]).toUpperCase();
+    }
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }, [displayName]);
 
   const navItem = (tab, onClick) => {
     const active = activeTab === tab.id;
@@ -283,15 +305,20 @@ function AppContent() {
 
         <div className="space-y-3 border-t border-line p-4">
           <a href="#profile" onClick={(e) => { e.preventDefault(); goTo('profile'); }} className="group flex items-center gap-3" title="Open profile">
-            {avatarUrl ? (
-              <img src={avatarUrl} alt="" className="size-9 shrink-0 rounded-xl border border-line object-cover" />
+            {avatarUrl && !avatarError ? (
+              <img
+                src={avatarUrl}
+                alt={displayName}
+                onError={() => setAvatarError(true)}
+                className="size-9 shrink-0 rounded-full border border-line object-cover"
+              />
             ) : (
-              <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-accent/15 font-mono text-sm font-semibold text-accent-hi transition-colors group-hover:bg-accent/25">
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent/15 font-mono text-sm font-semibold text-accent-hi transition-colors group-hover:bg-accent/25 select-none">
                 {initials}
               </div>
             )}
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold transition-colors group-hover:text-accent-hi">{user?.name || 'Guest'}</p>
+              <p className="truncate text-sm font-semibold transition-colors group-hover:text-accent-hi">{displayName}</p>
               <p className="truncate text-xs text-subtle">{user?.email || 'Local data only'}</p>
             </div>
           </a>
@@ -341,15 +368,24 @@ function AppContent() {
               {TABS.map((tab) => navItem(tab, () => goTo(tab.id)))}
             </nav>
             <div className="space-y-3 border-t border-line pt-4">
-              <div className="flex items-center gap-3">
-                <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-accent/15 font-mono text-sm font-semibold text-accent-hi">
-                  {initials}
-                </div>
+              <a href="#profile" onClick={(e) => { e.preventDefault(); goTo('profile'); setMobileMenuOpen(false); }} className="group flex items-center gap-3" title="Open profile">
+                {avatarUrl && !avatarError ? (
+                  <img
+                    src={avatarUrl}
+                    alt={displayName}
+                    onError={() => setAvatarError(true)}
+                    className="size-9 shrink-0 rounded-full border border-line object-cover"
+                  />
+                ) : (
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent/15 font-mono text-sm font-semibold text-accent-hi select-none">
+                    {initials}
+                  </div>
+                )}
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">{user?.name || 'Guest'}</p>
+                  <p className="truncate text-sm font-semibold transition-colors group-hover:text-accent-hi">{displayName}</p>
                   <p className="truncate text-xs text-subtle">{user?.email || 'Local data only'}</p>
                 </div>
-              </div>
+              </a>
               {actionButtons}
             </div>
           </div>

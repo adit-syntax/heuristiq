@@ -469,11 +469,14 @@ const Dashboard = ({
 
             {/* Header */}
             <div>
-                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                    <p className="font-mono text-xs uppercase tracking-[0.25em] text-subtle">{getCurrentDateInfo()}</p>
-                    <LiveClock className="text-[11px] tracking-[0.2em] text-faint" />
+                <div className="flex flex-wrap items-center gap-2">
+                    <span className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-line bg-raised/50 px-2.5 font-mono text-xs font-medium uppercase tracking-wider text-subtle leading-none">
+                        <Calendar className="size-3.5 shrink-0 text-accent-hi" />
+                        <span className="leading-none">{getCurrentDateInfo()}</span>
+                    </span>
+                    <LiveClock />
                 </div>
-                <h1 className="mt-1.5 text-2xl font-bold tracking-tight sm:text-3xl">
+                <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
                     {getGreeting()}, <span className="text-accent-hi">{userName || 'User'}</span>
                 </h1>
             </div>

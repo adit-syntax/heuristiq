@@ -18,7 +18,6 @@ import {
     Trash2,
     Info,
     X,
-    Sparkles,
 } from 'lucide-react';
 import DayDetails from './DayDetails';
 import NoteHistory from './NoteHistory';
@@ -31,107 +30,124 @@ import { getLocalDateKey, calculateStreak } from '../lib/dateUtils';
 
 const MOTIVATIONAL_QUOTES = [
     {
-        text: "You have a right to your work, never to the fruits of it. Dedicate yourself fully to the craft.",
+        text: "You have a right to your work, but never to the fruits thereof. Let not the fruit of action be your motive, nor let your attachment be to inaction.",
         source: "Bhagavad Gita",
         chapter: "2",
         verse: "47",
         author: "Lord Krishna",
     },
     {
-        text: "Excellence and mastery in action is true Yoga.",
-        source: "Bhagavad Gita",
-        chapter: "2",
-        verse: "50",
-        author: "Lord Krishna",
-    },
-    {
-        text: "For one who has conquered the mind, the mind is the best of friends.",
-        source: "Bhagavad Gita",
-        chapter: "6",
-        verse: "6",
-        author: "Lord Krishna",
-    },
-    {
-        text: "Through ceaseless practice and disciplined focus, the restless mind is mastered.",
-        source: "Bhagavad Gita",
-        chapter: "6",
-        verse: "35",
-        author: "Lord Krishna",
-    },
-    {
-        text: "Elevate yourself through your own mind; do not degrade yourself. You are your own greatest ally.",
-        source: "Bhagavad Gita",
-        chapter: "6",
-        verse: "5",
-        author: "Lord Krishna",
-    },
-    {
-        text: "No sincere effort on this path is ever lost or wasted.",
-        source: "Bhagavad Gita",
-        chapter: "2",
-        verse: "40",
-        author: "Lord Krishna",
-    },
-    {
-        text: "Arise, awake, and stop not until the goal is achieved.",
-        source: "Katha Upanishad",
-        chapter: "1.3",
-        verse: "14",
-        author: "Katha Upanishad",
-    },
-    {
-        text: "A person is shaped by their faith and focus. As you believe, so you become.",
-        source: "Bhagavad Gita",
-        chapter: "17",
-        verse: "3",
-        author: "Lord Krishna",
-    },
-    {
-        text: "There is nothing in this world as purifying as knowledge and disciplined understanding.",
-        source: "Bhagavad Gita",
-        chapter: "4",
-        verse: "38",
-        author: "Lord Krishna",
-    },
-    {
-        text: "Tasks are accomplished by determined effort alone, not by wishful thinking.",
-        source: "Hitopadesha",
-        chapter: "Prastavika",
-        verse: "36",
-        author: "Narayana Pandit",
-    },
-    {
-        text: "Remain balanced in both triumph and obstacle — equanimity is the mark of mastery.",
+        text: "Perform your duty with an even mind, abandoning all attachment to success or failure. Such equanimity of mind is called Yoga.",
         source: "Bhagavad Gita",
         chapter: "2",
         verse: "48",
         author: "Lord Krishna",
     },
     {
-        text: "Whatever standard a dedicated practitioner sets by action, the world follows.",
+        text: "One who is endowed with equanimity of mind frees themselves in this life from both good and bad deeds. Therefore, strive for Yoga; Yoga is skill in action.",
+        source: "Bhagavad Gita",
+        chapter: "2",
+        verse: "50",
+        author: "Lord Krishna",
+    },
+    {
+        text: "Elevate yourself through the power of your own mind; do not degrade yourself. For the mind alone is one's friend, and the mind alone is one's enemy.",
+        source: "Bhagavad Gita",
+        chapter: "6",
+        verse: "5",
+        author: "Lord Krishna",
+    },
+    {
+        text: "For one who has conquered the mind, the mind is the best of allies; but for one who has failed to master it, the mind remains the greatest foe.",
+        source: "Bhagavad Gita",
+        chapter: "6",
+        verse: "6",
+        author: "Lord Krishna",
+    },
+    {
+        text: "The mind is undoubtedly restless and hard to restrain, but it can be mastered through ceaseless practice and detachment.",
+        source: "Bhagavad Gita",
+        chapter: "6",
+        verse: "35",
+        author: "Lord Krishna",
+    },
+    {
+        text: "In this endeavor, no sincere effort is ever lost or wasted, and no adverse result is incurred. Even a little practice protects one from great fear.",
+        source: "Bhagavad Gita",
+        chapter: "2",
+        verse: "40",
+        author: "Lord Krishna",
+    },
+    {
+        text: "In this world, there is nothing as purifying as knowledge. One who has attained perfection through practice finds this wisdom within themselves in due time.",
+        source: "Bhagavad Gita",
+        chapter: "4",
+        verse: "38",
+        author: "Lord Krishna",
+    },
+    {
+        text: "A person is shaped by their conviction. Whatever a person's deepest conviction is, that indeed they become.",
+        source: "Bhagavad Gita",
+        chapter: "17",
+        verse: "3",
+        author: "Lord Krishna",
+    },
+    {
+        text: "Whatever action an exemplary person performs, common people emulate. Whatever standards they set by their deeds, the world pursues.",
         source: "Bhagavad Gita",
         chapter: "3",
         verse: "21",
         author: "Lord Krishna",
     },
-    { text: "Consistency beats talent when talent stops solving.", source: "Daily Mindset", author: "Discipline" },
-    { text: "One problem a day keeps self-doubt away. Keep coding.", source: "DSA Prep", author: "Consistency" },
-    { text: "Every hard problem was once an unsolved puzzle. Break it down.", source: "Algorithm Insight", author: "Problem Solver" },
-    { text: "Today's struggle with DP is tomorrow's muscle memory.", source: "Daily Practice", author: "Mastery" },
-    { text: "Small daily solves compound into dream offers.", source: "Prep Philosophy", author: "Compounding" },
-    { text: "Don't count the problems, make every problem count.", source: "Daily Focus", author: "Action" },
-    { text: "Every accepted submission starts with a compiler error.", source: "Engineering Law", author: "Builder" },
-    { text: "Discipline will take you places where motivation won't.", source: "Mindset", author: "Jim Ryun" },
-    { text: "The best time to solve that pending question is right now.", source: "Action First", author: "Daily Focus" },
-    { text: "Debugging is just teaching yourself how to think clearly.", source: "Engineer's Law", author: "Craftsmanship" },
-    { text: "Mastery isn't born in big leaps—it's forged in daily problems.", source: "Practice", author: "Deep Work" },
-    { text: "Stay curious, stay relentless, and submit that green code.", source: "Heuristiq", author: "Code Life" },
-    { text: "One more problem today, one less hurdle in the interview.", source: "Interview Prep", author: "Daily Grind" },
-    { text: "Stack your skills, queue your goals, and eliminate bottlenecks.", source: "Data Structures", author: "DSA Discipline" },
-    { text: "Embrace the red test cases—they guide you straight to the green.", source: "Resilience", author: "Problem Solver" },
-    { text: "Algorithms are thoughts made tangible. Sharpen your blade.", source: "Craftsmanship", author: "Mastery" },
-    { text: "Every graph has a path forward. Keep traversing.", source: "Graph Theory", author: "Algorithm Insight" },
-    { text: "Push one more commit, solve one more problem. You've got this.", source: "Next Step", author: "Momentum" },
+    {
+        text: "Without attachment, constantly perform the work that ought to be done; for by doing work without attachment, one attains the supreme state.",
+        source: "Bhagavad Gita",
+        chapter: "3",
+        verse: "19",
+        author: "Lord Krishna",
+    },
+    {
+        text: "From wherever the restless and unsteady mind wanders away, one should curb it and bring it back under the control of the self alone.",
+        source: "Bhagavad Gita",
+        chapter: "6",
+        verse: "26",
+        author: "Lord Krishna",
+    },
+    {
+        text: "As a lamp in a windless place does not flicker, so is the steady mind of a seeker who practices union with the deeper self.",
+        source: "Bhagavad Gita",
+        chapter: "6",
+        verse: "19",
+        author: "Lord Krishna",
+    },
+    {
+        text: "That which appears like poison in the beginning but tastes like nectar in the end — that joy is born of clear self-knowledge and disciplined effort.",
+        source: "Bhagavad Gita",
+        chapter: "18",
+        verse: "37",
+        author: "Lord Krishna",
+    },
+    {
+        text: "The contact of the senses with their objects gives rise to cold and heat, pleasure and pain. They are fleeting and impermanent; learn to endure them patiently.",
+        source: "Bhagavad Gita",
+        chapter: "2",
+        verse: "14",
+        author: "Lord Krishna",
+    },
+    {
+        text: "Arise, awake, and stop not until the highest goal is attained. The path is as sharp as the edge of a razor, difficult to tread and hard to cross.",
+        source: "Katha Upanishad",
+        chapter: "1.3",
+        verse: "14",
+        author: "Katha Upanishad",
+    },
+    {
+        text: "Tasks are accomplished by deliberate, persistent effort, never by mere wishful thinking. A sleeping lion catches no prey.",
+        source: "Hitopadesha",
+        chapter: "Prastavika",
+        verse: "36",
+        author: "Narayana Pandit",
+    },
 ];
 
 /** Formats source citation for motivational quote in very small text (purely in English) */
@@ -661,27 +677,23 @@ const Dashboard = ({
                     </span>
                     <LiveClock />
                 </div>
-                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
-                    <h1 className="text-2xl font-bold tracking-tight sm:text-3xl shrink-0">
+                <div className="mt-2 flex flex-col gap-2.5 md:flex-row md:items-center md:justify-between">
+                    <h1 className="text-2xl font-bold tracking-tight sm:text-3xl shrink-0 text-fg">
                         {getGreeting()}, <span className="text-accent-hi">{userName || 'User'}</span>
                     </h1>
                     {currentQuote && (
                         <div
                             onClick={() => setQuoteIndex((prev) => (prev + 1) % MOTIVATIONAL_QUOTES.length)}
-                            title="Click for another motivational quote"
-                            className="group inline-flex flex-wrap items-center gap-1.5 rounded-full border border-line/50 bg-raised/30 px-3 py-0.5 text-fg/85 backdrop-blur-xs transition-all hover:border-accent/40 hover:bg-raised/60 hover:text-fg shadow-2xs select-none max-w-full"
+                            title="Click for another quote"
+                            className="group flex cursor-pointer flex-col items-start md:items-end text-left md:text-right max-w-xl md:ml-auto transition-all select-none"
                         >
-                            <Sparkles className="size-3 shrink-0 text-accent-hi/80 transition-transform group-hover:rotate-12 group-hover:scale-110" />
-                            <span
-                                className="text-sm sm:text-base font-medium tracking-wide"
-                                style={{ fontFamily: "'Caveat', 'Dancing Script', 'Brush Script MT', 'Segoe Script', cursive" }}
-                            >
-                                "{currentQuote.text}"
-                            </span>
+                            <p className="font-serif italic text-sm sm:text-[15px] font-medium text-fg leading-snug group-hover:text-accent-hi transition-colors">
+                                “{currentQuote.text}”
+                            </p>
                             {formatQuoteSource(currentQuote) && (
-                                <span className="text-[10px] text-subtle not-italic font-mono ml-0.5 opacity-75 group-hover:opacity-100 transition-opacity">
+                                <p className="mt-0.5 font-mono text-[11px] font-semibold text-subtle uppercase tracking-wider group-hover:text-fg transition-colors">
                                     — {formatQuoteSource(currentQuote)}
-                                </span>
+                                </p>
                             )}
                         </div>
                     )}

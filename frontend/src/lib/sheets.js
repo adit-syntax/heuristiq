@@ -38,19 +38,36 @@ const flattenStriver = (mod) => {
     return out;
 };
 
+const humanizeUrl = (str) => {
+    if (!str || typeof str !== 'string' || !str.startsWith('http')) return str;
+    const m = str.match(/\/problems\/([^/]+)/);
+    const slug = m ? m[1] : str.replace(/^https?:\/\/[^/]+\//, '').replace(/\/$/, '');
+    return slug
+        .split(/[-_]+/)
+        .filter(Boolean)
+        .map((w) => {
+            const lower = w.toLowerCase();
+            if (['ii', 'iii', 'iv', 'v', 'vi'].includes(lower)) return lower.toUpperCase();
+            if (['bst', 'lru', 'lfu', 'trie', 'gcd', 'lcm', 'dp'].includes(lower)) return lower.toUpperCase();
+            return w.charAt(0).toUpperCase() + w.slice(1);
+        })
+        .join(' ');
+};
+
 // Tab-shaped sheets (MIK, SDE, NeetCode, Blind, Top 150, CP, CSES, SQL):
 // topics -> rows of { title, video, problem, code?, companies, learn, difficulty }.
 const flattenTabbed = (prefix, topics) => {
     const out = [];
     topics?.forEach((topic, topicIndex) => {
         topic.rows?.forEach((row, questionIndex) => {
+            const title = humanizeUrl(row.title) || 'Untitled';
             // Titles repeat across topics, so scope the id by topic.
             out.push({
-                id: `${prefix}:${topic.id}:${row.title}`,
+                id: `${prefix}:${topic.id}:${title}`,
                 cid: canonicalKey({ leetCodeLink: row.problem || '' }) || undefined,
                 topic: topic.title,
                 subtopic: 'Problems',
-                problem: row.title,
+                problem: title,
                 // `code` is the solution/editorial link slot (e.g. CP-31 GitHub solutions).
                 questionLink: row.code || '',
                 gfgLink: '',

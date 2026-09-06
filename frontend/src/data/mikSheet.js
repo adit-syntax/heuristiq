@@ -138,532 +138,532 @@ export const MIK_TOPICS = [
     "title": "Blind 75 - codestorywithMIK",
     "rows": [
       {
-        "title": "https://leetcode.com/problems/two-sum/",
+        "title": "Two Sum",
         "video": "https://www.youtube.com/watch?v=TCaBnVIllrQ",
         "problem": "https://leetcode.com/problems/two-sum/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/",
+        "title": "Best Time to Buy And Sell Stock",
         "video": "https://www.youtube.com/watch?v=iTvEXpOAyHY",
         "problem": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/contains-duplicate/",
+        "title": "Contains Duplicate",
         "video": "",
         "problem": "https://leetcode.com/problems/contains-duplicate/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/product-of-array-except-self/",
+        "title": "Product of Array Except Self",
         "video": "",
         "problem": "https://leetcode.com/problems/product-of-array-except-self/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/maximum-subarray/",
+        "title": "Maximum Subarray",
         "video": "",
         "problem": "https://leetcode.com/problems/maximum-subarray/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/maximum-product-subarray/",
+        "title": "Maximum Product Subarray",
         "video": "",
         "problem": "https://leetcode.com/problems/maximum-product-subarray/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/",
+        "title": "Find Minimum In Rotated Sorted Array",
         "video": "https://youtu.be/Jin6vO0MdzY?si=LFJy8D86a9ZMVaXI",
         "problem": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/search-in-rotated-sorted-array/",
+        "title": "Search In Rotated Sorted Array",
         "video": "https://youtu.be/U1VsdRgVevY?si=vp2o5yj5_0kKCq9a",
         "problem": "https://leetcode.com/problems/search-in-rotated-sorted-array/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/3sum/",
+        "title": "3Sum",
         "video": "https://youtu.be/_cBWWebTVpI?si=XzauYdL0Q69_7R2d",
         "problem": "https://leetcode.com/problems/3sum/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/container-with-most-water/",
+        "title": "Container With Most Water",
         "video": "https://youtu.be/KVU4JNNJkVg?si=1QHQn6EzDcpkqn7E",
         "problem": "https://leetcode.com/problems/container-with-most-water/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/sum-of-two-integers/",
+        "title": "Sum of Two Integers",
         "video": "",
         "problem": "https://leetcode.com/problems/sum-of-two-integers/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/number-of-1-bits/",
+        "title": "Number of 1 Bits",
         "video": "",
         "problem": "https://leetcode.com/problems/number-of-1-bits/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/counting-bits/",
+        "title": "Counting Bits",
         "video": "https://youtu.be/uwOz378g3ew?si=m37tlkg7OoPoxP_9",
         "problem": "https://leetcode.com/problems/counting-bits/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/missing-number",
+        "title": "Missing Number",
         "video": "https://www.youtube.com/watch?v=lpyQGkbDvqI",
         "problem": "https://leetcode.com/problems/missing-number",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/reverse-bits/",
+        "title": "Reverse Bits",
         "video": "",
         "problem": "https://leetcode.com/problems/reverse-bits/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/reverse-linked-list/",
+        "title": "Reverse Linked List",
         "video": "https://youtu.be/RreHsOfi14w?si=fJ5QSp10JSpK9pBI",
         "problem": "https://leetcode.com/problems/reverse-linked-list/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/linked-list-cycle/",
+        "title": "Linked List Cycle",
         "video": "",
         "problem": "https://leetcode.com/problems/linked-list-cycle/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/merge-two-sorted-lists/",
+        "title": "Merge Two Sorted Lists",
         "video": "https://youtu.be/RreHsOfi14w?si=szPqscASw51HLVUP",
         "problem": "https://leetcode.com/problems/merge-two-sorted-lists/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/merge-k-sorted-lists/",
+        "title": "Merge K Sorted Lists",
         "video": "https://youtu.be/Q64u-W3l3mA?si=-FmJOCBEhQd04bq5",
         "problem": "https://leetcode.com/problems/merge-k-sorted-lists/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/remove-nth-node-from-end-of-list/",
+        "title": "Remove Nth Node From End of List",
         "video": "",
         "problem": "https://leetcode.com/problems/remove-nth-node-from-end-of-list/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/reorder-list/",
+        "title": "Reorder List",
         "video": "",
         "problem": "https://leetcode.com/problems/reorder-list/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/climbing-stairs/",
+        "title": "Climbing Stairs",
         "video": "https://youtu.be/6OjGE04Kx_M?si=dmjT5_kH7mYW5gIZ",
         "problem": "https://leetcode.com/problems/climbing-stairs/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/coin-change/",
+        "title": "Coin Change",
         "video": "",
         "problem": "https://leetcode.com/problems/coin-change/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/longest-increasing-subsequence/",
+        "title": "Longest Increasing Subsequence",
         "video": "https://youtu.be/DG50PJIx2SM?si=Zn-mVXb-HDC3uSPw",
         "problem": "https://leetcode.com/problems/longest-increasing-subsequence/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/longest-common-subsequence/",
+        "title": "Longest Common Subsequence",
         "video": "https://youtu.be/aJNu_DLyOxY?si=zUbDbMAlhIeIoLYo",
         "problem": "https://leetcode.com/problems/longest-common-subsequence/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/word-break/",
+        "title": "Word Break",
         "video": "https://youtu.be/oBUpyPZ08zU?si=ddvusPWi3624G0mq",
         "problem": "https://leetcode.com/problems/word-break/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/combination-sum-iv/",
+        "title": "Combination Sum IV",
         "video": "",
         "problem": "https://leetcode.com/problems/combination-sum-iv/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/house-robber/",
+        "title": "House Robber",
         "video": "https://youtu.be/SI6Pm8AKqnQ?si=jpAwTs9gmIrhzo-3",
         "problem": "https://leetcode.com/problems/house-robber/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/house-robber-ii/",
+        "title": "House Robber II",
         "video": "https://youtu.be/5AxMZBirNKo?si=dVbPTGY8BVrxMDcm",
         "problem": "https://leetcode.com/problems/house-robber-ii/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/decode-ways/",
+        "title": "Decode Ways",
         "video": "https://youtu.be/HW-y3gvQTVQ?si=AFgcEG6cfXHZYpF8",
         "problem": "https://leetcode.com/problems/decode-ways/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/unique-paths/",
+        "title": "Unique Paths",
         "video": "https://youtu.be/DaakAKiCkyc?si=SGSZ0UhFLR4oqEld",
         "problem": "https://leetcode.com/problems/unique-paths/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/jump-game/",
+        "title": "Jump Game",
         "video": "https://youtu.be/pvg0yrD-E5w?si=VRKGm93yVnkd-a8o",
         "problem": "https://leetcode.com/problems/jump-game/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+        "title": "Longest Substring Without Repeating Characters",
         "video": "",
         "problem": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/longest-repeating-character-replacement/",
+        "title": "Longest Repeating Character Replacement",
         "video": "",
         "problem": "https://leetcode.com/problems/longest-repeating-character-replacement/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/minimum-window-substring/",
+        "title": "Minimum Window Substring",
         "video": "https://www.youtube.com/watch?v=3Bp3OVD1EGc&t=125s",
         "problem": "https://leetcode.com/problems/minimum-window-substring/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/valid-anagram/",
+        "title": "Valid Anagram",
         "video": "https://www.youtube.com/watch?v=1tmEKyRAMuY",
         "problem": "https://leetcode.com/problems/valid-anagram/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/group-anagrams/",
+        "title": "Group Anagrams",
         "video": "https://www.youtube.com/watch?v=TNe3gF4r128",
         "problem": "https://leetcode.com/problems/group-anagrams/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/valid-parentheses/",
+        "title": "Valid Parentheses",
         "video": "https://www.youtube.com/watch?v=3ssh_mk4LqY",
         "problem": "https://leetcode.com/problems/valid-parentheses/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/valid-palindrome/",
+        "title": "Valid Palindrome",
         "video": "",
         "problem": "https://leetcode.com/problems/valid-palindrome/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/longest-palindromic-substring/",
+        "title": "Longest Palindromic Substring",
         "video": "https://www.youtube.com/watch?v=n_kL8BkURVA",
         "problem": "https://leetcode.com/problems/longest-palindromic-substring/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/palindromic-substrings/",
+        "title": "Palindromic Substrings",
         "video": "",
         "problem": "https://leetcode.com/problems/palindromic-substrings/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/encode-and-decode-strings/",
+        "title": "Encode and Decode Strings",
         "video": "",
         "problem": "https://leetcode.com/problems/encode-and-decode-strings/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/clone-graph/",
+        "title": "Clone Graph",
         "video": "https://www.youtube.com/watch?v=z7mPg_xT5xk",
         "problem": "https://leetcode.com/problems/clone-graph/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/course-schedule/",
+        "title": "Course Schedule",
         "video": "https://www.youtube.com/watch?v=lqjlGGMjSMU",
         "problem": "https://leetcode.com/problems/course-schedule/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/pacific-atlantic-water-flow/",
+        "title": "Pacific Atlantic Water Flow",
         "video": "",
         "problem": "https://leetcode.com/problems/pacific-atlantic-water-flow/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/number-of-islands/",
+        "title": "Number of Islands",
         "video": "",
         "problem": "https://leetcode.com/problems/number-of-islands/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/longest-consecutive-sequence/",
+        "title": "Longest Consecutive Sequence",
         "video": "",
         "problem": "https://leetcode.com/problems/longest-consecutive-sequence/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/alien-dictionary/",
+        "title": "Alien Dictionary",
         "video": "",
         "problem": "https://leetcode.com/problems/alien-dictionary/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/graph-valid-tree/",
+        "title": "Graph Valid Tree",
         "video": "",
         "problem": "https://leetcode.com/problems/graph-valid-tree/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/",
+        "title": "Number of Connected Components In An Undirected Graph",
         "video": "",
         "problem": "https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/insert-interval/",
+        "title": "Insert Interval",
         "video": "https://www.youtube.com/watch?v=XXaVIDIbUn4",
         "problem": "https://leetcode.com/problems/insert-interval/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/merge-intervals/",
+        "title": "Merge Intervals",
         "video": "",
         "problem": "https://leetcode.com/problems/merge-intervals/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/non-overlapping-intervals/",
+        "title": "Non Overlapping Intervals",
         "video": "https://www.youtube.com/watch?v=0TYKyTwGOAs",
         "problem": "https://leetcode.com/problems/non-overlapping-intervals/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/meeting-rooms/",
+        "title": "Meeting Rooms",
         "video": "",
         "problem": "https://leetcode.com/problems/meeting-rooms/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/meeting-rooms-ii/",
+        "title": "Meeting Rooms II",
         "video": "",
         "problem": "https://leetcode.com/problems/meeting-rooms-ii/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/set-matrix-zeroes/",
+        "title": "Set Matrix Zeroes",
         "video": "",
         "problem": "https://leetcode.com/problems/set-matrix-zeroes/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/spiral-matrix/",
+        "title": "Spiral Matrix",
         "video": "https://www.youtube.com/watch?v=73j2ipxR958",
         "problem": "https://leetcode.com/problems/spiral-matrix/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/rotate-image/",
+        "title": "Rotate Image",
         "video": "https://www.youtube.com/watch?v=I48Z8QlQH8c",
         "problem": "https://leetcode.com/problems/rotate-image/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/word-search/",
+        "title": "Word Search",
         "video": "https://www.youtube.com/watch?v=whyax_vB8xY",
         "problem": "https://leetcode.com/problems/word-search/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/maximum-depth-of-binary-tree/",
+        "title": "Maximum Depth of Binary Tree",
         "video": "https://www.youtube.com/watch?v=uCvur520ejA",
         "problem": "https://leetcode.com/problems/maximum-depth-of-binary-tree/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/same-tree/",
+        "title": "Same Tree",
         "video": "https://www.youtube.com/watch?v=YtoibyDlzk0",
         "problem": "https://leetcode.com/problems/same-tree/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/invert-binary-tree/",
+        "title": "Invert Binary Tree",
         "video": "",
         "problem": "https://leetcode.com/problems/invert-binary-tree/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/binary-tree-maximum-path-sum/",
+        "title": "Binary Tree Maximum Path Sum",
         "video": "https://www.youtube.com/watch?v=Op6YFcs8R9M",
         "problem": "https://leetcode.com/problems/binary-tree-maximum-path-sum/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/binary-tree-level-order-traversal/",
+        "title": "Binary Tree Level Order Traversal",
         "video": "",
         "problem": "https://leetcode.com/problems/binary-tree-level-order-traversal/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/",
+        "title": "Serialize and Deserialize Binary Tree",
         "video": "",
         "problem": "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/subtree-of-another-tree/",
+        "title": "Subtree of Another Tree",
         "video": "",
         "problem": "https://leetcode.com/problems/subtree-of-another-tree/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/",
+        "title": "Construct Binary Tree From Preorder And Inorder Traversal",
         "video": "https://youtu.be/G5c1wM3Kpuw?si=Nb6oDPbGuwr8d0ZB",
         "problem": "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/validate-binary-search-tree/",
+        "title": "Validate Binary Search Tree",
         "video": "",
         "problem": "https://leetcode.com/problems/validate-binary-search-tree/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/kth-smallest-element-in-a-bst/",
+        "title": "Kth Smallest Element In a Bst",
         "video": "",
         "problem": "https://leetcode.com/problems/kth-smallest-element-in-a-bst/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/",
+        "title": "Lowest Common Ancestor of a Binary Search Tree",
         "video": "https://www.youtube.com/watch?v=Oi3_06ultic",
         "problem": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/implement-trie-prefix-tree/",
+        "title": "Implement Trie Prefix Tree",
         "video": "https://www.youtube.com/watch?v=YXefcFMpemo",
         "problem": "https://leetcode.com/problems/implement-trie-prefix-tree/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/add-and-search-word-data-structure-design/",
+        "title": "Design Add and Search Words Data Structure",
         "video": "https://www.youtube.com/watch?v=wyUO7Oq9uS4",
         "problem": "https://leetcode.com/problems/add-and-search-word-data-structure-design/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/word-search-ii/",
+        "title": "Word Search II",
         "video": "https://www.youtube.com/watch?v=DMP2bqW6URA",
         "problem": "https://leetcode.com/problems/word-search-ii/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/merge-k-sorted-lists/",
+        "title": "Merge K Sorted Lists",
         "video": "https://www.youtube.com/watch?v=Q64u-W3l3mA",
         "problem": "https://leetcode.com/problems/merge-k-sorted-lists/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/top-k-frequent-elements/",
+        "title": "Top K Frequent Elements",
         "video": "https://www.youtube.com/watch?v=GLw4WbJdYLw",
         "problem": "https://leetcode.com/problems/top-k-frequent-elements/",
         "companies": "",
         "learn": ""
       },
       {
-        "title": "https://leetcode.com/problems/find-median-from-data-stream/",
+        "title": "Find Median From Data Stream",
         "video": "https://www.youtube.com/watch?v=jnj87BSi9Is",
         "problem": "https://leetcode.com/problems/find-median-from-data-stream/",
         "companies": "",
@@ -899,7 +899,8 @@ export const MIK_TOPICS = [
         "learn": ""
       },
       {
-        "title": "https://github.com/MAZHARMIK/Interview_DS_Algo/tree/master/Arrays/Intervals_Based_Qn",
+        "title": "Interval Based Questions Repo",
+        "problem": "https://github.com/MAZHARMIK/Interview_DS_Algo/tree/master/Arrays/Intervals_Based_Qn",
         "video": "",
         "problem": "",
         "companies": "",

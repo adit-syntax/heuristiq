@@ -229,6 +229,8 @@ const Companies = ({
         return () => { live = false; };
     }, []);
 
+    const [searchQuery, setSearchQuery] = useState('');
+
     // True solved count per company: canonical marks (from ANY sheet/company)
     // resolved via the cid index, plus legacy per-list keys. Empty until the
     // index loads; the cards fall back to getCompanySolvedCount meanwhile.
@@ -252,6 +254,18 @@ const Companies = ({
         return counts;
     }, [cidIndex, dsaProgress]);
 
+    const followedSet = useMemo(() => new Set(followedCompanies), [followedCompanies]);
+
+    const list = useMemo(() => {
+        if (!registry) return [];
+        let base = followedOnly ? registry.filter((c) => followedSet.has(`cj:${c.slug}`)) : registry;
+        if (searchQuery.trim()) {
+            const q = searchQuery.toLowerCase().trim();
+            base = base.filter((c) => c.name.toLowerCase().includes(q));
+        }
+        return base;
+    }, [registry, followedOnly, followedSet, searchQuery]);
+
     if (!registry) {
         return <p className="py-24 text-center text-subtle">Loading companies...</p>;
     }
@@ -268,18 +282,6 @@ const Companies = ({
             />
         );
     }
-
-    const [searchQuery, setSearchQuery] = useState('');
-
-    const followedSet = new Set(followedCompanies);
-    const list = useMemo(() => {
-        let base = followedOnly ? registry.filter((c) => followedSet.has(`cj:${c.slug}`)) : registry;
-        if (searchQuery.trim()) {
-            const q = searchQuery.toLowerCase().trim();
-            base = base.filter((c) => c.name.toLowerCase().includes(q));
-        }
-        return base;
-    }, [registry, followedOnly, followedSet, searchQuery]);
 
     const solvedCountFor = (c) => (cidIndex && dsaProgress
         ? (solvedByCompany.get(c.id) || 0)

@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import useSyncedDoc from '../hooks/useSyncedDoc';
 import useToast from '../hooks/useToast';
+import FloatingPanel from './FloatingPanel';
 
 const EMPTY = { items: {} };
 
@@ -242,7 +243,7 @@ const NoteMarkdown = ({ text, onToggleTask }) => {
     return <div className="space-y-1">{rendered}</div>;
 };
 
-const Notes = ({ jumpQuery }) => {
+const Notes = ({ jumpQuery, floating = false, onClose }) => {
     const [doc, setDoc, { loading, status }] = useSyncedDoc('notes', EMPTY);
     const [activeId, setActiveId] = useState(null);
     const [query, setQuery] = useState('');
@@ -701,32 +702,10 @@ const Notes = ({ jumpQuery }) => {
         return { words, chars, lines };
     }, [active?.body]);
 
-    return (
-        <div className="space-y-6 px-1 sm:px-0">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-3.5">
-                    <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-accent-hi to-accent-deep shadow-lg shadow-accent/20 sm:size-14">
-                        <StickyNote className="size-6 text-white sm:size-7" />
-                    </div>
-                    <div>
-                        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Notes</h1>
-                        <p className="font-mono text-sm text-subtle">{notes.length} note{notes.length === 1 ? '' : 's'}</p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-3">
-                    <SyncBadge status={status} loading={loading} />
-                    <button
-                        onClick={createNote}
-                        className="flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-hi shadow-sm shadow-accent/20"
-                    >
-                        <Plus className="size-4" /> New note
-                    </button>
-                </div>
-            </div>
-
-            <div className="grid gap-4 lg:grid-cols-[300px_1fr] xl:grid-cols-[340px_1fr]">
-                {/* List - on mobile, hide if active note is being edited */}
-                <div className={`max-h-[72vh] flex-col overflow-hidden rounded-2xl border border-line bg-panel ${activeId ? 'hidden lg:flex' : 'flex'}`}>
+    const notesGrid = (
+        <div className={`grid gap-3.5 ${floating ? 'h-full min-h-0 grid-cols-[240px_1fr] sm:grid-cols-[280px_1fr]' : 'gap-4 lg:grid-cols-[300px_1fr] xl:grid-cols-[340px_1fr]'}`}>
+            {/* List - on mobile, hide if active note is being edited */}
+            <div className={`flex flex-col overflow-hidden rounded-2xl border border-line bg-panel ${floating ? 'h-full min-h-0' : 'max-h-[72vh]'} ${activeId && !floating ? 'hidden lg:flex' : 'flex'}`}>
                     <div className="border-b border-line p-3 space-y-2.5">
                         <div className="flex items-center gap-2">
                             <div className="relative flex-1">
@@ -838,7 +817,7 @@ const Notes = ({ jumpQuery }) => {
                 </div>
 
                 {/* Editor - on mobile, hide if no note selected */}
-                <div className={`min-h-[540px] flex-col overflow-hidden rounded-2xl border border-line bg-panel ${!activeId ? 'hidden lg:flex' : 'flex'}`}>
+                <div className={`flex flex-col overflow-hidden rounded-2xl border border-line bg-panel ${floating ? 'h-full min-h-0' : 'min-h-[540px]'} ${!activeId && !floating ? 'hidden lg:flex' : 'flex'}`}>
                     {!active ? (
                         <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
                             <StickyNote className="mb-3 size-12 text-faint" />
@@ -1041,7 +1020,7 @@ const Notes = ({ jumpQuery }) => {
                             </div>
 
                             {/* Editor & Preview Body */}
-                            <div className="flex-1 min-h-[360px] flex overflow-hidden">
+                            <div className={`flex-1 flex overflow-hidden ${floating ? 'min-h-0' : 'min-h-[360px]'}`}>
                                 {/* Write / Textarea */}
                                 {(viewMode === 'edit' || viewMode === 'split') && (
                                     <div className={`flex-1 flex flex-col ${viewMode === 'split' ? 'border-r border-line' : ''}`}>
@@ -1088,6 +1067,64 @@ const Notes = ({ jumpQuery }) => {
                     )}
                 </div>
             </div>
+    );
+
+    if (floating) {
+        return (
+            <FloatingPanel
+                title={active?.title ? `Notes - ${active.title}` : 'Notes'}
+                icon={<StickyNote className="size-4 shrink-0 text-accent-hi" />}
+                initialWidth={920}
+                initialHeight={620}
+                minW={480}
+                minH={360}
+                keepAspect={false}
+                allowOffscreen
+                onClose={onClose || (() => {})}
+                bodyClassName="overflow-hidden"
+            >
+                <div className="flex h-full flex-col overflow-hidden p-2.5 gap-2">
+                    <div className="flex items-center justify-between gap-2 px-1 border-b border-line/60 pb-2">
+                        <SyncBadge status={status} loading={loading} />
+                        <button
+                            onClick={createNote}
+                            className="flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1 text-xs font-semibold text-white transition-colors hover:bg-accent-hi shadow-xs"
+                        >
+                            <Plus className="size-3.5" /> New note
+                        </button>
+                    </div>
+                    <div className="flex-1 min-h-0 overflow-hidden">
+                        {notesGrid}
+                    </div>
+                </div>
+            </FloatingPanel>
+        );
+    }
+
+    return (
+        <div className="space-y-6 px-1 sm:px-0">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3.5">
+                    <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-accent-hi to-accent-deep shadow-lg shadow-accent/20 sm:size-14">
+                        <StickyNote className="size-6 text-white sm:size-7" />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Notes</h1>
+                        <p className="font-mono text-sm text-subtle">{notes.length} note{notes.length === 1 ? '' : 's'}</p>
+                    </div>
+                </div>
+                <div className="flex items-center gap-3">
+                    <SyncBadge status={status} loading={loading} />
+                    <button
+                        onClick={createNote}
+                        className="flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-hi shadow-sm shadow-accent/20"
+                    >
+                        <Plus className="size-4" /> New note
+                    </button>
+                </div>
+            </div>
+
+            {notesGrid}
         </div>
     );
 };

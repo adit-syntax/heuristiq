@@ -51,6 +51,8 @@ const Notes = lazy(() => import('./components/Notes'));
 const Whiteboard = lazy(() => import('./components/Whiteboard'));
 const Profile = lazy(() => import('./components/Profile'));
 const Feedback = lazy(() => import('./components/Feedback'));
+const CodeEditor = lazy(() => import('./components/CodeEditor'));
+import FloatingPanel from './components/FloatingPanel';
 
 const TABS = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, primary: true },
@@ -103,6 +105,8 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState(readHash);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [boardOpen, setBoardOpen] = useState(false);
+  const [codeOpen, setCodeOpen] = useState(false);
+  const [notesOpen, setNotesOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [jump, setJump] = useState({}); // { dsaQuery?, companySlug?, notesQuery? }
   const [theme, setTheme] = useState(() => localStorage.getItem('preptracker-theme') || 'dark');
@@ -713,19 +717,86 @@ function AppContent() {
         </ErrorBoundary>
       )}
 
-      {/* Global whiteboard - reachable from any tab. Hidden on the whiteboard
-          tab itself so only one copy of the boards document is ever mounted. */}
-      {activeTab !== 'whiteboard' && (
+      {/* ============ Global quick floating tools (Code, Notes, Whiteboard) ============ */}
+      <div className="fixed bottom-20 right-3.5 z-40 flex flex-col items-center gap-2.5 md:bottom-6 md:right-6">
+        {/* Code Playground floating toggle */}
         <button
-          onClick={() => setBoardOpen(true)}
-          title="Open whiteboard"
-          className="fixed bottom-20 right-4 z-40 flex size-12 items-center justify-center rounded-full bg-gradient-to-br from-accent-hi to-accent-deep text-white shadow-lg shadow-accent/30 transition-transform hover:scale-105 active:scale-95 md:bottom-6"
+          onClick={() => setCodeOpen((v) => !v)}
+          title={codeOpen ? "Close floating code" : "Open Code Playground (Floating)"}
+          className={`group relative flex size-11 items-center justify-center rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95 ${
+            codeOpen
+              ? 'bg-accent text-white shadow-accent/40 ring-2 ring-accent-hi/40'
+              : 'border border-line/80 bg-panel/90 text-subtle shadow-black/40 backdrop-blur-md hover:border-accent/50 hover:bg-raised hover:text-accent-hi'
+          }`}
         >
-          <PenLine className="size-5" />
+          <SquareCode className="size-5 transition-transform group-hover:scale-110" />
+          <span className="sr-only">Code Playground</span>
         </button>
+
+        {/* Notes floating toggle */}
+        <button
+          onClick={() => setNotesOpen((v) => !v)}
+          title={notesOpen ? "Close floating notes" : "Open Notes (Floating)"}
+          className={`group relative flex size-11 items-center justify-center rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95 ${
+            notesOpen
+              ? 'bg-accent text-white shadow-accent/40 ring-2 ring-accent-hi/40'
+              : 'border border-line/80 bg-panel/90 text-subtle shadow-black/40 backdrop-blur-md hover:border-accent/50 hover:bg-raised hover:text-accent-hi'
+          }`}
+        >
+          <StickyNote className="size-5 transition-transform group-hover:scale-110" />
+          <span className="sr-only">Notes</span>
+        </button>
+
+        {/* Draw / Whiteboard floating toggle */}
+        <button
+          onClick={() => setBoardOpen((v) => !v)}
+          title={boardOpen ? "Close floating whiteboard" : "Open Whiteboard (Floating)"}
+          className={`group relative flex size-11 items-center justify-center rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95 ${
+            boardOpen
+              ? 'bg-accent text-white shadow-accent/40 ring-2 ring-accent-hi/40'
+              : 'bg-gradient-to-br from-accent-hi to-accent-deep text-white shadow-accent/30 hover:shadow-accent/50'
+          }`}
+        >
+          <PenLine className="size-5 transition-transform group-hover:scale-110" />
+          <span className="sr-only">Whiteboard</span>
+        </button>
+      </div>
+
+      {/* Floating Code Playground Panel */}
+      {codeOpen && (
+        <FloatingPanel
+          title="Code Playground"
+          icon={<SquareCode className="size-4 shrink-0 text-accent-hi" />}
+          initialWidth={860}
+          initialHeight={620}
+          minW={480}
+          minH={360}
+          keepAspect={false}
+          allowOffscreen
+          onClose={() => setCodeOpen(false)}
+          bodyClassName="overflow-y-auto"
+        >
+          <div className="h-full p-2">
+            <ErrorBoundary>
+              <Suspense fallback={<Loading label="Loading code editor..." />}>
+                <CodeEditor storageKey="playground" theme={theme} fill />
+              </Suspense>
+            </ErrorBoundary>
+          </div>
+        </FloatingPanel>
       )}
 
-      {boardOpen && activeTab !== 'whiteboard' && (
+      {/* Floating Notes Panel */}
+      {notesOpen && (
+        <ErrorBoundary>
+          <Suspense fallback={<Loading label="Loading notes..." />}>
+            <Notes floating onClose={() => setNotesOpen(false)} />
+          </Suspense>
+        </ErrorBoundary>
+      )}
+
+      {/* Floating Whiteboard Panel */}
+      {boardOpen && (
         <ErrorBoundary>
           <Suspense fallback={<Loading label="Loading whiteboard..." />}>
             <Whiteboard theme={theme} floating onClose={() => setBoardOpen(false)} />

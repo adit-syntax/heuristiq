@@ -7,6 +7,7 @@ import { updateProfile } from 'firebase/auth';
 import { auth, db } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
 import useToast from '../hooks/useToast';
+import { getLocalDateKey } from '../lib/dateUtils';
 
 // Coding profile links shown as editable handles. value = username/handle.
 const CODING_SITES = [
@@ -311,7 +312,7 @@ const SyncCard = ({ handles, markSolvedBatch, toast }) => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    query: 'query($u: String!) { recentAcSubmissionList(username: $u) { titleSlug } }',
+                    query: 'query($u: String!) { recentAcSubmissionList(username: $u) { titleSlug timestamp } }',
                     variables: { u },
                 }),
             });
@@ -320,9 +321,19 @@ const SyncCard = ({ handles, markSolvedBatch, toast }) => {
             if (j.errors && j.errors.length > 0) {
                 throw new Error(j.errors[0]?.message || 'GraphQL Error');
             }
-            const slugs = (j.data?.recentAcSubmissionList || []).map((s) => s.titleSlug);
+            const submissions = j.data?.recentAcSubmissionList || [];
+            const slugs = submissions.map((s) => s.titleSlug);
             if (slugs.length === 0) throw new Error('No public accepted submissions found for that username');
-            const res = markSolvedBatch(slugs.map((s) => `lc:${s}`));
+
+            // Detect if any accepted submission was completed today in the user's local timezone
+            const todayStr = getLocalDateKey();
+            const hasSolvesToday = submissions.some((s) => {
+                if (!s.timestamp) return false;
+                const subDate = getLocalDateKey(new Date(Number(s.timestamp) * 1000));
+                return subDate === todayStr;
+            });
+
+            const res = markSolvedBatch(slugs.map((s) => `lc:${s}`), { creditToday: hasSolvesToday });
             if (res.added === 0 && res.already === 0) {
                 toast(`LeetCode checked ${slugs.length} recent problems`, {
                     detail: `Found your 20 most recent submissions, but none matched questions in the current sheets.`,
@@ -330,8 +341,8 @@ const SyncCard = ({ handles, markSolvedBatch, toast }) => {
                 });
             } else {
                 toast(`LeetCode sync: ${res.added} marked solved`, {
-                    detail: `${res.already} already solved · scanned your ${slugs.length} most recent accepted problems`,
-                    kind: res.added > 0 ? 'success' : 'info',
+                    detail: `${res.already} already solved · scanned your ${slugs.length} most recent accepted problems${hasSolvesToday ? ' · streak credited for today!' : ''}`,
+                    kind: res.added > 0 || hasSolvesToday ? 'success' : 'info',
                 });
             }
         } catch (e) {
@@ -352,14 +363,22 @@ const SyncCard = ({ handles, markSolvedBatch, toast }) => {
             if (!r.ok) throw new Error(`HTTP ${r.status}`);
             const j = await r.json();
             if (j.status !== 'OK') throw new Error(j.comment || 'user not found');
-            const keys = j.result
-                .filter((s) => s.verdict === 'OK' && s.problem?.contestId && s.problem?.index)
-                .map((s) => `cf:${s.problem.contestId}${s.problem.index}`);
-            if (keys.length === 0) throw new Error('No accepted submissions found');
-            const res = markSolvedBatch(keys);
+            const submissions = j.result.filter((s) => s.verdict === 'OK' && s.problem?.contestId && s.problem?.index);
+            if (submissions.length === 0) throw new Error('No accepted submissions found');
+            const keys = submissions.map((s) => `cf:${s.problem.contestId}${s.problem.index}`);
+
+            // Detect if any accepted submission was made today in local timezone
+            const todayStr = getLocalDateKey();
+            const hasSolvesToday = submissions.some((s) => {
+                if (!s.creationTimeSeconds) return false;
+                const subDate = getLocalDateKey(new Date(Number(s.creationTimeSeconds) * 1000));
+                return subDate === todayStr;
+            });
+
+            const res = markSolvedBatch(keys, { creditToday: hasSolvesToday });
             toast(`Codeforces sync: ${res.added} marked solved`, {
-                detail: `${res.already} already solved · last ${Math.min(keys.length, 2000)} submissions scanned`,
-                kind: res.added > 0 ? 'success' : 'info',
+                detail: `${res.already} already solved · last ${Math.min(keys.length, 2000)} submissions scanned${hasSolvesToday ? ' · streak credited for today!' : ''}`,
+                kind: res.added > 0 || hasSolvesToday ? 'success' : 'info',
             });
         } catch (e) {
             toast('Codeforces sync failed', { detail: String(e.message || e).slice(0, 120), kind: 'danger' });

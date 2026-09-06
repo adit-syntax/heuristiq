@@ -15,7 +15,9 @@ import {
     ListTodo,
     Check,
     Plus,
-    Trash2
+    Trash2,
+    Info,
+    X,
 } from 'lucide-react';
 import DayDetails from './DayDetails';
 import NoteHistory from './NoteHistory';
@@ -24,13 +26,7 @@ import { SHEETS, getSheet } from '../lib/sheets';
 import { useMemo, useState, useEffect, useRef } from 'react';
 import LiveContestBanner from './LiveContestBanner';
 import ContestReminderBanner from './ContestReminderBanner';
-
-const getLocalDateKey = (d = new Date()) => {
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${dd}`;
-};
+import { getLocalDateKey, calculateStreak } from '../lib/dateUtils';
 
 const Stat = ({ value, label }) => (
     <div className="rounded-2xl border border-line bg-panel p-4">
@@ -39,87 +35,151 @@ const Stat = ({ value, label }) => (
     </div>
 );
 
+/** Modal explaining Universal Streak rules & logic */
+const StreakInfoModal = ({ onClose }) => (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm animate-fade-in" onClick={onClose}>
+        <div className="w-full max-w-lg rounded-2xl border border-line bg-panel p-5 sm:p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-start justify-between gap-3 border-b border-line pb-4">
+                <div className="flex items-center gap-3">
+                    <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-rose-500 text-white shadow-md shadow-amber-500/20">
+                        <Flame className="size-5" />
+                    </div>
+                    <div>
+                        <h3 className="text-base font-bold text-fg">Universal Streak Rules</h3>
+                        <p className="text-xs text-subtle">How consistency, daily resets, and streaks work</p>
+                    </div>
+                </div>
+                <button
+                    onClick={onClose}
+                    className="flex size-8 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg"
+                >
+                    <X className="size-4" />
+                </button>
+            </div>
+
+            <div className="mt-4 space-y-3 text-xs leading-relaxed text-muted">
+                <div className="flex items-start gap-3 rounded-xl border border-line/60 bg-raised/40 p-3">
+                    <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-accent/20 text-accent-hi font-bold text-[11px]">1</span>
+                    <div>
+                        <p className="font-semibold text-fg">1 Problem = 1 Active Day</p>
+                        <p className="mt-0.5 text-subtle">
+                            Solving at least <strong className="text-fg">1 problem</strong> in any sheet, playground, or syncing newly solved questions from LeetCode / Codeforces stamps today as active.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="flex items-start gap-3 rounded-xl border border-line/60 bg-raised/40 p-3">
+                    <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-amber-500/20 text-amber-400 font-bold text-[11px]">2</span>
+                    <div>
+                        <p className="font-semibold text-fg">Local Midnight Reset (Your Timezone)</p>
+                        <p className="mt-0.5 text-subtle">
+                            Streaks run on your device's local calendar day (<span className="font-mono text-fg">00:00 → 23:59</span>). You have until midnight in your own local time to keep the flame alive.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="flex items-start gap-3 rounded-xl border border-line/60 bg-raised/40 p-3">
+                    <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-rose-500/20 text-rose-400 font-bold text-[11px]">3</span>
+                    <div>
+                        <p className="font-semibold text-fg">At-Risk Grace Period</p>
+                        <p className="mt-0.5 text-subtle">
+                            If you solved yesterday, your streak won't break during the day—it stays marked <strong className="text-fg">"At Risk"</strong>. Solving any question before midnight securely advances the streak.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="flex items-start gap-3 rounded-xl border border-line/60 bg-raised/40 p-3">
+                    <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-sky-500/20 text-sky-400 font-bold text-[11px]">4</span>
+                    <div>
+                        <p className="font-semibold text-fg">Coding Profile Sync</p>
+                        <p className="mt-0.5 text-subtle">
+                            Syncing LeetCode or Codeforces detects accepted submissions completed today in your local time and credits today's streak instantly.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="mt-5 flex justify-end">
+                <button
+                    onClick={onClose}
+                    className="rounded-xl bg-accent px-4 py-2 text-xs font-semibold text-white transition-opacity hover:opacity-90"
+                >
+                    Got it
+                </button>
+            </div>
+        </div>
+    </div>
+);
+
 /** Duolingo-style streak bar: flame for the current streak, a medal for the
  *  longest streak ever. Sits above the calendar. */
 const StreakHeader = ({ activityDates }) => {
-    const dayKey = (d) => {
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, '0');
-        const dd = String(d.getDate()).padStart(2, '0');
-        return `${y}-${m}-${dd}`;
-    };
-    const active = useMemo(() => new Set(activityDates || []), [activityDates]);
-
+    const [infoOpen, setInfoOpen] = useState(false);
     const { current, longest, solvedToday } = useMemo(() => {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const solvedToday = active.has(dayKey(today));
-
-        // Current streak: consecutive active days ending today (or yesterday -
-        // an unsolved today reads "at risk", not "broken").
-        let cursor = new Date(today);
-        if (!active.has(dayKey(cursor))) cursor.setDate(cursor.getDate() - 1);
-        let current = 0;
-        while (active.has(dayKey(cursor))) {
-            current++;
-            cursor.setDate(cursor.getDate() - 1);
-        }
-
-        // Longest streak: walk every active date, count consecutive runs.
-        const sorted = [...active].sort();
-        let longestRun = 0, run = 0, prev = null;
-        for (const key of sorted) {
-            run = prev && (new Date(key + 'T00:00') - new Date(prev + 'T00:00')) / 86400000 === 1
-                ? run + 1 : 1;
-            longestRun = Math.max(longestRun, run);
-            prev = key;
-        }
-
-        return { current, longest: Math.max(longestRun, current), solvedToday };
-    }, [active]);
+        return calculateStreak(activityDates);
+    }, [activityDates]);
 
     return (
-        <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {/* Current streak - flame */}
-            <div className={`flex items-center gap-3 rounded-2xl border px-4 py-3
-                ${current > 0 ? 'border-accent/25 bg-accent/10' : 'border-line bg-raised/40'}`}>
-                <span className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${current > 0 ? 'bg-accent/20' : 'bg-raised'}`}>
-                    <Flame
-                        className={`size-5 ${current > 0 ? 'fill-accent/30 text-accent-hi' : 'text-faint'} ${solvedToday ? 'animate-pulse' : ''}`}
-                    />
+        <div className="mb-4 space-y-2">
+            <div className="flex items-center justify-between px-0.5">
+                <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted">
+                    <Flame className="size-3.5 text-accent-hi" />
+                    Consistency & Streaks
                 </span>
-                <div className="min-w-0">
-                    <p className="font-mono text-xl font-bold leading-none">
-                        {current}
-                        <span className="ml-1 text-xs font-medium text-subtle">{current === 1 ? 'day streak' : 'day streaks'}</span>
-                    </p>
-                    <p className="mt-1 truncate text-xs text-subtle">
-                        {current === 0 ? 'Solve one problem to start'
-                            : solvedToday ? 'Solved today - streak safe'
-                            : 'Not solved yet today'}
-                    </p>
+                <button
+                    onClick={() => setInfoOpen(true)}
+                    title="How streaks work"
+                    className="group flex items-center gap-1.5 rounded-lg border border-line bg-raised/50 px-2 py-0.5 text-[11px] font-medium text-subtle transition-colors hover:border-accent/40 hover:bg-accent/10 hover:text-accent-hi"
+                >
+                    <Info className="size-3 text-subtle transition-colors group-hover:text-accent-hi" />
+                    <span>Streak logic</span>
+                </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {/* Current streak - flame */}
+                <div className={`flex items-center gap-3 rounded-2xl border px-4 py-3
+                    ${current > 0 ? 'border-accent/25 bg-accent/10' : 'border-line bg-raised/40'}`}>
+                    <span className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${current > 0 ? 'bg-accent/20' : 'bg-raised'}`}>
+                        <Flame
+                            className={`size-5 ${current > 0 ? 'fill-accent/30 text-accent-hi' : 'text-faint'} ${solvedToday ? 'animate-pulse' : ''}`}
+                        />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                        <p className="font-mono text-xl font-bold leading-none">
+                            {current}
+                            <span className="ml-1 text-xs font-medium text-subtle">{current === 1 ? 'day streak' : 'day streaks'}</span>
+                        </p>
+                        <p className="mt-1 truncate text-xs text-subtle">
+                            {current === 0 ? 'Solve one problem to start'
+                                : solvedToday ? 'Solved today - streak safe'
+                                : 'Not solved yet today (at risk)'}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Longest streak - achievement medal */}
+                <div className={`flex items-center gap-3 rounded-2xl border px-4 py-3
+                    ${longest >= 7 ? 'border-amber-500/30 bg-amber-500/10' : 'border-line bg-raised/40'}`}>
+                    <span className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${longest >= 7 ? 'bg-amber-500/20' : 'bg-raised'}`}>
+                        <Medal className={`size-5 ${longest >= 7 ? 'text-amber-400' : 'text-faint'}`} />
+                    </span>
+                    <div className="min-w-0">
+                        <p className="font-mono text-xl font-bold leading-none">
+                            {longest}
+                            <span className="ml-1 text-xs font-medium text-subtle">{longest === 1 ? 'day best' : 'days best'}</span>
+                        </p>
+                        <p className="mt-1 truncate text-xs text-subtle">
+                            {longest >= 30 ? 'Legendary consistency'
+                                : longest >= 14 ? 'Unstoppable'
+                                : longest >= 7 ? 'Week warrior - keep going'
+                                : 'Reach 7 days for bronze'}
+                        </p>
+                    </div>
                 </div>
             </div>
 
-            {/* Longest streak - achievement medal */}
-            <div className={`flex items-center gap-3 rounded-2xl border px-4 py-3
-                ${longest >= 7 ? 'border-amber-500/30 bg-amber-500/10' : 'border-line bg-raised/40'}`}>
-                <span className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${longest >= 7 ? 'bg-amber-500/20' : 'bg-raised'}`}>
-                    <Medal className={`size-5 ${longest >= 7 ? 'text-amber-400' : 'text-faint'}`} />
-                </span>
-                <div className="min-w-0">
-                    <p className="font-mono text-xl font-bold leading-none">
-                        {longest}
-                        <span className="ml-1 text-xs font-medium text-subtle">{longest === 1 ? 'day best' : 'days best'}</span>
-                    </p>
-                    <p className="mt-1 truncate text-xs text-subtle">
-                        {longest >= 30 ? 'Legendary consistency'
-                            : longest >= 14 ? 'Unstoppable'
-                            : longest >= 7 ? 'Week warrior - keep going'
-                            : 'Reach 7 days for bronze'}
-                    </p>
-                </div>
-            </div>
+            {infoOpen && <StreakInfoModal onClose={() => setInfoOpen(false)} />}
         </div>
     );
 };

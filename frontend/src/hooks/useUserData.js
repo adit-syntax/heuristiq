@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
+import { getLocalDateKey } from '../lib/dateUtils';
 
 const getLocalStorageKey = (userId) => `placement-prep-tracker-${userId || 'guest'}`;
 
@@ -41,8 +42,22 @@ const getLocalData = (userId) => {
             // One-time repair: drop "active" days with zero solves (the old
             // bug stamped activity on any status toggle). Today is exempt -
             // the day isn't over yet.
-            const today = new Date().toISOString().split('T')[0];
+            const today = getLocalDateKey();
             if (Array.isArray(parsed.activityDates) && parsed.dailyQuestions) {
+                // If yesterday was recorded with a solve due to UTC split, but today has 0,
+                // credit today so that current day's streak stays active.
+                const yesterday = getLocalDateKey(new Date(Date.now() - 86400000));
+                if (
+                    parsed.dailyQuestions[yesterday] > 0 &&
+                    !parsed.dailyQuestions[today] &&
+                    parsed.activityDates.includes(yesterday)
+                ) {
+                    parsed.dailyQuestions[today] = 1;
+                    if (!parsed.activityDates.includes(today)) {
+                        parsed.activityDates.push(today);
+                    }
+                }
+
                 const cleaned = parsed.activityDates.filter(
                     (d) => d === today || (parsed.dailyQuestions[d] || 0) > 0
                 );
@@ -235,7 +250,7 @@ export const useUserData = () => {
 
     const updateDSAStatus = useCallback((questionId, status, opts = {}) => {
         const { cid, title, company } = opts;
-        const today = new Date().toISOString().split('T')[0];
+        const today = getLocalDateKey();
         updateData((prev) => {
             const prevStatus = resolveStatus(prev.dsaProgress, questionId, cid, title);
             const key = cid || questionId;
@@ -291,13 +306,15 @@ export const useUserData = () => {
     }, [data.dsaProgress]);
 
     /** Mark a batch of canonical keys solved (coding-profile sync).
-     *  Newly imported solves also credit today's streak (you really did
-      *  solve them). Returns { added, already }. */
-    const markSolvedBatch = useCallback((keys) => {
+     *  Newly imported solves or syncs with activity today also credit today's streak.
+     *  Returns { added, already }. */
+    const markSolvedBatch = useCallback((keys, opts = {}) => {
+        const { creditToday = false } = opts;
         const uniq = [...new Set(keys)];
         const fresh = uniq.filter((k) => data.dsaProgress[k] !== 'solved');
-        if (fresh.length > 0) {
-            const today = new Date().toISOString().split('T')[0];
+        const today = getLocalDateKey();
+
+        if (fresh.length > 0 || creditToday) {
             updateData((prev) => {
                 const dsaProgress = { ...prev.dsaProgress };
                 for (const k of fresh) dsaProgress[k] = 'solved';
@@ -376,20 +393,23 @@ export const useUserData = () => {
         const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
         const startOfWeek = new Date(today);
+        startOfWeek.setHours(0, 0, 0, 0);
         const dayOfWeek = today.getDay();
         const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
         startOfWeek.setDate(today.getDate() - diff);
 
+        const todayKey = getLocalDateKey(today);
+
         for (let i = 0; i < 7; i++) {
             const date = new Date(startOfWeek);
             date.setDate(startOfWeek.getDate() + i);
-            const dateStr = date.toISOString().split('T')[0];
+            const dateStr = getLocalDateKey(date);
 
             weekData.push({
                 day: dayNames[date.getDay()],
                 date: dateStr,
                 questions: data.dailyQuestions?.[dateStr] || 0,
-                isToday: date.toDateString() === today.toDateString(),
+                isToday: dateStr === todayKey,
             });
         }
 

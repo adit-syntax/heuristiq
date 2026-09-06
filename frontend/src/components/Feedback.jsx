@@ -11,8 +11,8 @@ const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
 const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 const CONFIGURED = Boolean(SERVICE_ID && TEMPLATE_ID && PUBLIC_KEY);
 
-const MAX_FILE_MB = 1;
-const MAX_TOTAL_MB = 3;
+const MAX_FILE_KB = 50;
+const MAX_TOTAL_KB = 50;
 
 const Feedback = () => {
     const { user } = useAuth();
@@ -33,12 +33,12 @@ const Feedback = () => {
         let total = next.reduce((n, f) => n + f.size, 0);
         for (const f of picked) {
             if (!f.type && !/\.\w+$/.test(f.name)) continue;
-            if (f.size > MAX_FILE_MB * 1024 * 1024) {
-                toast(`${f.name} is over ${MAX_FILE_MB} MB - skipped`, { kind: 'danger' });
+            if (f.size > MAX_FILE_KB * 1024) {
+                toast(`${f.name} is over ${MAX_FILE_KB} KB. For larger files, paste a Google Drive or PDF link in the description!`, { kind: 'danger', duration: 6000 });
                 continue;
             }
-            if (total + f.size > MAX_TOTAL_MB * 1024 * 1024) {
-                toast(`Total attachments capped at ${MAX_TOTAL_MB} MB`, { kind: 'danger' });
+            if (total + f.size > MAX_TOTAL_KB * 1024) {
+                toast(`Total attachments capped at ${MAX_TOTAL_KB} KB. For larger files, paste a link in the description.`, { kind: 'danger', duration: 6000 });
                 break;
             }
             total += f.size;
@@ -147,23 +147,34 @@ const Feedback = () => {
                     <textarea
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        placeholder="What happened, what you expected, or what you'd love to see..."
+                        placeholder="What happened, what you expected, or what you'd love to see... (For larger screenshots, recordings, or PDFs, feel free to paste a Google Drive, Dropbox, or public link here)"
                         rows={6}
                         className={`${inputClass} resize-y`}
                     />
                 </div>
 
                 {/* Attachments */}
-                <div>
-                    <label className="mb-1.5 block text-xs font-medium text-muted">Attachments (optional)</label>
+                <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                        <label className="block text-xs font-medium text-muted">Attachments (optional)</label>
+                        <span className="text-[11px] text-subtle">Max {MAX_FILE_KB} KB direct attachment</span>
+                    </div>
                     <input ref={fileRef} type="file" multiple className="hidden" onChange={onPickFiles} />
                     <button
                         type="button"
                         onClick={() => fileRef.current?.click()}
                         className="flex items-center gap-2 rounded-xl border border-dashed border-line px-4 py-2.5 text-sm text-muted transition-colors hover:border-accent/40 hover:text-fg"
                     >
-                        <Paperclip className="size-4" /> Add files (max {MAX_FILE_MB} MB each, {MAX_TOTAL_MB} MB total)
+                        <Paperclip className="size-4" /> Add file (max {MAX_FILE_KB} KB)
                     </button>
+
+                    <div className="rounded-xl border border-line/60 bg-raised/30 p-3 text-xs leading-relaxed text-subtle">
+                        <p className="font-semibold text-fg">💡 Have a larger screenshot, PDF, or video?</p>
+                        <p className="mt-0.5">
+                            Direct email attachments are limited to 50 KB. For larger files, please upload to <span className="font-medium text-fg">Google Drive</span>, <span className="font-medium text-fg">Dropbox</span>, or an image host, and paste the shareable link in the <span className="font-medium text-accent-hi">Description</span> box above.
+                        </p>
+                    </div>
+
                     {files.length > 0 && (
                         <div className="mt-2 space-y-1.5">
                             {files.map((f, i) => (

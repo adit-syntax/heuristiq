@@ -179,7 +179,30 @@ const CourseVideos = () => {
                                         </button>
                                     )}
                                 </div>
-                                <div className="aspect-video w-full bg-black">{playerBody}</div>
+                                <div className="aspect-video w-full bg-black">
+                                    {popped ? (
+                                        <div className="flex h-full flex-col items-center justify-center gap-3 bg-panel/30 p-6 text-center text-subtle">
+                                            <div className="flex size-14 items-center justify-center rounded-2xl bg-accent/15 text-accent-hi shadow-inner">
+                                                <PictureInPicture2 className="size-7 animate-pulse" />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-sm font-semibold text-fg">Playing in floating window</p>
+                                                <p className="max-w-xs text-xs text-subtle">
+                                                    Video is popped out and draggable anywhere on screen.
+                                                </p>
+                                            </div>
+                                            <button
+                                                onClick={() => setPopped(false)}
+                                                className="mt-1 flex items-center gap-2 rounded-xl border border-line bg-raised px-4 py-2 text-xs font-medium text-fg transition-all hover:bg-panel hover:scale-[1.02]"
+                                            >
+                                                <Locate className="size-3.5 text-accent-hi" />
+                                                Dock video back here
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        playerBody
+                                    )}
+                                </div>
                             </div>
                             {!popped && (
                                 <div className="mt-3 flex flex-wrap items-center gap-3">

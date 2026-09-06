@@ -106,9 +106,65 @@ export const grabContests = async () => {
         return s.parse(s.html ? await r.text() : await r.json());
     }));
     const failed = SOURCES.filter((_, i) => settled[i].status === 'rejected').map((s) => s.name);
-    const results = settled.filter((x) => x.status === 'fulfilled').flatMap((x) => x.value);
+    let results = settled.filter((x) => x.status === 'fulfilled').flatMap((x) => x.value);
+
+    // Fallback: If any platform was unreachable directly (e.g. CORS on production static host),
+    // query open mirror feeds to recover LeetCode, CodeChef, and AtCoder contests.
+    if (failed.length > 0) {
+        // 1. Try CompeteAPI for LeetCode, CodeChef, Codeforces
+        try {
+            const fallbackRes = await fetch('https://competeapi.vercel.app/contests/upcoming');
+            if (fallbackRes.ok) {
+                const feed = await fallbackRes.json();
+                const recovered = new Set();
+                feed.forEach((item) => {
+                    const plat = item.site?.toLowerCase();
+                    const matchedSource = SOURCES.find((s) => s.id === plat || s.name.toLowerCase() === plat);
+                    if (matchedSource && failed.includes(matchedSource.name)) {
+                        results.push({
+                            platform: matchedSource.id,
+                            name: item.title,
+                            url: item.url,
+                            start: Number(item.startTime),
+                            duration: Number(item.duration),
+                        });
+                        recovered.add(matchedSource.name);
+                    }
+                });
+                for (let i = failed.length - 1; i >= 0; i--) {
+                    if (recovered.has(failed[i])) failed.splice(i, 1);
+                }
+            }
+        } catch { /* ignore fallback error */ }
+
+        // 2. If AtCoder is still failed, recover from Kenkoooo's public CORS-open endpoint
+        if (failed.includes('AtCoder')) {
+            try {
+                const acRes = await fetch('https://kenkoooo.com/atcoder/resources/contests.json');
+                if (acRes.ok) {
+                    const acList = await acRes.json();
+                    const nowSec = (Date.now() - 24 * 3600 * 1000) / 1000;
+                    const acUpcoming = acList.filter((c) => c.start_epoch_second >= nowSec);
+                    if (acUpcoming.length > 0) {
+                        acUpcoming.forEach((c) => {
+                            results.push({
+                                platform: 'atcoder',
+                                name: c.title,
+                                url: `https://atcoder.jp/contests/${c.id}`,
+                                start: c.start_epoch_second * 1000,
+                                duration: (c.duration_second || 6000) * 1000,
+                            });
+                        });
+                        const idx = failed.indexOf('AtCoder');
+                        if (idx >= 0) failed.splice(idx, 1);
+                    }
+                }
+            } catch { /* ignore fallback error */ }
+        }
+    }
+
     if (results.length === 0) throw new Error('contest sources unreachable');
-    const merged = [...new Map(results.map((c) => [c.url, c])).values()]
+    const merged = [...new Map(results.map((c) => [c.url || `${c.platform}-${c.start}`, c])).values()]
         .sort((a, b) => a.start - b.start);
     try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: merged })); } catch { /* full */ }
     return { contests: merged, failed };

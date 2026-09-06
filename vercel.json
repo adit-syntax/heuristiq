@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/lc-graphql/:path*",
+      "destination": "https://leetcode.com/:path*"
+    },
+    {
+      "source": "/cc-api/:path*",
+      "destination": "https://www.codechef.com/:path*"
+    },
+    {
+      "source": "/ac/:path*",
+      "destination": "https://atcoder.jp/:path*"
+    }
+  ]
+}

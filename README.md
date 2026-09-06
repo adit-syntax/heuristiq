@@ -31,7 +31,6 @@ The app has no server code of its own - Firebase (Auth + Firestore) is the backe
 ```bash
 cd frontend
 npm install
-cp .env.example .env    # fill in your Firebase web app config
 npm run dev
 ```
 

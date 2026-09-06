@@ -732,10 +732,12 @@ function AppContent() {
               className={`group relative flex size-11 items-center justify-center rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95 ${
                 codeOpen
                   ? 'bg-gradient-to-br from-rose-500 to-accent text-white shadow-lg shadow-accent/40 ring-2 ring-accent-hi/40'
-                  : 'bg-zinc-950 border border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-900 hover:text-white shadow-black/50'
+                  : theme === 'light'
+                    ? 'bg-zinc-950 border border-zinc-800 text-rose-500 hover:border-zinc-700 hover:bg-zinc-900 hover:text-rose-400 shadow-black/50'
+                    : 'bg-zinc-950 border border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-900 hover:text-white shadow-black/50'
               }`}
             >
-              <SquareCode className="size-5 transition-transform group-hover:scale-110" />
+              <SquareCode className={`size-5 transition-transform group-hover:scale-110 ${!codeOpen && theme === 'light' ? 'text-rose-500' : ''}`} />
               <span className="sr-only">Code Playground</span>
             </button>
 
@@ -746,10 +748,12 @@ function AppContent() {
               className={`group relative flex size-11 items-center justify-center rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95 ${
                 notesOpen
                   ? 'bg-gradient-to-br from-rose-500 to-accent text-white shadow-lg shadow-accent/40 ring-2 ring-accent-hi/40'
-                  : 'bg-zinc-950 border border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-900 hover:text-white shadow-black/50'
+                  : theme === 'light'
+                    ? 'bg-zinc-950 border border-zinc-800 text-rose-500 hover:border-zinc-700 hover:bg-zinc-900 hover:text-rose-400 shadow-black/50'
+                    : 'bg-zinc-950 border border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-900 hover:text-white shadow-black/50'
               }`}
             >
-              <StickyNote className="size-5 transition-transform group-hover:scale-110" />
+              <StickyNote className={`size-5 transition-transform group-hover:scale-110 ${!notesOpen && theme === 'light' ? 'text-rose-500' : ''}`} />
               <span className="sr-only">Notes</span>
             </button>
 
@@ -760,10 +764,12 @@ function AppContent() {
               className={`group relative flex size-11 items-center justify-center rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95 ${
                 boardOpen
                   ? 'bg-gradient-to-br from-rose-500 to-accent text-white shadow-lg shadow-accent/40 ring-2 ring-accent-hi/40'
-                  : 'bg-zinc-950 border border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-900 hover:text-white shadow-black/50'
+                  : theme === 'light'
+                    ? 'bg-zinc-950 border border-zinc-800 text-rose-500 hover:border-zinc-700 hover:bg-zinc-900 hover:text-rose-400 shadow-black/50'
+                    : 'bg-zinc-950 border border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-900 hover:text-white shadow-black/50'
               }`}
             >
-              <PenLine className="size-5 transition-transform group-hover:scale-110" />
+              <PenLine className={`size-5 transition-transform group-hover:scale-110 ${!boardOpen && theme === 'light' ? 'text-rose-500' : ''}`} />
               <span className="sr-only">Whiteboard</span>
             </button>
           </div>
@@ -778,12 +784,18 @@ function AppContent() {
               ? 'bg-zinc-900 border border-zinc-700 text-white shadow-black/60'
               : hasActiveFloatingTool
                 ? 'bg-zinc-950 border border-accent/60 text-white shadow-accent/20'
-                : 'bg-zinc-950 border border-zinc-800 text-zinc-300 hover:border-zinc-700 hover:bg-zinc-900 hover:text-white shadow-black/60'
+                : theme === 'light'
+                  ? 'bg-zinc-950 border border-zinc-800 text-rose-500 hover:border-zinc-700 hover:bg-zinc-900 shadow-black/60'
+                  : 'bg-zinc-950 border border-zinc-800 text-zinc-300 hover:border-zinc-700 hover:bg-zinc-900 hover:text-white shadow-black/60'
           }`}
         >
           <Plus
             className={`size-5 transition-transform duration-300 ${
-              floatingToolsOpen ? 'rotate-45 text-rose-400' : 'text-zinc-300 group-hover:text-white'
+              floatingToolsOpen
+                ? 'rotate-45 text-rose-400'
+                : theme === 'light'
+                  ? 'text-rose-500 group-hover:text-rose-400'
+                  : 'text-zinc-300 group-hover:text-white'
             }`}
           />
           {hasActiveFloatingTool && !floatingToolsOpen && (

@@ -23,6 +23,7 @@ import {
   MessageSquare,
   PanelLeftClose,
   PanelLeftOpen,
+  Plus,
 } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import AuthPage from './components/AuthPage';
@@ -107,6 +108,8 @@ function AppContent() {
   const [boardOpen, setBoardOpen] = useState(false);
   const [codeOpen, setCodeOpen] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);
+  const [floatingToolsOpen, setFloatingToolsOpen] = useState(false);
+  const hasActiveFloatingTool = codeOpen || notesOpen || boardOpen;
   const [searchOpen, setSearchOpen] = useState(false);
   const [jump, setJump] = useState({}); // { dsaQuery?, companySlug?, notesQuery? }
   const [theme, setTheme] = useState(() => localStorage.getItem('preptracker-theme') || 'dark');
@@ -719,46 +722,77 @@ function AppContent() {
 
       {/* ============ Global quick floating tools (Code, Notes, Whiteboard) ============ */}
       <div className="fixed bottom-20 right-3.5 z-40 flex flex-col items-center gap-2.5 md:bottom-6 md:right-6">
-        {/* Code Playground floating toggle */}
-        <button
-          onClick={() => setCodeOpen((v) => !v)}
-          title={codeOpen ? "Close floating code" : "Open Code Playground (Floating)"}
-          className={`group relative flex size-11 items-center justify-center rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95 ${
-            codeOpen
-              ? 'bg-accent text-white shadow-accent/40 ring-2 ring-accent-hi/40'
-              : 'border border-line/80 bg-panel/90 text-subtle shadow-black/40 backdrop-blur-md hover:border-accent/50 hover:bg-raised hover:text-accent-hi'
-          }`}
-        >
-          <SquareCode className="size-5 transition-transform group-hover:scale-110" />
-          <span className="sr-only">Code Playground</span>
-        </button>
+        {/* Collapsible tool items */}
+        {floatingToolsOpen && (
+          <div className="flex flex-col items-center gap-2.5 transition-all duration-200">
+            {/* Code Playground floating toggle */}
+            <button
+              onClick={() => setCodeOpen((v) => !v)}
+              title={codeOpen ? "Close floating code" : "Open Code Playground (Floating)"}
+              className={`group relative flex size-11 items-center justify-center rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95 ${
+                codeOpen
+                  ? 'bg-gradient-to-br from-rose-500 to-accent text-white shadow-lg shadow-accent/40 ring-2 ring-accent-hi/40'
+                  : 'bg-zinc-950 border border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-900 hover:text-white shadow-black/50'
+              }`}
+            >
+              <SquareCode className="size-5 transition-transform group-hover:scale-110" />
+              <span className="sr-only">Code Playground</span>
+            </button>
 
-        {/* Notes floating toggle */}
-        <button
-          onClick={() => setNotesOpen((v) => !v)}
-          title={notesOpen ? "Close floating notes" : "Open Notes (Floating)"}
-          className={`group relative flex size-11 items-center justify-center rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95 ${
-            notesOpen
-              ? 'bg-accent text-white shadow-accent/40 ring-2 ring-accent-hi/40'
-              : 'border border-line/80 bg-panel/90 text-subtle shadow-black/40 backdrop-blur-md hover:border-accent/50 hover:bg-raised hover:text-accent-hi'
-          }`}
-        >
-          <StickyNote className="size-5 transition-transform group-hover:scale-110" />
-          <span className="sr-only">Notes</span>
-        </button>
+            {/* Notes floating toggle */}
+            <button
+              onClick={() => setNotesOpen((v) => !v)}
+              title={notesOpen ? "Close floating notes" : "Open Notes (Floating)"}
+              className={`group relative flex size-11 items-center justify-center rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95 ${
+                notesOpen
+                  ? 'bg-gradient-to-br from-rose-500 to-accent text-white shadow-lg shadow-accent/40 ring-2 ring-accent-hi/40'
+                  : 'bg-zinc-950 border border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-900 hover:text-white shadow-black/50'
+              }`}
+            >
+              <StickyNote className="size-5 transition-transform group-hover:scale-110" />
+              <span className="sr-only">Notes</span>
+            </button>
 
-        {/* Draw / Whiteboard floating toggle */}
+            {/* Draw / Whiteboard floating toggle */}
+            <button
+              onClick={() => setBoardOpen((v) => !v)}
+              title={boardOpen ? "Close floating whiteboard" : "Open Whiteboard (Floating)"}
+              className={`group relative flex size-11 items-center justify-center rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95 ${
+                boardOpen
+                  ? 'bg-gradient-to-br from-rose-500 to-accent text-white shadow-lg shadow-accent/40 ring-2 ring-accent-hi/40'
+                  : 'bg-zinc-950 border border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-900 hover:text-white shadow-black/50'
+              }`}
+            >
+              <PenLine className="size-5 transition-transform group-hover:scale-110" />
+              <span className="sr-only">Whiteboard</span>
+            </button>
+          </div>
+        )}
+
+        {/* Master collapsible toggle button */}
         <button
-          onClick={() => setBoardOpen((v) => !v)}
-          title={boardOpen ? "Close floating whiteboard" : "Open Whiteboard (Floating)"}
-          className={`group relative flex size-11 items-center justify-center rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95 ${
-            boardOpen
-              ? 'bg-accent text-white shadow-accent/40 ring-2 ring-accent-hi/40'
-              : 'bg-gradient-to-br from-accent-hi to-accent-deep text-white shadow-accent/30 hover:shadow-accent/50'
+          onClick={() => setFloatingToolsOpen((v) => !v)}
+          title={floatingToolsOpen ? "Collapse quick tools" : "Quick tools (Code, Notes, Whiteboard)"}
+          className={`group relative flex size-12 items-center justify-center rounded-2xl shadow-2xl transition-all hover:scale-105 active:scale-95 ${
+            floatingToolsOpen
+              ? 'bg-zinc-900 border border-zinc-700 text-white shadow-black/60'
+              : hasActiveFloatingTool
+                ? 'bg-zinc-950 border border-accent/60 text-white shadow-accent/20'
+                : 'bg-zinc-950 border border-zinc-800 text-zinc-300 hover:border-zinc-700 hover:bg-zinc-900 hover:text-white shadow-black/60'
           }`}
         >
-          <PenLine className="size-5 transition-transform group-hover:scale-110" />
-          <span className="sr-only">Whiteboard</span>
+          <Plus
+            className={`size-5 transition-transform duration-300 ${
+              floatingToolsOpen ? 'rotate-45 text-rose-400' : 'text-zinc-300 group-hover:text-white'
+            }`}
+          />
+          {hasActiveFloatingTool && !floatingToolsOpen && (
+            <span className="absolute -top-1 -right-1 flex size-3">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75" />
+              <span className="relative inline-flex size-3 rounded-full bg-rose-500" />
+            </span>
+          )}
+          <span className="sr-only">{floatingToolsOpen ? "Collapse tools" : "Expand tools"}</span>
         </button>
       </div>
 

@@ -70,16 +70,24 @@ const FloatingPanel = ({
     }, []);
 
     const isMobileScreen = typeof window !== 'undefined' && window.innerWidth < 640;
-    const w0 = Math.min(initialWidth, typeof window !== 'undefined' ? window.innerWidth - 16 : 720);
+    const defaultMobileW = typeof window !== 'undefined' ? Math.min(360, window.innerWidth - 16) : 360;
+    const defaultMobileH = typeof window !== 'undefined' ? Math.min(460, window.innerHeight - 110) : 420;
+
+    const w0 = isMobileScreen
+        ? defaultMobileW
+        : Math.min(initialWidth, typeof window !== 'undefined' ? window.innerWidth - 16 : 720);
+
     const [size, setSize] = useState({
         w: w0,
-        h: initialHeight
-            ? Math.min(initialHeight, typeof window !== 'undefined' ? window.innerHeight - 80 : 500)
-            : Math.round(w0 / aspect),
+        h: isMobileScreen
+            ? defaultMobileH
+            : initialHeight
+                ? Math.min(initialHeight, typeof window !== 'undefined' ? window.innerHeight - 80 : 500)
+                : Math.round(w0 / aspect),
     });
     const [pos, setPos] = useState(() => ({
         x: Math.max(8, Math.round(((typeof window !== 'undefined' ? window.innerWidth : 800) - w0) / 2)),
-        y: Math.max(8, Math.round(((typeof window !== 'undefined' ? window.innerHeight : 600) - Math.round(w0 / aspect)) * 0.15)),
+        y: Math.max(8, Math.round(((typeof window !== 'undefined' ? window.innerHeight : 600) - (isMobileScreen ? defaultMobileH : Math.round(w0 / aspect))) * 0.15)),
     }));
 
     const dragRef = useRef(null);
@@ -102,19 +110,17 @@ const FloatingPanel = ({
     liveRef.current = sanitize(pos, size);
 
     const clamp = useCallback((x, y, w) => {
-        // Free horizontal movement: any sliver of the panel is fine because
-        // the title bar spans the full width - part of it stays grabbable.
-        // Vertically the TITLE BAR must stay visible (y in [0, vh-40]) so the
-        // panel always has a grabbable handle - prevents the "frozen panel".
-        // Hard NaN rejection: NaN/Infinity fall back to the safe centre, so
-        // no bad value can EVER reach the style attribute.
-        const cx = Number.isFinite(x) ? Math.min(Math.max(GRAB_X - w, x), window.innerWidth - GRAB_X) : Math.round((window.innerWidth - w) / 2);
-        const cy = Number.isFinite(y) ? Math.min(Math.max(0, y), window.innerHeight - GRAB_Y) : Math.round(window.innerHeight * 0.2);
+        // Free horizontal movement: keep at least 48px visible on small screens
+        const grabMargin = Math.min(GRAB_X, Math.max(48, Math.round((typeof window !== 'undefined' ? window.innerWidth : 800) * 0.15)));
+        const maxW = typeof window !== 'undefined' ? window.innerWidth : 800;
+        const maxH = typeof window !== 'undefined' ? window.innerHeight : 600;
+        const cx = Number.isFinite(x) ? Math.min(Math.max(grabMargin - w, x), maxW - grabMargin) : Math.round((maxW - w) / 2);
+        const cy = Number.isFinite(y) ? Math.min(Math.max(0, y), maxH - GRAB_Y) : Math.round(maxH * 0.15);
         return { x: Math.round(cx), y: Math.round(cy) };
     }, []);
 
-    // Auto-maximize on small screens (< 640px)
-    const [isMaximized, setIsMaximized] = useState(() => isMobileScreen);
+    // Do not force-maximize on mobile: keep panels floating and freely draggable!
+    const [isMaximized, setIsMaximized] = useState(false);
     const preMaxRef = useRef(null);
 
     const toggleMaximize = useCallback(() => {
@@ -151,39 +157,50 @@ const FloatingPanel = ({
     const [dragging, setDragging] = useState(false);
 
     const onDragStart = useCallback((e) => {
-        if (e.button !== 0) return;
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
         const { size: s, pos: p } = liveRef.current;
-        // Carry size AND pos: the move clamp needs the panel's current
-        // dimensions for its keep-visible bounds.
-        dragRef.current = { mode: 'move', startX: e.clientX, startY: e.clientY, orig: p, origSize: s };
+        dragRef.current = {
+            mode: 'move',
+            startX: e.clientX,
+            startY: e.clientY,
+            orig: p,
+            origSize: s,
+            pointerType: e.pointerType || 'mouse',
+            pointerId: e.pointerId,
+        };
         setDragging(true);
-        e.preventDefault();
+        if (e.target?.setPointerCapture && e.pointerId !== undefined) {
+            try { e.target.setPointerCapture(e.pointerId); } catch {}
+        }
     }, []);
 
     // dir bits: n/s/e/w - e.g. 'se' = bottom-right corner, 'e' = right edge.
     const onResizeStart = useCallback((e, dir) => {
-        if (e.button !== 0) return;
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
         e.stopPropagation();
-        e.preventDefault();
         const { size: s, pos: p } = liveRef.current;
-        dragRef.current = { mode: `resize:${dir}`, startX: e.clientX, startY: e.clientY, orig: s, origPos: p };
+        dragRef.current = {
+            mode: `resize:${dir}`,
+            startX: e.clientX,
+            startY: e.clientY,
+            orig: s,
+            origPos: p,
+            pointerType: e.pointerType || 'mouse',
+            pointerId: e.pointerId,
+        };
         setDragging(true);
+        if (e.target?.setPointerCapture && e.pointerId !== undefined) {
+            try { e.target.setPointerCapture(e.pointerId); } catch {}
+        }
     }, []);
 
-    // ONE listener registration for the component's lifetime. All gesture
-    // math derives from dragRef (frozen at pointerdown) - the current
-    // size/pos only matter at gesture START, which onDragStart/onResizeStart
-    // read from liveRef. Independent width/height tracking: each axis is
-    // computed from its own delta and clamped on its own; nothing couples
-    // them (unless keepAspect corners).
+    // ONE listener registration for the component's lifetime.
     useEffect(() => {
         const onMove = (e) => {
             const d = dragRef.current;
             if (!d) return;
-            if (e.buttons === 0) {
-                // Pointer is up but we never saw pointerup (e.g. it happened
-                // over an iframe). Self-heal instead of waiting for a zombie
-                // cleanup: drop the gesture immediately.
+            // Only mouse can check e.buttons === 0. Touch events frequently report 0 buttons!
+            if (d.pointerType === 'mouse' && e.buttons === 0) {
                 dragRef.current = null;
                 setDragging(false);
                 return;
@@ -249,7 +266,10 @@ const FloatingPanel = ({
             });
         };
 
-        const onUp = () => {
+        const onUp = (e) => {
+            if (dragRef.current?.pointerId !== undefined && e?.target?.releasePointerCapture) {
+                try { e.target.releasePointerCapture(dragRef.current.pointerId); } catch {}
+            }
             dragRef.current = null;
             setDragging(false);
         };

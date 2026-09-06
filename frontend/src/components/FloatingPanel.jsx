@@ -419,56 +419,73 @@ const FloatingPanel = ({
                 data-drag-handle
                 style={{ touchAction: isMaximized ? 'auto' : 'none' }}
                 onPointerDown={isMaximized ? undefined : onDragStart}
-                className={`flex h-10 shrink-0 items-center gap-1.5 sm:gap-2 border-b border-line bg-raised/60 px-2.5 sm:px-3 ${isMaximized ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'}`}
+                className={`flex h-11 sm:h-10 shrink-0 items-center gap-1.5 sm:gap-2 border-b border-line bg-raised/75 px-2.5 sm:px-3 relative z-20 ${isMaximized ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'}`}
                 title={isMaximized ? undefined : "Drag to move · arrow keys nudge"}
             >
                 <Grip className={`size-3.5 shrink-0 text-subtle ${isMaximized ? 'hidden sm:block opacity-40' : ''}`} />
                 {icon}
-                <span className="min-w-0 flex-1 truncate text-xs font-medium">{title}</span>
+                <span className="min-w-0 flex-1 truncate text-xs font-medium select-none">{title}</span>
 
-                {/* Recenter button (hidden when maximized) */}
-                {!isMaximized && (
+                {/* Header Action Buttons - isolated from drag with high z-index and touch manipulation */}
+                <div
+                    className="flex items-center gap-1 sm:gap-1.5 shrink-0 relative z-30"
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
+                >
+                    {/* Recenter button (hidden when maximized) */}
+                    {!isMaximized && (
+                        <button
+                            type="button"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                recenter();
+                            }}
+                            title="Re-centre on screen"
+                            className={`flex size-8 sm:size-7 shrink-0 items-center justify-center rounded-lg transition-colors touch-manipulation active:scale-95
+                                ${isOffscreen ? 'bg-accent/20 text-accent-hi hover:bg-accent/30' : 'text-subtle hover:bg-raised hover:text-fg active:bg-raised'}`}
+                        >
+                            <Locate className="size-4 sm:size-3.5" />
+                        </button>
+                    )}
+
+                    {/* Maximize / Restore button */}
                     <button
-                        onPointerDown={(e) => e.stopPropagation()}
-                        onClick={recenter}
-                        title="Re-centre on screen"
-                        className={`flex size-7 shrink-0 items-center justify-center rounded-lg transition-colors
-                            ${isOffscreen ? 'bg-accent/15 text-accent-hi hover:bg-accent/25' : 'text-subtle hover:bg-raised hover:text-fg'}`}
+                        type="button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            toggleMaximize();
+                        }}
+                        title={isMaximized ? "Restore window size" : "Maximize (Full screen)"}
+                        className="flex size-8 sm:size-7 shrink-0 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg active:bg-raised touch-manipulation active:scale-95"
                     >
-                        <Locate className="size-3.5" />
+                        {isMaximized ? <Minimize2 className="size-4 sm:size-3.5" /> : <Maximize2 className="size-4 sm:size-3.5" />}
                     </button>
-                )}
 
-                {/* Maximize / Restore button */}
-                <button
-                    onPointerDown={(e) => e.stopPropagation()}
-                    onClick={toggleMaximize}
-                    title={isMaximized ? "Restore window size" : "Maximize (Full screen)"}
-                    className="flex size-7 shrink-0 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg"
-                >
-                    {isMaximized ? <Minimize2 className="size-3.5" /> : <Maximize2 className="size-3.5" />}
-                </button>
+                    {onExternal && (
+                        <a
+                            href={onExternal.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title={onExternal.title || 'Open externally'}
+                            className="flex size-8 sm:size-7 shrink-0 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg active:bg-raised touch-manipulation active:scale-95"
+                        >
+                            {onExternal.icon}
+                        </a>
+                    )}
 
-                {onExternal && (
-                    <a
-                        href={onExternal.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onPointerDown={(e) => e.stopPropagation()}
-                        title={onExternal.title || 'Open externally'}
-                        className="flex size-7 shrink-0 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg"
+                    {/* Close button */}
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onClose?.();
+                        }}
+                        title="Close (Esc)"
+                        className="flex size-8 sm:size-7 shrink-0 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-rose-500/15 hover:text-rose-400 active:bg-rose-500/20 active:text-rose-400 touch-manipulation active:scale-95"
                     >
-                        {onExternal.icon}
-                    </a>
-                )}
-                <button
-                    onPointerDown={(e) => e.stopPropagation()}
-                    onClick={onClose}
-                    title="Close (Esc)"
-                    className="flex size-7 shrink-0 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-rose-500/10 hover:text-rose-400"
-                >
-                    <X className="size-3.5" />
-                </button>
+                        <X className="size-4 sm:size-3.5" />
+                    </button>
+                </div>
             </div>
 
             {/* Body: cleanly fills remaining panel height without overflow */}
@@ -481,15 +498,15 @@ const FloatingPanel = ({
                 <>
                     {[
                         // Corners
-                        { dir: 'nw', cls: 'left-0 top-0 size-8 sm:size-5 cursor-nwse-resize z-20' },
-                        { dir: 'ne', cls: 'right-0 top-0 size-8 sm:size-5 cursor-nesw-resize z-20' },
+                        { dir: 'nw', cls: 'left-0 top-0 size-8 sm:size-5 cursor-nwse-resize z-10' },
+                        { dir: 'ne', cls: 'right-0 top-0 size-4 cursor-nesw-resize z-10' },
                         { dir: 'sw', cls: 'left-0 bottom-0 size-8 sm:size-5 cursor-nesw-resize z-20' },
-                        { dir: 'se', cls: 'right-0 bottom-0 size-10 sm:size-7 cursor-nwse-resize z-30' },
-                        // Edges
-                        { dir: 'n', cls: 'left-8 right-8 top-0 h-3 sm:h-2 cursor-ns-resize z-10' },
-                        { dir: 's', cls: 'left-8 right-8 bottom-0 h-4 sm:h-2 cursor-ns-resize z-10' },
-                        { dir: 'w', cls: 'top-8 bottom-8 left-0 w-4 sm:w-2 cursor-ew-resize z-10' },
-                        { dir: 'e', cls: 'top-8 bottom-8 right-0 w-4 sm:w-2 cursor-ew-resize z-10' },
+                        { dir: 'se', cls: 'right-0 bottom-0 size-11 sm:size-7 cursor-nwse-resize z-30' },
+                        // Edges - top edge stops before buttons
+                        { dir: 'n', cls: 'left-8 right-32 top-0 h-2 cursor-ns-resize z-10' },
+                        { dir: 's', cls: 'left-8 right-8 bottom-0 h-4 sm:h-2 cursor-ns-resize z-20' },
+                        { dir: 'w', cls: 'top-12 bottom-8 left-0 w-4 sm:w-2 cursor-ew-resize z-20' },
+                        { dir: 'e', cls: 'top-12 bottom-8 right-0 w-4 sm:w-2 cursor-ew-resize z-20' },
                     ].map((h) => (
                         <div
                             key={h.dir}

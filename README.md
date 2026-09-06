@@ -213,8 +213,8 @@ Heuristiq is evolving into a full-scale collaborative developer ecosystem. The f
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/aditsyntax/DSA-Tracker.git
-   cd DSA-Tracker
+   git clone https://github.com/adit-syntax/heuristiq.git
+   cd heuristiq
    ```
 
 2. **Navigate to the frontend workspace & install dependencies:**
@@ -265,7 +265,7 @@ firebase deploy --only firestore:rules
 ## 👤 Author & Contributor
 
 **Aditya Singh**
-* GitHub: [@aditsyntax](https://github.com/aditsyntax)
+* GitHub: [@adit-syntax](https://github.com/adit-syntax)
 * Email: [aditsyntax@gmail.com](mailto:aditsyntax@gmail.com)
 
 ---

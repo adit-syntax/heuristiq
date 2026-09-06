@@ -67,10 +67,10 @@ const SolveModal = ({ question, status, onStatusChange, onClose, theme }) => {
                 <FloatingPanel
                     title={question.problem}
                     icon={<SquareCode className="size-4 shrink-0 text-accent-hi" />}
-                    initialWidth={Math.min(920, window.innerWidth - 32)}
-                    initialHeight={Math.min(680, window.innerHeight - 60)}
-                    minW={460}
-                    minH={360}
+                    initialWidth={typeof window !== 'undefined' ? Math.min(920, window.innerWidth - 16) : 920}
+                    initialHeight={typeof window !== 'undefined' ? Math.min(680, window.innerHeight - 60) : 680}
+                    minW={260}
+                    minH={200}
                     keepAspect={false}
                     allowOffscreen
                     onClose={onClose}

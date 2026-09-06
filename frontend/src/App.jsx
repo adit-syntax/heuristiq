@@ -798,10 +798,9 @@ function AppContent() {
                   : 'text-zinc-300 group-hover:text-white'
             }`}
           />
-          {hasActiveFloatingTool && !floatingToolsOpen && (
+          {hasActiveFloatingTool && (
             <span className="absolute -top-1 -right-1 flex size-3">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75" />
-              <span className="relative inline-flex size-3 rounded-full bg-rose-500" />
+              <span className="size-3 rounded-full bg-rose-500 ring-2 ring-zinc-950 shadow-xs shadow-rose-500/50" />
             </span>
           )}
           <span className="sr-only">{floatingToolsOpen ? "Collapse tools" : "Expand tools"}</span>

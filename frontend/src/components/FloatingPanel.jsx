@@ -7,6 +7,38 @@ import { Grip, Locate } from 'lucide-react';
 const GRAB_X = 140;
 const GRAB_Y = 40;
 
+// Dynamic z-index stacking manager for all floating panels (101..118).
+// Keeps panels strictly below toasts (z-[120]) and modal dialogs (z-[130]).
+// Clicking or focusing any panel elevates it above all other panels.
+const activePanels = new Set();
+let baseZ = 101;
+let topUpdater = null;
+
+function registerPanel(setZ) {
+    activePanels.add(setZ);
+    baseZ++;
+    topUpdater = setZ;
+    setZ(baseZ);
+    return () => {
+        activePanels.delete(setZ);
+        if (topUpdater === setZ) topUpdater = null;
+    };
+}
+
+function bringPanelToFront(setZ) {
+    if (topUpdater === setZ) return; // already on top
+    baseZ++;
+    if (baseZ >= 118) {
+        // Renormalize existing panels so numbers never climb indefinitely
+        baseZ = 101;
+        for (const updater of activePanels) {
+            if (updater !== setZ) updater(baseZ++);
+        }
+    }
+    topUpdater = setZ;
+    setZ(baseZ);
+}
+
 /**
  * Floating, draggable, resizable panel shell. The caller supplies the bar
  * content (right side) and the body. Move by dragging the title bar OR any
@@ -27,6 +59,16 @@ const FloatingPanel = ({
     children,
     bodyClassName = '',
 }) => {
+    const [zIndex, setZIndex] = useState(105);
+
+    useEffect(() => {
+        return registerPanel(setZIndex);
+    }, []);
+
+    const bringToFront = useCallback(() => {
+        bringPanelToFront(setZIndex);
+    }, []);
+
     const w0 = Math.min(initialWidth, window.innerWidth - 16);
     const [size, setSize] = useState({
         w: w0,
@@ -245,8 +287,10 @@ const FloatingPanel = ({
     return createPortal(
         <div
             ref={panelRef}
-            className="fixed z-[110] select-none overflow-hidden rounded-2xl border border-line bg-panel shadow-2xl"
-            style={{ left: pos.x, top: pos.y, width: size.w, touchAction: 'none' }}
+            className="fixed select-none overflow-hidden rounded-2xl border border-line bg-panel shadow-2xl transition-[box-shadow,border-color] duration-150"
+            style={{ left: pos.x, top: pos.y, width: size.w, zIndex, touchAction: 'none' }}
+            onPointerDownCapture={bringToFront}
+            onFocusCapture={bringToFront}
             onPointerDown={(e) => {
                 // Any non-interactive part of the body also moves the panel
                 // ("all non-working space drags"): title bar, paddings, empty

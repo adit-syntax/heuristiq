@@ -30,140 +30,97 @@ import { getLocalDateKey, calculateStreak } from '../lib/dateUtils';
 
 const MOTIVATIONAL_QUOTES = [
     {
-        text: "You have a right to your work, but never to the fruits thereof. Let not the fruit of action be your motive, nor let your attachment be to inaction.",
-        source: "Bhagavad Gita",
-        chapter: "2",
-        verse: "47",
-        author: "Lord Krishna",
+        short: "Focus on your work, not on the fruits.",
+        source: "Bhagavad Gita 2:47",
+        verse: "Chapter 2, Verse 47",
+        fullTranslation: "You have a right to perform your prescribed duty, but you are not entitled to the fruits of your actions. Never let the fruits be your motive, nor be attached to inaction.",
+        meaning: "Devote your complete focus to mastering algorithms and writing clean code rather than obsessing over interview outcomes. True mastery creates opportunities effortlessly."
     },
     {
-        text: "Perform your duty with an even mind, abandoning all attachment to success or failure. Such equanimity of mind is called Yoga.",
-        source: "Bhagavad Gita",
-        chapter: "2",
-        verse: "48",
-        author: "Lord Krishna",
+        short: "True yoga is skill and excellence in action.",
+        source: "Bhagavad Gita 2:50",
+        verse: "Chapter 2, Verse 50",
+        fullTranslation: "One who is endowed with equanimity of mind frees themselves from both good and bad deeds in this life. Strive therefore for Yoga, which is dexterity in action.",
+        meaning: "Treat problem-solving as craft and deliberate practice rather than a sprint. Composure and attention to detail turn complex problems into routine steps."
     },
     {
-        text: "One who is endowed with equanimity of mind frees themselves in this life from both good and bad deeds. Therefore, strive for Yoga; Yoga is skill in action.",
-        source: "Bhagavad Gita",
-        chapter: "2",
-        verse: "50",
-        author: "Lord Krishna",
+        short: "The mind alone is your greatest ally or foe.",
+        source: "Bhagavad Gita 6:5",
+        verse: "Chapter 6, Verse 5",
+        fullTranslation: "Elevate yourself through the power of your own mind; do not degrade yourself. For the mind alone is one's friend, and the mind alone is one's enemy.",
+        meaning: "Doubts and distractions only have power if you feed them. Train your mind with daily disciplined problem-solving to make it your most formidable ally."
     },
     {
-        text: "Elevate yourself through the power of your own mind; do not degrade yourself. For the mind alone is one's friend, and the mind alone is one's enemy.",
-        source: "Bhagavad Gita",
-        chapter: "6",
-        verse: "5",
-        author: "Lord Krishna",
+        short: "A restless mind is conquered by persistent practice.",
+        source: "Bhagavad Gita 6:35",
+        verse: "Chapter 6, Verse 35",
+        fullTranslation: "The mind is undoubtedly restless and hard to restrain, but it can be mastered through ceaseless practice and detachment.",
+        meaning: "When complex topics like Dynamic Programming or Graphs feel intimidating, do not quit. Consistent daily practice gradually makes the hardest ideas intuitive."
     },
     {
-        text: "For one who has conquered the mind, the mind is the best of allies; but for one who has failed to master it, the mind remains the greatest foe.",
-        source: "Bhagavad Gita",
-        chapter: "6",
-        verse: "6",
-        author: "Lord Krishna",
+        short: "No sincere effort in this journey is ever wasted.",
+        source: "Bhagavad Gita 2:40",
+        verse: "Chapter 2, Verse 40",
+        fullTranslation: "In this endeavor, no sincere effort is ever lost or wasted, and no adverse result is incurred. Even a little practice protects one from great fear.",
+        meaning: "Every problem you grapple with strengthens your thinking even if you do not solve it on the first try. Every single minute invested accumulates into mastery."
     },
     {
-        text: "The mind is undoubtedly restless and hard to restrain, but it can be mastered through ceaseless practice and detachment.",
-        source: "Bhagavad Gita",
-        chapter: "6",
-        verse: "35",
-        author: "Lord Krishna",
+        short: "Nothing in this world purifies like genuine knowledge.",
+        source: "Bhagavad Gita 4:38",
+        verse: "Chapter 4, Verse 38",
+        fullTranslation: "In this world, there is nothing as purifying and liberating as knowledge. One who attains perfection through disciplined practice discovers this wisdom within.",
+        meaning: "Seek deep understanding of first principles instead of memorizing solutions. True conceptual clarity eliminates fear in high-stakes technical interviews."
     },
     {
-        text: "In this endeavor, no sincere effort is ever lost or wasted, and no adverse result is incurred. Even a little practice protects one from great fear.",
-        source: "Bhagavad Gita",
-        chapter: "2",
-        verse: "40",
-        author: "Lord Krishna",
+        short: "You become whatever your deepest conviction is.",
+        source: "Bhagavad Gita 17:3",
+        verse: "Chapter 17, Verse 3",
+        fullTranslation: "A person is shaped by their deepest convictions and faith. Whatever a person's faith is, that indeed they become.",
+        meaning: "Adopt the identity of a disciplined engineer who shows up every single day. Relentless self-belief backed by daily execution turns ambitions into reality."
     },
     {
-        text: "In this world, there is nothing as purifying as knowledge. One who has attained perfection through practice finds this wisdom within themselves in due time.",
-        source: "Bhagavad Gita",
-        chapter: "4",
-        verse: "38",
-        author: "Lord Krishna",
+        short: "Perform all essential tasks with disciplined dedication.",
+        source: "Bhagavad Gita 3:19",
+        verse: "Chapter 3, Verse 19",
+        fullTranslation: "Constantly perform the work that ought to be done without attachment; for by doing work with pure intent, one attains the supreme state.",
+        meaning: "Consistency will always defeat fleeting motivation. Show up at your desk and solve your daily quota even on days you do not feel inspired."
     },
     {
-        text: "A person is shaped by their conviction. Whatever a person's deepest conviction is, that indeed they become.",
-        source: "Bhagavad Gita",
-        chapter: "17",
-        verse: "3",
-        author: "Lord Krishna",
+        short: "Keep your focus steady like a windless lamp.",
+        source: "Bhagavad Gita 6:19",
+        verse: "Chapter 6, Verse 19",
+        fullTranslation: "As a lamp in a windless place does not flicker, so is the steady mind of a seeker who practices union with the deeper self.",
+        meaning: "Turn off distractions and immerse yourself into deep work. An unwavering, concentrated mind solves hard engineering problems in half the time."
     },
     {
-        text: "Whatever action an exemplary person performs, common people emulate. Whatever standards they set by their deeds, the world pursues.",
-        source: "Bhagavad Gita",
-        chapter: "3",
-        verse: "21",
-        author: "Lord Krishna",
+        short: "Discipline feels bitter first, but sweet at last.",
+        source: "Bhagavad Gita 18:37",
+        verse: "Chapter 18, Verse 37",
+        fullTranslation: "That which appears like poison in the beginning but tastes like nectar in the end — that joy is born of clear self-knowledge and disciplined effort.",
+        meaning: "The grind of preparation can feel exhausting in the moment, but the skill and career confidence you gain lasts a lifetime."
     },
     {
-        text: "Without attachment, constantly perform the work that ought to be done; for by doing work without attachment, one attains the supreme state.",
-        source: "Bhagavad Gita",
-        chapter: "3",
-        verse: "19",
-        author: "Lord Krishna",
+        short: "Fleeting discomfort passes; endure it with patience.",
+        source: "Bhagavad Gita 2:14",
+        verse: "Chapter 2, Verse 14",
+        fullTranslation: "The contact of the senses with their objects gives rise to cold and heat, pleasure and pain. They are fleeting and impermanent; learn to endure them patiently.",
+        meaning: "Frustration when debugging edge cases is only temporary. Remain patient and analytical, and celebrate the insight each mistake teaches you."
     },
     {
-        text: "From wherever the restless and unsteady mind wanders away, one should curb it and bring it back under the control of the self alone.",
-        source: "Bhagavad Gita",
-        chapter: "6",
-        verse: "26",
-        author: "Lord Krishna",
+        short: "Arise, awake, and stop not until the goal is reached.",
+        source: "Katha Upanishad 1:3:14",
+        verse: "Chapter 1.3, Verse 14",
+        fullTranslation: "Arise, awake, and stop not until the highest goal is attained. The path is subtle like the edge of a razor, but conquerable by the steadfast.",
+        meaning: "Do not let complacency or momentary setbacks derail your momentum. Protect your streak and push yourself forward every single day."
     },
     {
-        text: "As a lamp in a windless place does not flicker, so is the steady mind of a seeker who practices union with the deeper self.",
-        source: "Bhagavad Gita",
-        chapter: "6",
-        verse: "19",
-        author: "Lord Krishna",
-    },
-    {
-        text: "That which appears like poison in the beginning but tastes like nectar in the end — that joy is born of clear self-knowledge and disciplined effort.",
-        source: "Bhagavad Gita",
-        chapter: "18",
-        verse: "37",
-        author: "Lord Krishna",
-    },
-    {
-        text: "The contact of the senses with their objects gives rise to cold and heat, pleasure and pain. They are fleeting and impermanent; learn to endure them patiently.",
-        source: "Bhagavad Gita",
-        chapter: "2",
-        verse: "14",
-        author: "Lord Krishna",
-    },
-    {
-        text: "Arise, awake, and stop not until the highest goal is attained. The path is as sharp as the edge of a razor, difficult to tread and hard to cross.",
-        source: "Katha Upanishad",
-        chapter: "1.3",
-        verse: "14",
-        author: "Katha Upanishad",
-    },
-    {
-        text: "Tasks are accomplished by deliberate, persistent effort, never by mere wishful thinking. A sleeping lion catches no prey.",
-        source: "Hitopadesha",
-        chapter: "Prastavika",
-        verse: "36",
-        author: "Narayana Pandit",
-    },
-];
-
-/** Formats source citation for motivational quote in very small text (purely in English) */
-const formatQuoteSource = (q) => {
-    if (!q) return '';
-    const parts = [];
-    if (q.source) {
-        let src = q.source;
-        if (q.chapter && q.verse) src += ` ${q.chapter}:${q.verse}`;
-        else if (q.chapter) src += ` Ch.${q.chapter}`;
-        else if (q.verse) src += ` v.${q.verse}`;
-        parts.push(src);
+        short: "Great results come from persistent effort, not mere wishing.",
+        source: "Hitopadesha 1:36",
+        verse: "Prastavika, Verse 36",
+        fullTranslation: "Tasks are accomplished by deliberate, persistent effort, never by mere wishful thinking. A sleeping lion catches no prey.",
+        meaning: "Dreaming of top tech offers is easy; putting in the focused practice hours is what makes it happen. Let your code speak for your ambition."
     }
-    if (q.author) parts.push(q.author);
-    return parts.join(' • ');
-};
+];
 
 const Stat = ({ value, label }) => (
     <div className="rounded-2xl border border-line bg-panel p-4">
@@ -453,9 +410,22 @@ const Dashboard = ({
     const [taskInput, setTaskInput] = useState('');
     const tasksSliderRef = useRef(null);
 
-    // Motivational quote randomized on every refresh / page load
-    const [quoteIndex, setQuoteIndex] = useState(() => Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length));
+    // Motivational quote randomized on every refresh / page load (does not change on click)
+    const [quoteIndex] = useState(() => Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length));
     const currentQuote = MOTIVATIONAL_QUOTES[quoteIndex];
+    const [quoteInfoOpen, setQuoteInfoOpen] = useState(false);
+    const [quoteHovered, setQuoteHovered] = useState(false);
+    const quoteRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (quoteRef.current && !quoteRef.current.contains(e.target)) {
+                setQuoteInfoOpen(false);
+            }
+        };
+        document.addEventListener('pointerdown', handleClickOutside);
+        return () => document.removeEventListener('pointerdown', handleClickOutside);
+    }, []);
 
     const isToday = activeDate === todayStr;
     const activeDateObj = useMemo(() => {
@@ -683,17 +653,78 @@ const Dashboard = ({
                     </h1>
                     {currentQuote && (
                         <div
-                            onClick={() => setQuoteIndex((prev) => (prev + 1) % MOTIVATIONAL_QUOTES.length)}
-                            title="Click for another quote"
-                            className="group flex cursor-pointer flex-col items-start md:items-end text-left md:text-right max-w-xl md:ml-auto transition-all select-none"
+                            ref={quoteRef}
+                            className="relative flex flex-col items-start md:items-end text-left md:text-right max-w-sm sm:max-w-md md:ml-auto select-text"
                         >
-                            <p className="font-serif italic text-sm sm:text-[15px] font-medium text-fg leading-snug group-hover:text-accent-hi transition-colors">
-                                “{currentQuote.text}”
+                            <p className="font-serif italic text-xs sm:text-sm font-medium text-zinc-400 leading-snug">
+                                “{currentQuote.short}”
                             </p>
-                            {formatQuoteSource(currentQuote) && (
-                                <p className="mt-0.5 font-mono text-[11px] font-semibold text-subtle uppercase tracking-wider group-hover:text-fg transition-colors">
-                                    — {formatQuoteSource(currentQuote)}
-                                </p>
+                            <div className="mt-1 flex items-center gap-1.5 font-mono text-[10px] sm:text-[11px] font-semibold text-subtle uppercase tracking-wider">
+                                <span>— {currentQuote.source}</span>
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setQuoteInfoOpen((prev) => !prev);
+                                    }}
+                                    onMouseEnter={() => setQuoteHovered(true)}
+                                    onMouseLeave={() => setQuoteHovered(false)}
+                                    title="View verse translation & practical focus"
+                                    aria-label="View verse translation and practical focus"
+                                    className="group inline-flex items-center justify-center rounded-full p-0.5 text-zinc-400 transition-colors hover:text-accent-hi focus:outline-none"
+                                >
+                                    <Info className="size-3 transition-transform group-hover:scale-110" />
+                                </button>
+                            </div>
+
+                            {/* Sleek dark-themed tooltip / modal */}
+                            {(quoteInfoOpen || quoteHovered) && (
+                                <div
+                                    onMouseEnter={() => setQuoteHovered(true)}
+                                    onMouseLeave={() => setQuoteHovered(false)}
+                                    className="absolute right-0 top-full z-50 mt-2 w-72 sm:w-88 md:w-96 rounded-2xl border border-zinc-800 bg-zinc-950/95 p-4 sm:p-5 text-left shadow-2xl backdrop-blur-xl animate-fade-in"
+                                >
+                                    <div className="flex items-start justify-between gap-3 border-b border-zinc-800/80 pb-2.5">
+                                        <div>
+                                            <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-500/10 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-rose-400">
+                                                {currentQuote.source}
+                                            </span>
+                                            <p className="mt-1 font-mono text-[10px] text-zinc-500">
+                                                {currentQuote.verse}
+                                            </p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setQuoteInfoOpen(false);
+                                                setQuoteHovered(false);
+                                            }}
+                                            className="rounded-lg p-1 text-zinc-500 hover:bg-zinc-800 hover:text-zinc-200 transition-colors"
+                                            aria-label="Close"
+                                        >
+                                            <X className="size-3.5" />
+                                        </button>
+                                    </div>
+
+                                    <div className="mt-3 space-y-3">
+                                        <div>
+                                            <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Full Translation</p>
+                                            <p className="mt-1 font-serif italic text-xs sm:text-[13px] leading-relaxed text-zinc-200">
+                                                “{currentQuote.fullTranslation}”
+                                            </p>
+                                        </div>
+
+                                        <div className="rounded-xl border border-rose-500/20 bg-rose-500/5 p-3">
+                                            <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-rose-400">
+                                                <span className="size-1.5 rounded-full bg-rose-400" />
+                                                Practical Focus
+                                            </p>
+                                            <p className="mt-1 text-xs leading-relaxed text-zinc-300">
+                                                {currentQuote.meaning}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
                             )}
                         </div>
                     )}

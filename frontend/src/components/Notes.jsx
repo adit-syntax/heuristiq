@@ -1076,8 +1076,8 @@ const Notes = ({ jumpQuery, floating = false, onClose }) => {
                 icon={<StickyNote className="size-4 shrink-0 text-accent-hi" />}
                 initialWidth={typeof window !== 'undefined' ? Math.min(920, window.innerWidth - 16) : 920}
                 initialHeight={typeof window !== 'undefined' ? Math.min(620, window.innerHeight - 80) : 620}
-                minW={300}
-                minH={220}
+                minW={220}
+                minH={180}
                 keepAspect={false}
                 allowOffscreen
                 onClose={onClose || (() => {})}

@@ -70,6 +70,8 @@ const FloatingPanel = ({
     }, []);
 
     const isMobileScreen = typeof window !== 'undefined' && window.innerWidth < 640;
+    const effectiveMinW = isMobileScreen ? Math.min(minW, 220) : minW;
+    const effectiveMinH = isMobileScreen ? Math.min(minH, 180) : minH;
     const defaultMobileW = typeof window !== 'undefined' ? Math.min(360, window.innerWidth - 16) : 360;
     const defaultMobileH = typeof window !== 'undefined' ? Math.min(460, window.innerHeight - 110) : 420;
 
@@ -92,21 +94,17 @@ const FloatingPanel = ({
 
     const dragRef = useRef(null);
     const panelRef = useRef(null);
-    // Live geometry mirror: window listeners read this ref, never state
-    // closures. Sanitised on every update - a NaN anywhere (however it
-    // appears) is healed from the panel's real DOM rect before it can
-    // poison a gesture.
-    const sanitize = (p, fallbackSize) => ({
-        size: {
-            w: Number.isFinite(fallbackSize?.w) ? fallbackSize.w : (panelRef.current?.offsetWidth || 600),
-            h: Number.isFinite(fallbackSize?.h) ? fallbackSize.h : (panelRef.current?.offsetHeight || 400),
-        },
+    const liveRef = useRef({ pos, size });
+    const sanitize = (p, s) => ({
         pos: {
-            x: Number.isFinite(p?.x) ? p.x : (panelRef.current ? parseFloat(getComputedStyle(panelRef.current).left) || 0 : 0),
-            y: Number.isFinite(p?.y) ? p.y : (panelRef.current ? parseFloat(getComputedStyle(panelRef.current).top) || 0 : 0),
+            x: Number.isFinite(p.x) ? p.x : 20,
+            y: Number.isFinite(p.y) ? p.y : 20,
+        },
+        size: {
+            w: Number.isFinite(s.w) ? Math.max(effectiveMinW, s.w) : 480,
+            h: Number.isFinite(s.h) ? Math.max(effectiveMinH, s.h) : 320,
         },
     });
-    const liveRef = useRef(sanitize(pos, size));
     liveRef.current = sanitize(pos, size);
 
     const clamp = useCallback((x, y, w) => {
@@ -124,26 +122,29 @@ const FloatingPanel = ({
     const preMaxRef = useRef(null);
 
     const toggleMaximize = useCallback(() => {
-        setIsMaximized((prev) => {
-            if (!prev) {
-                preMaxRef.current = { pos: liveRef.current.pos, size: liveRef.current.size };
-                return true;
-            } else {
-                if (preMaxRef.current) {
-                    setPos(preMaxRef.current.pos);
-                    setSize(preMaxRef.current.size);
-                }
-                return false;
+        if (isMaximized) {
+            setIsMaximized(false);
+            if (preMaxRef.current) {
+                setPos(preMaxRef.current.pos);
+                setSize(preMaxRef.current.size);
             }
-        });
-    }, []);
+        } else {
+            preMaxRef.current = { pos, size };
+            setIsMaximized(true);
+            setPos({ x: 8, y: 8 });
+            setSize({
+                w: typeof window !== 'undefined' ? window.innerWidth - 16 : 800,
+                h: typeof window !== 'undefined' ? window.innerHeight - 16 : 600,
+            });
+        }
+    }, [isMaximized, pos, size]);
 
     useEffect(() => {
         const handleWindowResize = () => {
             if (isMaximized) return;
             setSize((s) => {
-                const maxW = Math.max(minW, window.innerWidth - 16);
-                const maxH = Math.max(minH, window.innerHeight - 80);
+                const maxW = Math.max(effectiveMinW, window.innerWidth - 16);
+                const maxH = Math.max(effectiveMinH, window.innerHeight - 80);
                 const w = Math.min(s.w, maxW);
                 const h = Math.min(s.h, maxH);
                 return (w === s.w && h === s.h) ? s : { w, h };
@@ -152,12 +153,13 @@ const FloatingPanel = ({
         };
         window.addEventListener('resize', handleWindowResize);
         return () => window.removeEventListener('resize', handleWindowResize);
-    }, [clamp, isMaximized, minW, minH]);
+    }, [clamp, isMaximized, effectiveMinW, effectiveMinH]);
 
     const [dragging, setDragging] = useState(false);
 
     const onDragStart = useCallback((e) => {
         if (e.pointerType === 'mouse' && e.button !== 0) return;
+        if (e.cancelable) e.preventDefault();
         const { size: s, pos: p } = liveRef.current;
         dragRef.current = {
             mode: 'move',
@@ -178,6 +180,7 @@ const FloatingPanel = ({
     const onResizeStart = useCallback((e, dir) => {
         if (e.pointerType === 'mouse' && e.button !== 0) return;
         e.stopPropagation();
+        if (e.cancelable) e.preventDefault();
         const { size: s, pos: p } = liveRef.current;
         dragRef.current = {
             mode: `resize:${dir}`,
@@ -237,17 +240,20 @@ const FloatingPanel = ({
             if (dir.includes('w')) { w = orig.w - dx; x = origPos.x + dx; }
             if (dir.includes('n')) { h = orig.h - dy; y = origPos.y + dy; }
 
-            w = Math.min(Math.max(minW, w), window.innerWidth - 8);
+            const clampedW = Math.min(Math.max(effectiveMinW, w), window.innerWidth - 8);
             // Cap height below the free-movement inversion threshold.
-            const maxH = Math.max(minH, window.innerHeight - 80);
-            h = Math.min(Math.max(minH, h), maxH);
+            const maxH = Math.max(effectiveMinH, window.innerHeight - 80);
+            const clampedH = Math.min(Math.max(effectiveMinH, h), maxH);
+
+            w = clampedW;
+            h = clampedH;
 
             // Aspect lock only applies to corner drags (a stretched edge is
             // explicitly a one-axis request).
             if (keepAspect && dir.length === 2) {
                 w = Math.round(h * aspect);
                 if (w > window.innerWidth - 8) { w = window.innerWidth - 8; h = Math.round(w / aspect); }
-                if (w < minW) { w = minW; h = Math.round(w / aspect); }
+                if (w < effectiveMinW) { w = effectiveMinW; h = Math.round(w / aspect); }
                 // Keep the opposite corner anchored.
                 if (dir.includes('w')) x = d.origPos.x + (orig.w - w);
                 if (dir.includes('n')) y = d.origPos.y + (orig.h - h);
@@ -255,15 +261,17 @@ const FloatingPanel = ({
 
             // When an edge pulled the panel past a min, pin it back so the
             // opposite side stays anchored.
-            if (dir.includes('w')) x = Math.min(x, d.origPos.x + orig.w - minW);
-            if (dir.includes('n')) y = Math.min(y, d.origPos.y + orig.h - minH);
+            if (dir.includes('w')) x = Math.min(x, d.origPos.x + orig.w - effectiveMinW);
+            if (dir.includes('n')) y = Math.min(y, d.origPos.y + orig.h - effectiveMinH);
 
             const nextW = Math.round(w), nextH = Math.round(h);
             setSize((prev) => (prev.w === nextW && prev.h === nextH ? prev : { w: nextW, h: nextH }));
-            setPos((prev) => {
-                const next = clamp(Math.round(x), Math.round(y), nextW);
-                return next.x === prev.x && next.y === prev.y ? prev : next;
-            });
+            if (dir.includes('w') || dir.includes('n')) {
+                setPos((prev) => {
+                    const next = clamp(Math.round(x), Math.round(y), nextW);
+                    return next.x === prev.x && next.y === prev.y ? prev : next;
+                });
+            }
         };
 
         const onUp = (e) => {
@@ -437,8 +445,8 @@ const FloatingPanel = ({
                 </button>
             </div>
 
-            {/* Body */}
-            <div className={bodyClassName} style={{ height: actualBodyHeight }}>
+            {/* Body: cleanly fills the remaining panel height without overflowing */}
+            <div className={`flex-1 min-h-0 w-full overflow-hidden ${bodyClassName}`}>
                 {children}
             </div>
 
@@ -451,36 +459,36 @@ const FloatingPanel = ({
                             if (e.pointerType === 'touch') return;
                             onDragStart(e);
                         }}
-                        className="absolute inset-x-[18px] top-[40px] z-[15] h-3 cursor-grab active:cursor-grabbing"
+                        className="absolute inset-x-[20px] top-[40px] z-[15] h-3 cursor-grab active:cursor-grabbing"
                         title="Drag to move"
                     />
 
-                    {/* Resize zones: 4 corners + 4 edges */}
+                    {/* Resize zones: 4 corners + 4 edges with generous touch targets on mobile */}
                     {[
-                        // Corners (18px squares, layered above edges)
-                        { dir: 'nw', cls: 'left-0 top-0 size-[18px] cursor-nwse-resize' },
-                        { dir: 'ne', cls: 'right-0 top-0 size-[18px] cursor-nesw-resize' },
-                        { dir: 'sw', cls: 'left-0 bottom-0 size-[18px] cursor-nesw-resize' },
-                        { dir: 'se', cls: 'right-0 bottom-0 size-[18px] cursor-nwse-resize' },
-                        // Edge bands - full length of each side, 8px deep
-                        { dir: 'n', cls: 'left-[18px] right-[18px] top-0 h-2 cursor-ns-resize' },
-                        { dir: 's', cls: 'left-[18px] right-[18px] bottom-0 h-2 cursor-ns-resize' },
-                        { dir: 'w', cls: 'top-[18px] bottom-[18px] left-0 w-2 cursor-ew-resize' },
-                        { dir: 'e', cls: 'top-[18px] bottom-[18px] right-0 w-2 cursor-ew-resize' },
+                        // Corners (generous hit target on mobile: 32px / 36px)
+                        { dir: 'nw', cls: 'left-0 top-0 size-8 sm:size-[18px] cursor-nwse-resize z-20' },
+                        { dir: 'ne', cls: 'right-0 top-0 size-8 sm:size-[18px] cursor-nesw-resize z-20' },
+                        { dir: 'sw', cls: 'left-0 bottom-0 size-8 sm:size-[18px] cursor-nesw-resize z-20' },
+                        { dir: 'se', cls: 'right-0 bottom-0 size-10 sm:size-7 cursor-nwse-resize z-30' },
+                        // Edge bands - full length of each side, comfortable touch targets
+                        { dir: 'n', cls: 'left-8 right-8 top-0 h-3 sm:h-2 cursor-ns-resize z-10' },
+                        { dir: 's', cls: 'left-8 right-8 bottom-0 h-4 sm:h-2 cursor-ns-resize z-10' },
+                        { dir: 'w', cls: 'top-8 bottom-8 left-0 w-4 sm:w-2 cursor-ew-resize z-10' },
+                        { dir: 'e', cls: 'top-8 bottom-8 right-0 w-4 sm:w-2 cursor-ew-resize z-10' },
                     ].map((h) => (
                         <div
                             key={h.dir}
                             style={{ touchAction: 'none' }}
                             onPointerDown={(e) => onResizeStart(e, h.dir)}
-                            className={`absolute z-10 ${h.cls}`}
+                            className={`absolute select-none ${h.cls}`}
                             title="Drag to resize"
                         />
                     ))}
 
                     {/* Corner affordance on the se grip */}
-                    <div className="pointer-events-none absolute bottom-0 right-0 size-4">
+                    <div className="pointer-events-none absolute bottom-1 right-1 size-4 sm:size-3.5 z-30 opacity-70">
                         <svg viewBox="0 0 16 16" className="size-full text-subtle">
-                            <path d="M15 5 L5 15 M15 10 L10 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
+                            <path d="M14 6 L6 14 M14 10 L10 14 M14 2 L2 14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
                         </svg>
                     </div>
                 </>

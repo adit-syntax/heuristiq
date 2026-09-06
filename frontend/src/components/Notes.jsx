@@ -1,5 +1,8 @@
-import { useState, useMemo } from 'react';
-import { StickyNote, Plus, Trash2, Search, Cloud, CloudOff, Loader2, ChevronLeft } from 'lucide-react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import {
+    StickyNote, Plus, Trash2, Search, Cloud, CloudOff, Loader2, ChevronLeft,
+    Undo2, Redo2, Eye, Edit3, Columns2, Copy, Check
+} from 'lucide-react';
 import useSyncedDoc from '../hooks/useSyncedDoc';
 import useToast from '../hooks/useToast';
 
@@ -13,13 +16,246 @@ export const SyncBadge = ({ status, loading }) => {
     return <span className="flex items-center gap-1.5 text-xs text-subtle"><Cloud className="size-3.5" /> Saved</span>;
 };
 
+/** Code block renderer with copy button */
+const CodeBlock = ({ code, language }) => {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = () => {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(code);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        }
+    };
+
+    return (
+        <div className="relative my-3 overflow-hidden rounded-xl border border-line bg-zinc-950/80 font-mono text-xs shadow-md">
+            <div className="flex items-center justify-between border-b border-white/10 bg-white/5 px-3 py-1.5 text-zinc-400">
+                <span className="text-[11px] font-medium uppercase tracking-wider text-zinc-400">{language || 'code'}</span>
+                <button
+                    type="button"
+                    onClick={handleCopy}
+                    className="flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] text-zinc-300 hover:bg-white/10 hover:text-white transition-colors"
+                >
+                    {copied ? <Check className="size-3 text-emerald-400" /> : <Copy className="size-3" />}
+                    <span>{copied ? 'Copied' : 'Copy'}</span>
+                </button>
+            </div>
+            <pre className="overflow-x-auto p-3.5 leading-relaxed text-zinc-100">
+                <code>{code}</code>
+            </pre>
+        </div>
+    );
+};
+
+/** Note Markdown Renderer */
+const NoteMarkdown = ({ text, onToggleTask }) => {
+    const rendered = useMemo(() => {
+        if (!text || !text.trim()) {
+            return (
+                <div className="flex flex-col items-center justify-center py-12 text-center text-subtle text-sm">
+                    <StickyNote className="mb-2 size-8 text-faint" />
+                    <p>No note content to preview yet.</p>
+                    <p className="mt-1 text-xs text-faint">Switch to <strong>Write</strong> mode or click any toolbar button above to start typing.</p>
+                </div>
+            );
+        }
+
+        // Split by code blocks first
+        const parts = [];
+        const codeBlockRegex = /```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g;
+        let lastIndex = 0;
+        let match;
+
+        while ((match = codeBlockRegex.exec(text)) !== null) {
+            if (match.index > lastIndex) {
+                parts.push({ type: 'markdown', content: text.substring(lastIndex, match.index) });
+            }
+            parts.push({ type: 'code', language: match[1] || 'code', content: match[2].replace(/\n$/, '') });
+            lastIndex = match.index + match[0].length;
+        }
+
+        if (lastIndex < text.length) {
+            parts.push({ type: 'markdown', content: text.substring(lastIndex) });
+        }
+
+        const renderInline = (str) => {
+            const elements = [];
+            const inlineRegex = /(\*\*([^*]+)\*\*|\*([^*]+)\*|~~([^~]+)~~|`([^`]+)`|\[([^\]]+)\]\(([^)]+)\))/g;
+            let last = 0;
+            let m;
+
+            while ((m = inlineRegex.exec(str)) !== null) {
+                if (m.index > last) elements.push(str.slice(last, m.index));
+                if (m[2]) {
+                    elements.push(<strong key={m.index} className="font-bold text-fg">{m[2]}</strong>);
+                } else if (m[3]) {
+                    elements.push(<em key={m.index} className="italic text-fg">{m[3]}</em>);
+                } else if (m[4]) {
+                    elements.push(<del key={m.index} className="line-through text-subtle">{m[4]}</del>);
+                } else if (m[5]) {
+                    elements.push(<code key={m.index} className="rounded bg-raised/80 border border-line/60 px-1.5 py-0.5 font-mono text-[11px] text-accent-hi">{m[5]}</code>);
+                } else if (m[6] && m[7]) {
+                    elements.push(
+                        <a key={m.index} href={m[7]} target="_blank" rel="noopener noreferrer" className="text-accent-hi underline decoration-accent/40 underline-offset-2 hover:decoration-accent">
+                            {m[6]}
+                        </a>
+                    );
+                }
+                last = inlineRegex.lastIndex;
+            }
+            if (last < str.length) elements.push(str.slice(last));
+            return elements;
+        };
+
+        return parts.map((part, pIdx) => {
+            if (part.type === 'code') {
+                return <CodeBlock key={pIdx} code={part.content} language={part.language} />;
+            }
+
+            const lines = part.content.split('\n');
+            const nodes = [];
+            let inList = false;
+            let listType = null;
+            let listItems = [];
+
+            const flushList = () => {
+                if (!inList) return;
+                if (listType === 'ul') {
+                    nodes.push(
+                        <ul key={`ul-${nodes.length}`} className="my-2 space-y-1.5 pl-5 list-disc marker:text-accent">
+                            {listItems.map((li, i) => <li key={i} className="text-sm leading-relaxed text-muted">{renderInline(li)}</li>)}
+                        </ul>
+                    );
+                } else if (listType === 'ol') {
+                    nodes.push(
+                        <ol key={`ol-${nodes.length}`} className="my-2 space-y-1.5 pl-5 list-decimal marker:text-accent font-medium">
+                            {listItems.map((li, i) => <li key={i} className="text-sm leading-relaxed text-muted font-normal">{renderInline(li)}</li>)}
+                        </ol>
+                    );
+                }
+                inList = false;
+                listType = null;
+                listItems = [];
+            };
+
+            lines.forEach((line, lIdx) => {
+                const trimmed = line.trim();
+
+                if (!trimmed) {
+                    flushList();
+                    nodes.push(<div key={`empty-${lIdx}`} className="h-2" />);
+                    return;
+                }
+
+                // Headings
+                const h1 = line.match(/^#\s+(.*)/);
+                if (h1) {
+                    flushList();
+                    nodes.push(<h1 key={`h1-${lIdx}`} className="mt-4 mb-2 text-xl font-bold text-fg border-b border-line pb-1.5 first:mt-0">{renderInline(h1[1])}</h1>);
+                    return;
+                }
+                const h2 = line.match(/^##\s+(.*)/);
+                if (h2) {
+                    flushList();
+                    nodes.push(<h2 key={`h2-${lIdx}`} className="mt-3 mb-1.5 text-lg font-bold text-fg first:mt-0">{renderInline(h2[1])}</h2>);
+                    return;
+                }
+                const h3 = line.match(/^###\s+(.*)/);
+                if (h3) {
+                    flushList();
+                    nodes.push(<h3 key={`h3-${lIdx}`} className="mt-2.5 mb-1 text-base font-semibold text-fg first:mt-0">{renderInline(h3[1])}</h3>);
+                    return;
+                }
+
+                // Blockquote
+                const bq = line.match(/^>\s*(.*)/);
+                if (bq) {
+                    flushList();
+                    nodes.push(
+                        <blockquote key={`bq-${lIdx}`} className="my-2.5 border-l-2 border-accent bg-raised/30 px-3.5 py-2 text-sm italic text-muted rounded-r-lg">
+                            {renderInline(bq[1])}
+                        </blockquote>
+                    );
+                    return;
+                }
+
+                // Task list item: - [ ] or - [x]
+                const task = line.match(/^[-*]\s+\[( |x|X)\]\s+(.*)/);
+                if (task) {
+                    flushList();
+                    const isChecked = task[1].toLowerCase() === 'x';
+                    nodes.push(
+                        <div key={`task-${lIdx}`} className="flex items-start gap-2.5 my-1.5">
+                            <input
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={() => onToggleTask && onToggleTask(line)}
+                                className="mt-1 size-3.5 rounded border-line accent-accent cursor-pointer"
+                            />
+                            <span className={`text-sm leading-relaxed ${isChecked ? 'line-through text-subtle' : 'text-muted'}`}>
+                                {renderInline(task[2])}
+                            </span>
+                        </div>
+                    );
+                    return;
+                }
+
+                // Unordered list
+                const ul = line.match(/^[-*]\s+(.*)/);
+                if (ul) {
+                    if (!inList || listType !== 'ul') {
+                        flushList();
+                        inList = true;
+                        listType = 'ul';
+                    }
+                    listItems.push(ul[1]);
+                    return;
+                }
+
+                // Ordered list
+                const ol = line.match(/^\d+\.\s+(.*)/);
+                if (ol) {
+                    if (!inList || listType !== 'ol') {
+                        flushList();
+                        inList = true;
+                        listType = 'ol';
+                    }
+                    listItems.push(ol[1]);
+                    return;
+                }
+
+                // Regular paragraph
+                flushList();
+                nodes.push(
+                    <p key={`p-${lIdx}`} className="text-sm leading-relaxed text-muted">
+                        {renderInline(line)}
+                    </p>
+                );
+            });
+
+            flushList();
+            return <div key={pIdx}>{nodes}</div>;
+        });
+    }, [text, onToggleTask]);
+
+    return <div className="space-y-1">{rendered}</div>;
+};
+
 const Notes = ({ jumpQuery }) => {
     const [doc, setDoc, { loading, status }] = useSyncedDoc('notes', EMPTY);
     const [activeId, setActiveId] = useState(null);
     const [query, setQuery] = useState('');
+    const [viewMode, setViewMode] = useState('edit'); // 'edit' | 'preview' | 'split'
 
-    // Global-search jump: land pre-filtered. Adjust-during-render instead of
-    // an effect (React-endorsed derive pattern).
+    const textareaRef = useRef(null);
+
+    // Undo / Redo history stacks
+    const [undoStack, setUndoStack] = useState([]);
+    const [redoStack, setRedoStack] = useState([]);
+    const currentNoteIdRef = useRef(null);
+
+    // Global-search jump: land pre-filtered.
     const [lastJump, setLastJump] = useState(null);
     if (jumpQuery && jumpQuery !== lastJump) {
         setLastJump(jumpQuery);
@@ -44,6 +280,15 @@ const Notes = ({ jumpQuery }) => {
 
     const active = activeId ? doc.items?.[activeId] : null;
 
+    // Reset undo/redo when switching active note
+    useEffect(() => {
+        if (activeId !== currentNoteIdRef.current) {
+            currentNoteIdRef.current = activeId;
+            setUndoStack([]);
+            setRedoStack([]);
+        }
+    }, [activeId]);
+
     const createNote = () => {
         const id = `n_${Date.now()}`;
         setDoc((prev) => ({
@@ -54,12 +299,44 @@ const Notes = ({ jumpQuery }) => {
         toast('Note created');
     };
 
-    const patchNote = (id, patch) => {
+    const patchNote = useCallback((id, patch) => {
         setDoc((prev) => ({
             ...prev,
             items: { ...prev.items, [id]: { ...prev.items[id], ...patch, updatedAt: Date.now() } },
         }));
-    };
+    }, [setDoc]);
+
+    const updateBodyWithHistory = useCallback((newBody, newStart, newEnd) => {
+        if (!active) return;
+        setUndoStack((prev) => [...prev.slice(-40), active.body || '']);
+        setRedoStack([]);
+        patchNote(active.id, { body: newBody });
+
+        if (newStart !== undefined && newEnd !== undefined) {
+            requestAnimationFrame(() => {
+                if (textareaRef.current) {
+                    textareaRef.current.focus();
+                    textareaRef.current.setSelectionRange(newStart, newEnd);
+                }
+            });
+        }
+    }, [active, patchNote]);
+
+    const handleUndo = useCallback(() => {
+        if (!active || undoStack.length === 0) return;
+        const prevText = undoStack[undoStack.length - 1];
+        setUndoStack((prev) => prev.slice(0, -1));
+        setRedoStack((prev) => [...prev.slice(-40), active.body || '']);
+        patchNote(active.id, { body: prevText });
+    }, [active, undoStack, patchNote]);
+
+    const handleRedo = useCallback(() => {
+        if (!active || redoStack.length === 0) return;
+        const nextText = redoStack[redoStack.length - 1];
+        setRedoStack((prev) => prev.slice(0, -1));
+        setUndoStack((prev) => [...prev.slice(-40), active.body || '']);
+        patchNote(active.id, { body: nextText });
+    }, [active, redoStack, patchNote]);
 
     const deleteNote = async (id) => {
         const note = doc.items?.[id];
@@ -75,8 +352,6 @@ const Notes = ({ jumpQuery }) => {
             return { ...prev, items };
         });
         if (activeId === id) setActiveId(null);
-        // Undo window: keep the note around in the toast closure; re-insert
-        // verbatim (original updatedAt preserved) if the user hits Undo.
         toast('Note deleted', {
             detail: note.title,
             kind: 'danger',
@@ -90,6 +365,259 @@ const Notes = ({ jumpQuery }) => {
             },
         });
     };
+
+    /** Toolbar formatting actions */
+    const applyFormat = (type) => {
+        const el = textareaRef.current;
+        if (!el || !active) return;
+        const start = el.selectionStart;
+        const end = el.selectionEnd;
+        const text = el.value || '';
+        const selection = text.substring(start, end);
+
+        const before = text.substring(0, start);
+        const after = text.substring(end);
+        let newText = text;
+        let newStart = start;
+        let newEnd = end;
+
+        const lineStart = text.lastIndexOf('\n', start - 1) + 1;
+        const lineEnd = text.indexOf('\n', end);
+        const actualLineEnd = lineEnd === -1 ? text.length : lineEnd;
+
+        switch (type) {
+            case 'bold': {
+                if (selection) {
+                    newText = before + `**${selection}**` + after;
+                    newStart = start + 2;
+                    newEnd = end + 2;
+                } else {
+                    newText = before + `**bold text**` + after;
+                    newStart = start + 2;
+                    newEnd = start + 11;
+                }
+                break;
+            }
+            case 'italic': {
+                if (selection) {
+                    newText = before + `*${selection}*` + after;
+                    newStart = start + 1;
+                    newEnd = end + 1;
+                } else {
+                    newText = before + `*italic text*` + after;
+                    newStart = start + 1;
+                    newEnd = start + 12;
+                }
+                break;
+            }
+            case 'strikethrough': {
+                if (selection) {
+                    newText = before + `~~${selection}~~` + after;
+                    newStart = start + 2;
+                    newEnd = end + 2;
+                } else {
+                    newText = before + `~~strikethrough~~` + after;
+                    newStart = start + 2;
+                    newEnd = start + 15;
+                }
+                break;
+            }
+            case 'inline-code': {
+                if (selection) {
+                    newText = before + `\`${selection}\`` + after;
+                    newStart = start + 1;
+                    newEnd = end + 1;
+                } else {
+                    newText = before + `\`code\`` + after;
+                    newStart = start + 1;
+                    newEnd = start + 5;
+                }
+                break;
+            }
+            case 'h1':
+            case 'h2':
+            case 'h3': {
+                const prefix = type === 'h1' ? '# ' : type === 'h2' ? '## ' : '### ';
+                const currentLines = text.substring(lineStart, actualLineEnd).split('\n');
+                const modifiedLines = currentLines.map(line => {
+                    const clean = line.replace(/^#{1,6}\s*/, '');
+                    return `${prefix}${clean}`;
+                });
+                const replacement = modifiedLines.join('\n');
+                newText = text.substring(0, lineStart) + replacement + text.substring(actualLineEnd);
+                newStart = lineStart + prefix.length;
+                newEnd = lineStart + replacement.length;
+                break;
+            }
+            case 'bullet-list': {
+                const currentLines = text.substring(lineStart, actualLineEnd).split('\n');
+                const modifiedLines = currentLines.map(line => {
+                    if (line.startsWith('- ')) return line.slice(2);
+                    if (line.match(/^\d+\.\s/)) return `- ${line.replace(/^\d+\.\s/, '')}`;
+                    return `- ${line}`;
+                });
+                const replacement = modifiedLines.join('\n');
+                newText = text.substring(0, lineStart) + replacement + text.substring(actualLineEnd);
+                newStart = lineStart;
+                newEnd = lineStart + replacement.length;
+                break;
+            }
+            case 'numbered-list': {
+                const currentLines = text.substring(lineStart, actualLineEnd).split('\n');
+                const modifiedLines = currentLines.map((line, idx) => {
+                    const clean = line.replace(/^(\d+\.\s*|-\s*)/, '');
+                    return `${idx + 1}. ${clean}`;
+                });
+                const replacement = modifiedLines.join('\n');
+                newText = text.substring(0, lineStart) + replacement + text.substring(actualLineEnd);
+                newStart = lineStart;
+                newEnd = lineStart + replacement.length;
+                break;
+            }
+            case 'code-block': {
+                if (selection) {
+                    const replacement = `\`\`\`javascript\n${selection}\n\`\`\``;
+                    newText = before + replacement + after;
+                    newStart = start + 14;
+                    newEnd = start + 14 + selection.length;
+                } else {
+                    const snippet = `\`\`\`javascript\n// write code here\n\`\`\``;
+                    newText = before + snippet + after;
+                    newStart = start + 14;
+                    newEnd = start + 32;
+                }
+                break;
+            }
+            case 'quote': {
+                const currentLines = text.substring(lineStart, actualLineEnd).split('\n');
+                const modifiedLines = currentLines.map(line => {
+                    if (line.startsWith('> ')) return line.slice(2);
+                    return `> ${line}`;
+                });
+                const replacement = modifiedLines.join('\n');
+                newText = text.substring(0, lineStart) + replacement + text.substring(actualLineEnd);
+                newStart = lineStart;
+                newEnd = lineStart + replacement.length;
+                break;
+            }
+            default:
+                return;
+        }
+
+        updateBodyWithHistory(newText, newStart, newEnd);
+    };
+
+    /** Keyboard enhancements: Tab indent, shortcuts, list auto-continue */
+    const handleKeyDown = (e) => {
+        if (!active) return;
+        const el = textareaRef.current;
+        if (!el) return;
+
+        // Undo: Ctrl+Z / Cmd+Z (without shift)
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) {
+            e.preventDefault();
+            handleUndo();
+            return;
+        }
+
+        // Redo: Ctrl+Y / Cmd+Y or Ctrl+Shift+Z / Cmd+Shift+Z
+        if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) {
+            e.preventDefault();
+            handleRedo();
+            return;
+        }
+
+        // Bold: Ctrl+B / Cmd+B
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+            e.preventDefault();
+            applyFormat('bold');
+            return;
+        }
+
+        // Italic: Ctrl+I / Cmd+I
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'i') {
+            e.preventDefault();
+            applyFormat('italic');
+            return;
+        }
+
+        // Tab: Insert 2 spaces
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            const start = el.selectionStart;
+            const end = el.selectionEnd;
+            const text = el.value || '';
+            const newText = text.substring(0, start) + '  ' + text.substring(end);
+            updateBodyWithHistory(newText, start + 2, start + 2);
+            return;
+        }
+
+        // Enter: Auto-continue lists
+        if (e.key === 'Enter' && !e.shiftKey) {
+            const text = el.value || '';
+            const pos = el.selectionStart;
+            const lineStart = text.lastIndexOf('\n', pos - 1) + 1;
+            const currentLine = text.substring(lineStart, pos);
+
+            // Empty bullet line -> terminate bullet
+            if (/^[-*]\s*$/.test(currentLine)) {
+                e.preventDefault();
+                const newText = text.substring(0, lineStart) + text.substring(pos);
+                updateBodyWithHistory(newText, lineStart, lineStart);
+                return;
+            }
+
+            // Bullet list continuation
+            const bulletMatch = currentLine.match(/^([-*]\s+)/);
+            if (bulletMatch) {
+                e.preventDefault();
+                const prefix = '\n' + bulletMatch[1];
+                const newText = text.substring(0, pos) + prefix + text.substring(pos);
+                updateBodyWithHistory(newText, pos + prefix.length, pos + prefix.length);
+                return;
+            }
+
+            // Empty numbered list line -> terminate numbered list
+            if (/^\d+\.\s*$/.test(currentLine)) {
+                e.preventDefault();
+                const newText = text.substring(0, lineStart) + text.substring(pos);
+                updateBodyWithHistory(newText, lineStart, lineStart);
+                return;
+            }
+
+            // Numbered list continuation
+            const numMatch = currentLine.match(/^(\d+)\.\s+/);
+            if (numMatch) {
+                e.preventDefault();
+                const nextNum = parseInt(numMatch[1], 10) + 1;
+                const prefix = `\n${nextNum}. `;
+                const newText = text.substring(0, pos) + prefix + text.substring(pos);
+                updateBodyWithHistory(newText, pos + prefix.length, pos + prefix.length);
+                return;
+            }
+        }
+    };
+
+    /** Toggle a checkbox from inside the preview mode */
+    const handleToggleTask = (targetLine) => {
+        if (!active) return;
+        const text = active.body || '';
+        const isChecked = targetLine.includes('[x]') || targetLine.includes('[X]');
+        const newLine = isChecked
+            ? targetLine.replace(/\[(x|X)\]/, '[ ]')
+            : targetLine.replace(/\[ \]/, '[x]');
+        const newText = text.replace(targetLine, newLine);
+        updateBodyWithHistory(newText);
+    };
+
+    // Note metrics
+    const stats = useMemo(() => {
+        const body = active?.body || '';
+        const words = body.trim() ? body.trim().split(/\s+/).length : 0;
+        const chars = body.length;
+        const lines = body ? body.split('\n').length : 0;
+        return { words, chars, lines };
+    }, [active?.body]);
 
     return (
         <div className="space-y-6 px-1 sm:px-0">
@@ -107,16 +635,16 @@ const Notes = ({ jumpQuery }) => {
                     <SyncBadge status={status} loading={loading} />
                     <button
                         onClick={createNote}
-                        className="flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-hi"
+                        className="flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-hi shadow-sm shadow-accent/20"
                     >
                         <Plus className="size-4" /> New note
                     </button>
                 </div>
             </div>
 
-            <div className="grid gap-4 lg:grid-cols-[320px_1fr]">
+            <div className="grid gap-4 lg:grid-cols-[300px_1fr] xl:grid-cols-[340px_1fr]">
                 {/* List - on mobile, hide if active note is being edited */}
-                <div className={`max-h-[70vh] flex-col overflow-hidden rounded-2xl border border-line bg-panel ${activeId ? 'hidden lg:flex' : 'flex'}`}>
+                <div className={`max-h-[72vh] flex-col overflow-hidden rounded-2xl border border-line bg-panel ${activeId ? 'hidden lg:flex' : 'flex'}`}>
                     <div className="relative border-b border-line p-3">
                         <Search className="absolute left-6 top-1/2 size-4 -translate-y-1/2 text-subtle" />
                         <input
@@ -126,23 +654,23 @@ const Notes = ({ jumpQuery }) => {
                             className="w-full rounded-xl border border-line bg-raised/50 py-2 pl-9 pr-3 text-sm text-fg placeholder:text-subtle focus:border-accent focus:outline-none"
                         />
                     </div>
-                    <div className="flex-1 overflow-y-auto">
+                    <div className="flex-1 overflow-y-auto divide-y divide-line/40">
                         {visible.length === 0 && (
-                            <p className="px-4 py-10 text-center text-sm text-subtle">
-                                {notes.length === 0 ? 'No notes yet. Create one.' : 'No matches.'}
+                            <p className="px-4 py-12 text-center text-sm text-subtle">
+                                {notes.length === 0 ? 'No notes yet. Create one.' : 'No matches found.'}
                             </p>
                         )}
                         {visible.map((n) => (
                             <button
                                 key={n.id}
                                 onClick={() => setActiveId(n.id)}
-                                className={`w-full border-b border-line/60 px-4 py-3 text-left transition-colors
+                                className={`w-full px-4 py-3 text-left transition-colors
                                     ${activeId === n.id ? 'bg-accent/10' : 'hover:bg-raised/40'}`}
                             >
-                                <div className="truncate text-sm font-medium">{n.title || 'Untitled'}</div>
-                                <div className="mt-0.5 truncate text-xs text-subtle">{n.body.slice(0, 60) || 'Empty'}</div>
+                                <div className="truncate text-sm font-semibold text-fg">{n.title || 'Untitled note'}</div>
+                                <div className="mt-0.5 truncate text-xs text-subtle">{n.body.slice(0, 70) || 'Empty note'}</div>
                                 {n.tag && (
-                                    <span className="mt-1.5 inline-block rounded bg-raised px-1.5 py-0.5 text-[10px] text-subtle">{n.tag}</span>
+                                    <span className="mt-1.5 inline-block rounded-md border border-line/60 bg-raised px-1.5 py-0.5 text-[10px] font-medium text-subtle">{n.tag}</span>
                                 )}
                             </button>
                         ))}
@@ -150,14 +678,15 @@ const Notes = ({ jumpQuery }) => {
                 </div>
 
                 {/* Editor - on mobile, hide if no note selected */}
-                <div className={`min-h-[420px] flex-col overflow-hidden rounded-2xl border border-line bg-panel ${!activeId ? 'hidden lg:flex' : 'flex'}`}>
+                <div className={`min-h-[540px] flex-col overflow-hidden rounded-2xl border border-line bg-panel ${!activeId ? 'hidden lg:flex' : 'flex'}`}>
                     {!active ? (
                         <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
                             <StickyNote className="mb-3 size-12 text-faint" />
-                            <p className="text-subtle">Select a note, or create a new one.</p>
+                            <p className="text-subtle">Select a note from the left, or create a new one.</p>
                         </div>
                     ) : (
                         <>
+                            {/* Note Header: Title, Tag, Delete */}
                             <div className="flex items-center gap-2 border-b border-line p-3 sm:gap-3 sm:p-4">
                                 <button
                                     onClick={() => setActiveId(null)}
@@ -166,34 +695,235 @@ const Notes = ({ jumpQuery }) => {
                                 >
                                     <ChevronLeft className="size-4" />
                                 </button>
-                                <input
-                                    value={active.title}
-                                    onChange={(e) => patchNote(active.id, { title: e.target.value })}
-                                    placeholder="Note title"
-                                    className="min-w-0 flex-1 bg-transparent text-base font-semibold text-fg placeholder:text-faint focus:outline-none sm:text-lg"
-                                />
-                                <input
-                                    value={active.tag || ''}
-                                    onChange={(e) => patchNote(active.id, { tag: e.target.value })}
-                                    placeholder="tag"
-                                    className="w-16 shrink-0 rounded-lg border border-line bg-raised/50 px-2 py-1 text-xs text-muted focus:border-accent focus:outline-none sm:w-24"
-                                />
+                                <div className="min-w-0 flex-1">
+                                    <label className="block text-[10px] font-semibold uppercase tracking-wider text-faint">Document Title</label>
+                                    <input
+                                        value={active.title}
+                                        onChange={(e) => patchNote(active.id, { title: e.target.value })}
+                                        placeholder="e.g. Getting Started with React 19 Server Components"
+                                        className="w-full bg-transparent text-base font-semibold text-fg placeholder:text-faint focus:outline-none sm:text-lg"
+                                    />
+                                </div>
+                                <div className="shrink-0">
+                                    <label className="block text-[10px] font-semibold uppercase tracking-wider text-faint">Tag</label>
+                                    <input
+                                        value={active.tag || ''}
+                                        onChange={(e) => patchNote(active.id, { tag: e.target.value })}
+                                        placeholder="tag"
+                                        className="w-16 rounded-lg border border-line bg-raised/50 px-2 py-1 text-xs text-muted focus:border-accent focus:outline-none sm:w-24"
+                                    />
+                                </div>
                                 <button
                                     onClick={() => deleteNote(active.id)}
-                                    className="flex size-9 shrink-0 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-rose-500/10 hover:text-rose-400"
+                                    className="mt-3.5 flex size-9 shrink-0 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-rose-500/10 hover:text-rose-400"
                                     title="Delete note"
                                 >
                                     <Trash2 className="size-4" />
                                 </button>
                             </div>
-                            <textarea
-                                value={active.body}
-                                onChange={(e) => patchNote(active.id, { body: e.target.value })}
-                                onBlur={() => toast('Note saved', { kind: 'info' })}
-                                placeholder="Approach, edge cases, complexity, mistakes to avoid..."
-                                className="flex-1 w-full resize-none bg-transparent p-3 font-mono text-sm leading-relaxed text-fg placeholder:text-faint focus:outline-none sm:p-4"
-                                spellCheck="false"
-                            />
+
+                            {/* Section Header: Document Content & Toolbar */}
+                            <div className="border-b border-line/70 bg-surface/30">
+                                <div className="px-3 pt-2 text-[10px] font-semibold uppercase tracking-wider text-faint">
+                                    Document Content
+                                </div>
+                                <div className="flex flex-wrap items-center gap-1 px-3 py-1.5">
+                                    {/* Inline formatting */}
+                                    <button
+                                        type="button"
+                                        onMouseDown={(e) => { e.preventDefault(); applyFormat('bold'); }}
+                                        title="Bold (Ctrl+B)"
+                                        className="flex size-7 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg font-bold text-xs"
+                                    >
+                                        B
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onMouseDown={(e) => { e.preventDefault(); applyFormat('italic'); }}
+                                        title="Italic (Ctrl+I)"
+                                        className="flex size-7 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg italic font-serif text-sm"
+                                    >
+                                        /
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onMouseDown={(e) => { e.preventDefault(); applyFormat('strikethrough'); }}
+                                        title="Strikethrough"
+                                        className="flex size-7 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg font-semibold text-xs line-through"
+                                    >
+                                        S
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onMouseDown={(e) => { e.preventDefault(); applyFormat('inline-code'); }}
+                                        title="Inline Code"
+                                        className="flex h-7 px-1.5 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg font-mono text-xs font-semibold"
+                                    >
+                                        &lt;/&gt;
+                                    </button>
+
+                                    <div className="mx-1 h-4 w-px bg-line/60 shrink-0" />
+
+                                    {/* Headings */}
+                                    <button
+                                        type="button"
+                                        onMouseDown={(e) => { e.preventDefault(); applyFormat('h1'); }}
+                                        title="Heading 1"
+                                        className="flex size-7 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg font-mono text-xs font-bold"
+                                    >
+                                        H1
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onMouseDown={(e) => { e.preventDefault(); applyFormat('h2'); }}
+                                        title="Heading 2"
+                                        className="flex size-7 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg font-mono text-xs font-bold"
+                                    >
+                                        H2
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onMouseDown={(e) => { e.preventDefault(); applyFormat('h3'); }}
+                                        title="Heading 3"
+                                        className="flex size-7 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg font-mono text-xs font-bold"
+                                    >
+                                        H3
+                                    </button>
+
+                                    <div className="mx-1 h-4 w-px bg-line/60 shrink-0" />
+
+                                    {/* Lists and Block formatting */}
+                                    <button
+                                        type="button"
+                                        onMouseDown={(e) => { e.preventDefault(); applyFormat('bullet-list'); }}
+                                        title="Bullet List"
+                                        className="flex h-7 items-center gap-1.5 rounded-lg px-2 text-xs font-medium text-subtle transition-colors hover:bg-raised hover:text-fg"
+                                    >
+                                        <span className="text-base leading-none">•</span> Bullet List
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onMouseDown={(e) => { e.preventDefault(); applyFormat('numbered-list'); }}
+                                        title="Numbered List"
+                                        className="flex h-7 items-center gap-1.5 rounded-lg px-2 text-xs font-medium text-subtle transition-colors hover:bg-raised hover:text-fg"
+                                    >
+                                        <span className="font-mono text-[11px]">1.</span> Numbered List
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onMouseDown={(e) => { e.preventDefault(); applyFormat('code-block'); }}
+                                        title="Code Block"
+                                        className="flex h-7 items-center gap-1.5 rounded-lg px-2 text-xs font-medium text-subtle transition-colors hover:bg-raised hover:text-fg"
+                                    >
+                                        Code Block
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onMouseDown={(e) => { e.preventDefault(); applyFormat('quote'); }}
+                                        title="Quote"
+                                        className="flex h-7 items-center gap-1.5 rounded-lg px-2 text-xs font-medium text-subtle transition-colors hover:bg-raised hover:text-fg"
+                                    >
+                                        <span className="font-serif italic font-bold">"</span> Quote
+                                    </button>
+
+                                    <div className="mx-1 h-4 w-px bg-line/60 shrink-0" />
+
+                                    {/* Undo / Redo */}
+                                    <button
+                                        type="button"
+                                        onMouseDown={(e) => { e.preventDefault(); handleUndo(); }}
+                                        disabled={undoStack.length === 0}
+                                        title="Undo (Ctrl+Z)"
+                                        className="flex size-7 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg disabled:opacity-30 disabled:cursor-not-allowed"
+                                    >
+                                        <Undo2 className="size-3.5" />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onMouseDown={(e) => { e.preventDefault(); handleRedo(); }}
+                                        disabled={redoStack.length === 0}
+                                        title="Redo (Ctrl+Y)"
+                                        className="flex size-7 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg disabled:opacity-30 disabled:cursor-not-allowed"
+                                    >
+                                        <Redo2 className="size-3.5" />
+                                    </button>
+
+                                    {/* Mode View Switcher: Write, Preview, Split */}
+                                    <div className="ml-auto flex items-center gap-1 rounded-xl border border-line bg-raised/50 p-0.5 text-xs">
+                                        <button
+                                            type="button"
+                                            onClick={() => setViewMode('edit')}
+                                            className={`flex items-center gap-1 rounded-lg px-2 py-1 transition-colors ${viewMode === 'edit' ? 'bg-accent text-white font-medium shadow-xs' : 'text-subtle hover:text-fg'}`}
+                                            title="Write Mode"
+                                        >
+                                            <Edit3 className="size-3" />
+                                            <span>Write</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setViewMode('preview')}
+                                            className={`flex items-center gap-1 rounded-lg px-2 py-1 transition-colors ${viewMode === 'preview' ? 'bg-accent text-white font-medium shadow-xs' : 'text-subtle hover:text-fg'}`}
+                                            title="Preview Mode"
+                                        >
+                                            <Eye className="size-3" />
+                                            <span>Preview</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setViewMode(viewMode === 'split' ? 'edit' : 'split')}
+                                            className={`hidden sm:flex items-center gap-1 rounded-lg px-2 py-1 transition-colors ${viewMode === 'split' ? 'bg-accent text-white font-medium shadow-xs' : 'text-subtle hover:text-fg'}`}
+                                            title="Side-by-side Split View"
+                                        >
+                                            <Columns2 className="size-3" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Editor & Preview Body */}
+                            <div className="flex-1 min-h-[360px] flex overflow-hidden">
+                                {/* Write / Textarea */}
+                                {(viewMode === 'edit' || viewMode === 'split') && (
+                                    <div className={`flex-1 flex flex-col ${viewMode === 'split' ? 'border-r border-line' : ''}`}>
+                                        <textarea
+                                            ref={textareaRef}
+                                            value={active.body}
+                                            onChange={(e) => {
+                                                const val = e.target.value;
+                                                setUndoStack((prev) => [...prev.slice(-40), active.body || '']);
+                                                setRedoStack([]);
+                                                patchNote(active.id, { body: val });
+                                            }}
+                                            onKeyDown={handleKeyDown}
+                                            onBlur={() => toast('Note saved', { kind: 'info' })}
+                                            placeholder="Write your note in markdown...&#10;&#10;Use the toolbar above or shortcuts:&#10;• Ctrl+B for bold&#10;• Ctrl+I for italic&#10;• Enter to continue lists&#10;• Tab for 2 spaces"
+                                            className="flex-1 w-full resize-none bg-transparent p-4 font-mono text-sm leading-relaxed text-fg placeholder:text-faint focus:outline-none overflow-y-auto"
+                                            spellCheck="false"
+                                        />
+                                    </div>
+                                )}
+
+                                {/* Rendered Preview */}
+                                {(viewMode === 'preview' || viewMode === 'split') && (
+                                    <div className="flex-1 overflow-y-auto p-4 sm:p-5 bg-surface/20">
+                                        <NoteMarkdown text={active.body} onToggleTask={handleToggleTask} />
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Footer Metrics */}
+                            <div className="flex items-center justify-between border-t border-line/60 bg-raised/20 px-4 py-2 text-[11px] text-subtle">
+                                <div className="flex items-center gap-3 font-mono">
+                                    <span>{stats.words} words</span>
+                                    <span>•</span>
+                                    <span>{stats.chars} characters</span>
+                                    <span>•</span>
+                                    <span>{stats.lines} lines</span>
+                                </div>
+                                <div className="hidden sm:block text-[11px] text-faint">
+                                    Markdown supported • Tab indents • Auto-continue lists
+                                </div>
+                            </div>
                         </>
                     )}
                 </div>

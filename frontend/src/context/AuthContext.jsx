@@ -40,6 +40,7 @@ export function AuthProvider({ children }) {
                     id: firebaseUser.uid,
                     name: firebaseUser.displayName || userData.name || 'User',
                     email: firebaseUser.email,
+                    photoURL: firebaseUser.photoURL || null,
                     createdAt: userData.createdAt || new Date().toISOString(),
                 });
             } else {

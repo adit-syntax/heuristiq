@@ -73,13 +73,14 @@ const Profile = ({ markSolvedBatch }) => {
         try {
             const next = { name: trimmed, bio: bio.trim(), avatar, handles, updatedAt: new Date().toISOString() };
             await persist(next);
-            // Keep the auth displayName/photo in step so the sidebar updates.
+            // Keep the auth displayName in step
             if (auth?.currentUser && !isGuest) {
                 await updateProfile(auth.currentUser, {
                     displayName: trimmed,
-                    ...(avatar ? { photoURL: avatar } : {}),
                 }).catch(() => { /* non-fatal */ });
             }
+            // Notify other components (like sidebar) immediately
+            window.dispatchEvent(new CustomEvent('profile-updated', { detail: next }));
             toast('Profile saved');
         } catch (e) {
             toast('Could not save profile', { detail: String(e.message || e), kind: 'danger' });
@@ -87,7 +88,7 @@ const Profile = ({ markSolvedBatch }) => {
         setSaving(false);
     };
 
-    // Avatar: read file -> data URL (kept small; Firestore doc limit is 1 MB).
+    // Avatar: read file -> downscale to max 256x256 JPEG data URL (~20-40 KB)
     const onAvatarPick = (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -97,12 +98,35 @@ const Profile = ({ markSolvedBatch }) => {
         }
         const reader = new FileReader();
         reader.onload = () => {
-            if (String(reader.result).length > 700_000) {
-                toast('Image too large - pick something under ~500 KB', { kind: 'danger' });
-                return;
-            }
-            setAvatar(String(reader.result));
-            toast('Avatar staged - hit Save to keep it', { kind: 'info' });
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const maxDim = 256;
+                let width = img.width;
+                let height = img.height;
+                if (width > height) {
+                    if (width > maxDim) {
+                        height = Math.round((height * maxDim) / width);
+                        width = maxDim;
+                    }
+                } else {
+                    if (height > maxDim) {
+                        width = Math.round((width * maxDim) / height);
+                        height = maxDim;
+                    }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                setAvatar(dataUrl);
+                toast('Avatar staged - hit Save to keep it', { kind: 'info' });
+            };
+            img.onerror = () => {
+                toast('Could not load image', { kind: 'danger' });
+            };
+            img.src = String(reader.result);
         };
         reader.readAsDataURL(file);
     };

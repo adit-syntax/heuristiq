@@ -31,6 +31,8 @@ import { ToastProvider } from './components/Toast';
 import useToast from './hooks/useToast';
 import logo from './assets/logo-icon.png';
 import useUserData from './hooks/useUserData';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from './config/firebase';
 import './index.css';
 
 // Heavy routes: the 500 kB question sheet, Monaco and Excalidraw stay out of
@@ -156,26 +158,77 @@ function AppContent() {
 
   useEffect(() => {
     let live = true;
-    const read = async () => {
-      try {
-        const p = JSON.parse(localStorage.getItem(`preptracker-profile-${user?.id || 'guest'}`) || 'null');
-        if (live) {
-          if (p?.avatar) { setAvatarUrl(p.avatar); setAvatarError(false); }
-          else { setAvatarUrl(user?.photoURL || ''); setAvatarError(false); }
-          if (p?.name) setProfileName(p.name);
-          else setProfileName(user?.name || user?.displayName || '');
-          return;
-        }
-      } catch { /* ignore */ }
+
+    // 1. Initial fast local read for instant rendering
+    try {
+      const p = JSON.parse(localStorage.getItem(`preptracker-profile-${user?.id || 'guest'}`) || 'null');
       if (live) {
-        setAvatarUrl(user?.photoURL || '');
+        if (p?.avatar) {
+          setAvatarUrl(p.avatar);
+          setAvatarError(false);
+        } else if (user?.photoURL) {
+          setAvatarUrl(user.photoURL);
+          setAvatarError(false);
+        }
+        if (p?.name) setProfileName(p.name);
+        else if (user?.name || user?.displayName) setProfileName(user.name || user.displayName);
+      }
+    } catch { /* ignore */ }
+
+    // 2. Real-time sync with Firestore profile document
+    let unsubFirestore = null;
+    if (isFirebaseConfigured && user?.id && !isGuest && db) {
+      try {
+        unsubFirestore = onSnapshot(
+          doc(db, 'users', user.id, 'data', 'profile'),
+          (snap) => {
+            if (!live) return;
+            if (snap.exists()) {
+              const data = snap.data();
+              if (data?.avatar) {
+                setAvatarUrl(data.avatar);
+                setAvatarError(false);
+              } else {
+                setAvatarUrl(user?.photoURL || '');
+                setAvatarError(false);
+              }
+              if (data?.name) setProfileName(data.name);
+
+              try {
+                localStorage.setItem(`preptracker-profile-${user.id}`, JSON.stringify(data));
+              } catch { /* quota full */ }
+            }
+          },
+          (err) => {
+            console.warn('Profile snapshot subscription warning:', err);
+          }
+        );
+      } catch (err) {
+        console.warn('Firestore snapshot setup warning:', err);
+      }
+    }
+
+    // 3. Custom event listener from Profile save
+    const onProfileUpdate = (e) => {
+      if (!live) return;
+      const next = e.detail;
+      if (!next) return;
+      if (next.avatar !== undefined) {
+        setAvatarUrl(next.avatar || user?.photoURL || '');
         setAvatarError(false);
-        setProfileName(user?.name || user?.displayName || '');
+      }
+      if (next.name) {
+        setProfileName(next.name);
       }
     };
-    read();
-    return () => { live = false; };
-  }, [user, activeTab]); // re-read on tab change so it updates right after a save
+    window.addEventListener('profile-updated', onProfileUpdate);
+
+    return () => {
+      live = false;
+      if (unsubFirestore) unsubFirestore();
+      window.removeEventListener('profile-updated', onProfileUpdate);
+    };
+  }, [user?.id, user?.photoURL, user?.name, user?.displayName, isGuest, isFirebaseConfigured, activeTab]);
 
   const {
     data,

@@ -5,6 +5,7 @@ import {
     Clock,
     ChevronLeft,
     ChevronRight,
+    ChevronUp,
     ChevronDown,
     Flame,
     Medal,
@@ -295,23 +296,9 @@ const Dashboard = ({
 
     const slideTasks = (dir) => {
         if (tasksSliderRef.current) {
-            tasksSliderRef.current.scrollBy({ left: dir * 230, behavior: 'smooth' });
+            tasksSliderRef.current.scrollBy({ top: dir * 120, behavior: 'smooth' });
         }
     };
-
-    // Allow horizontal scrolling on mouse wheel
-    useEffect(() => {
-        const el = tasksSliderRef.current;
-        if (!el) return;
-        const onWheel = (e) => {
-            if (e.deltaY !== 0 && el.scrollWidth > el.clientWidth) {
-                e.preventDefault();
-                el.scrollLeft += e.deltaY;
-            }
-        };
-        el.addEventListener('wheel', onWheel, { passive: false });
-        return () => el.removeEventListener('wheel', onWheel);
-    }, [currentTodos.length]);
 
     // Calculate days info - fully flexible goal:
     //   endDate set   -> pace the sheet across start..end
@@ -780,21 +767,21 @@ const Dashboard = ({
 
                             {/* Slider navigation & Open Details */}
                             <div className="flex items-center gap-1.5 shrink-0">
-                                {currentTodos.length > 1 && (
+                                {currentTodos.length > 3 && (
                                     <div className="flex items-center gap-1 mr-1">
                                         <button
                                             onClick={() => slideTasks(-1)}
-                                            title="Slide left"
+                                            title="Slide up"
                                             className="flex size-7 items-center justify-center rounded-lg border border-line bg-raised/40 text-subtle transition-colors hover:bg-raised hover:text-fg"
                                         >
-                                            <ChevronLeft className="size-3.5" />
+                                            <ChevronUp className="size-3.5" />
                                         </button>
                                         <button
                                             onClick={() => slideTasks(1)}
-                                            title="Slide right"
+                                            title="Slide down"
                                             className="flex size-7 items-center justify-center rounded-lg border border-line bg-raised/40 text-subtle transition-colors hover:bg-raised hover:text-fg"
                                         >
-                                            <ChevronRight className="size-3.5" />
+                                            <ChevronDown className="size-3.5" />
                                         </button>
                                     </div>
                                 )}
@@ -827,16 +814,16 @@ const Dashboard = ({
                             </button>
                         </form>
 
-                        {/* Horizontal Scroll / Slide for Tasks */}
+                        {/* Vertical Scroll / Slide for Tasks */}
                         {currentTodos.length > 0 ? (
                             <div
                                 ref={tasksSliderRef}
-                                className="flex gap-2.5 overflow-x-auto scrollbar-hide py-1 snap-x snap-mandatory scroll-smooth"
+                                className="max-h-56 space-y-2 overflow-y-auto scrollbar-thin scrollbar-thumb-line pr-1 scroll-smooth"
                             >
                                 {currentTodos.map((todo) => (
                                     <div
                                         key={todo.id}
-                                        className={`group flex min-w-[200px] max-w-[240px] shrink-0 snap-start items-center justify-between gap-2.5 rounded-xl border p-2.5 transition-all
+                                        className={`group flex items-center justify-between gap-2.5 rounded-xl border p-2.5 transition-all
                                             ${todo.completed
                                                 ? 'border-line/40 bg-raised/20 text-subtle'
                                                 : 'border-line bg-raised/50 text-fg hover:border-accent/40 hover:bg-raised'
@@ -854,7 +841,7 @@ const Dashboard = ({
                                             <Check className="size-3" strokeWidth={3} />
                                         </button>
                                         <span
-                                            className={`min-w-0 flex-1 text-xs font-medium leading-snug line-clamp-2 select-none ${todo.completed ? 'line-through text-subtle' : 'text-fg'}`}
+                                            className={`min-w-0 flex-1 text-xs font-medium leading-snug break-words select-none ${todo.completed ? 'line-through text-subtle' : 'text-fg'}`}
                                             title={todo.text}
                                         >
                                             {todo.text}

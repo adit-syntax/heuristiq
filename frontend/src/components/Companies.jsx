@@ -1,9 +1,10 @@
 import { useState, useMemo, useEffect } from 'react';
 import {
     Building2, ChevronLeft, Search, CheckCircle2, Circle, RotateCcw,
-    Star, StickyNote, ExternalLink, Eye, EyeOff
+    Star, StickyNote, ExternalLink, Eye, EyeOff, SquareCode
 } from 'lucide-react';
 import QuestionNoteModal from './QuestionNoteModal';
+import SolveModal from './SolveModal';
 
 // Per-company question files are ~50-200 kB; load only the opened one.
 const COMPANY_MODULES = import.meta.glob('../data/companies/*.js');
@@ -11,12 +12,13 @@ const COMPANY_MODULES = import.meta.glob('../data/companies/*.js');
 const DIFFS = ['all', 'easy', 'medium', 'hard'];
 
 /** One company's question list: search, difficulty filter, status toggles. */
-const CompanyQuestions = ({ company, getDSAStatus, updateDSAStatus, getQuestionNote, updateQuestionNote, getQuestionTags, updateQuestionTags, onBack }) => {
+const CompanyQuestions = ({ company, getDSAStatus, updateDSAStatus, getQuestionNote, updateQuestionNote, getQuestionTags, updateQuestionTags, onBack, theme }) => {
     const [rows, setRows] = useState(null);
     const [query, setQuery] = useState('');
     const [diff, setDiff] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all'); // all | unsolved | solved | revision
     const [noting, setNoting] = useState(null);
+    const [solving, setSolving] = useState(null);
 
     useEffect(() => {
         let live = true;
@@ -175,6 +177,13 @@ const CompanyQuestions = ({ company, getDSAStatus, updateDSAStatus, getQuestionN
                                         : 'border-line text-faint hover:border-amber-500/30 hover:text-amber-500/80'}`}>
                                 <StickyNote className="size-4" />
                             </button>
+                            <button
+                                onClick={() => setSolving(q)}
+                                title="Write and run code in playground"
+                                className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-accent/15 bg-accent/5 text-accent-hi/80 transition-all hover:border-accent/40 hover:bg-accent/10 hover:text-accent-hi"
+                            >
+                                <SquareCode className="size-4" />
+                            </button>
                             <a href={q.leetCodeLink} target="_blank" rel="noopener noreferrer"
                                 title="Open on LeetCode"
                                 className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-amber-500/15 bg-amber-500/5 text-amber-500/80 transition-colors hover:border-amber-500/40">
@@ -196,6 +205,16 @@ const CompanyQuestions = ({ company, getDSAStatus, updateDSAStatus, getQuestionN
                     onClose={() => setNoting(null)}
                 />
             )}
+
+            {solving && (
+                <SolveModal
+                    question={solving}
+                    status={getDSAStatus(solving.id, solving.cid)}
+                    onStatusChange={(qid, s) => updateDSAStatus(qid, s, { cid: solving.cid, title: solving.problem })}
+                    onClose={() => setSolving(null)}
+                    theme={theme}
+                />
+            )}
         </div>
     );
 };
@@ -204,7 +223,7 @@ const CompanyQuestions = ({ company, getDSAStatus, updateDSAStatus, getQuestionN
 const Companies = ({
     getDSAStatus, updateDSAStatus, getQuestionNote, updateQuestionNote,
     getQuestionTags, updateQuestionTags, getCompanySolvedCount,
-    followedCompanies, toggleFollowCompany, jumpSlug, dsaProgress,
+    followedCompanies, toggleFollowCompany, jumpSlug, dsaProgress, theme,
 }) => {
     const [registry, setRegistry] = useState(null);
     const [cidIndex, setCidIndex] = useState(null);
@@ -279,6 +298,7 @@ const Companies = ({
                 getQuestionNote={getQuestionNote} updateQuestionNote={updateQuestionNote}
                 getQuestionTags={getQuestionTags} updateQuestionTags={updateQuestionTags}
                 onBack={() => setOpenSlug(null)}
+                theme={theme}
             />
         );
     }

@@ -506,6 +506,7 @@ function AppContent() {
                   followedCompanies={data.followedCompanies || []}
                   dsaProgress={data.dsaProgress}
                   jumpSlug={jump.companySlug}
+                  theme={theme}
                 />
               )}
 

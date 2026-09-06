@@ -35,7 +35,7 @@ const Stat = ({ value, label }) => (
     </div>
 );
 
-/** Modal explaining Universal Streak rules & logic */
+/** Modal explaining streak rules & logic */
 const StreakInfoModal = ({ onClose }) => (
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm animate-fade-in" onClick={onClose}>
         <div className="w-full max-w-lg rounded-2xl border border-line bg-panel p-5 sm:p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
@@ -45,7 +45,7 @@ const StreakInfoModal = ({ onClose }) => (
                         <Flame className="size-5" />
                     </div>
                     <div>
-                        <h3 className="text-base font-bold text-fg">Universal Streak Rules</h3>
+                        <h3 className="text-base font-bold text-fg">Streak Rules</h3>
                         <p className="text-xs text-subtle">How consistency, daily resets, and streaks work</p>
                     </div>
                 </div>
@@ -63,7 +63,7 @@ const StreakInfoModal = ({ onClose }) => (
                     <div>
                         <p className="font-semibold text-fg">1 Problem = 1 Active Day</p>
                         <p className="mt-0.5 text-subtle">
-                            Solving at least <strong className="text-fg">1 problem</strong> in any sheet, playground, or syncing newly solved questions from LeetCode / Codeforces stamps today as active.
+                            Solving at least <strong className="text-fg">1 problem</strong> in any sheet, or syncing newly solved questions from LeetCode / Codeforces stamps today as active.
                         </p>
                     </div>
                 </div>

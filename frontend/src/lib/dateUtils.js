@@ -35,7 +35,7 @@ export const areConsecutiveDays = (dateStr1, dateStr2) => {
 
 /**
  * Calculates current streak, longest streak, and whether today is solved.
- * Follows the Universal Streak rules:
+ * Follows the streak rules:
  *  - Active day: At least 1 question solved or synced in that local calendar day.
  *  - Current streak: Consecutive active days ending today, or ending yesterday
  *    (in which case today is "at risk" with a grace period until midnight).

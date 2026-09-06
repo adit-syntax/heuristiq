@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import Editor from '@monaco-editor/react';
-import { Play, RotateCcw, Loader2, Terminal } from 'lucide-react';
+import { Play, RotateCcw, Loader2, Terminal, Info, Cpu, ShieldCheck, X } from 'lucide-react';
 import { LANGUAGES, getLanguage, runCode } from '../lib/runner';
 import useSyncedDoc from '../hooks/useSyncedDoc';
 import { SyncBadge } from './Notes';
@@ -20,6 +20,7 @@ const CodeEditor = ({ storageKey = 'playground', theme = 'dark', heading = null,
     const [running, setRunning] = useState(false);
     const [result, setResult] = useState(null);
     const [stdin, setStdin] = useState('');
+    const [showEngineInfo, setShowEngineInfo] = useState(false);
     const { toast, confirm } = useToast();
 
     const draft = doc.drafts?.[storageKey];
@@ -91,7 +92,21 @@ const CodeEditor = ({ storageKey = 'playground', theme = 'dark', heading = null,
                     <RotateCcw className="size-4" />
                 </button>
 
-                <div className="ml-auto"><SyncBadge status={status} loading={loading} /></div>
+                <div className="ml-auto flex items-center gap-2">
+                    <button
+                        onClick={() => setShowEngineInfo(true)}
+                        title="Execution Engine & Automatic Fallback Details"
+                        className="group flex items-center gap-1.5 rounded-xl border border-line bg-raised/60 px-2.5 py-2 text-xs font-medium text-subtle transition-colors hover:border-accent/40 hover:bg-accent/10 hover:text-accent-hi"
+                    >
+                        <Cpu className="size-3.5 text-accent-hi" />
+                        <span className="hidden sm:inline">Engine:</span>
+                        <span className="font-semibold text-fg group-hover:text-accent-hi">Judge0</span>
+                        <span className="hidden sm:inline text-faint">·</span>
+                        <span className="hidden sm:inline text-emerald-400">Fallback Ready</span>
+                        <Info className="size-3 text-subtle group-hover:text-accent-hi" />
+                    </button>
+                    <SyncBadge status={status} loading={loading} />
+                </div>
             </div>
 
             {/* Editor - fixed height inline, flexible when filling a panel */}
@@ -141,6 +156,78 @@ const CodeEditor = ({ storageKey = 'playground', theme = 'dark', heading = null,
                     </pre>
                 </div>
             </div>
+
+            {/* Runner Engine Info Modal */}
+            {showEngineInfo && (
+                <div
+                    className="fixed inset-0 z-[120] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm animate-fade-in"
+                    onClick={() => setShowEngineInfo(false)}
+                >
+                    <div
+                        className="w-full max-w-md rounded-2xl border border-line bg-panel p-5 sm:p-6 shadow-2xl"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex items-start justify-between gap-3 border-b border-line pb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-md shadow-blue-500/20">
+                                    <Cpu className="size-5" />
+                                </div>
+                                <div>
+                                    <h3 className="text-base font-bold text-fg">Code Execution Engine</h3>
+                                    <p className="text-xs text-subtle">High-availability dual-runner architecture</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setShowEngineInfo(false)}
+                                className="flex size-8 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg"
+                            >
+                                <X className="size-4" />
+                            </button>
+                        </div>
+
+                        <div className="mt-4 space-y-3 text-xs leading-relaxed text-muted">
+                            <div className="rounded-xl border border-line/60 bg-raised/40 p-3.5">
+                                <div className="flex items-center gap-2 font-semibold text-fg">
+                                    <span className="size-2 rounded-full bg-blue-400 animate-pulse" />
+                                    Primary Runner: Judge0 CE
+                                </div>
+                                <p className="mt-1 text-subtle">
+                                    Executes your code on high-performance sandbox compilers (GCC 14.1 for C/C++, Python 3.12, OpenJDK 17, Node.js 20) with fast response times and stdin streaming.
+                                </p>
+                            </div>
+
+                            <div className="rounded-xl border border-line/60 bg-raised/40 p-3.5">
+                                <div className="flex items-center gap-2 font-semibold text-fg">
+                                    <span className="size-2 rounded-full bg-emerald-400" />
+                                    Automatic Failover: Wandbox Sandbox
+                                </div>
+                                <p className="mt-1 text-subtle">
+                                    If Judge0 ever experiences high traffic, maintenance, or rate limits, Heuristiq automatically re-routes your code to Wandbox as an instant backup runner with zero interruptions.
+                                </p>
+                            </div>
+
+                            <div className="rounded-xl border border-line/60 bg-raised/40 p-3.5">
+                                <div className="flex items-center gap-2 font-semibold text-fg">
+                                    <ShieldCheck className="size-4 text-accent-hi" />
+                                    100% Free & No Setup Required
+                                </div>
+                                <p className="mt-1 text-subtle">
+                                    Runs completely in the cloud without requiring an account, API key, or credit card.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="mt-5 flex justify-end">
+                            <button
+                                onClick={() => setShowEngineInfo(false)}
+                                className="rounded-xl bg-accent px-4 py-2 text-xs font-semibold text-white transition-opacity hover:opacity-90"
+                            >
+                                Got it
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

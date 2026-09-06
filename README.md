@@ -8,7 +8,8 @@
 ![Firebase](https://img.shields.io/badge/Firebase_Auth_%26_Firestore-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
 ![Monaco Editor](https://img.shields.io/badge/Monaco_Editor-1E1E1E?style=for-the-badge&logo=visualstudiocode&logoColor=007ACC)
 ![Excalidraw](https://img.shields.io/badge/Excalidraw-6965DB?style=for-the-badge&logo=excalidraw&logoColor=white)
-![Wandbox](https://img.shields.io/badge/Wandbox_API-Compiler-blueviolet?style=for-the-badge)
+![Judge0](https://img.shields.io/badge/Judge0_CE-Primary_Runner-blue?style=for-the-badge)
+![Wandbox](https://img.shields.io/badge/Wandbox_API-Failover_Fallback-blueviolet?style=for-the-badge)
 
 **An all-in-one, offline-first engineering workstation for Data Structures & Algorithms, interview prep, algorithm visualization, and competitive programming.**
 
@@ -36,7 +37,7 @@ Built with an **offline-first caching architecture**, user progress, notes, code
 | **Build Tool** | **Vite 7** | Lightning-fast HMR and optimized Rollup code-splitting |
 | **Styling & Theme** | **Tailwind CSS 4** | Glassmorphism, tailored HSL color tokens, dark/light aesthetics |
 | **Code Editor** | **Monaco Editor** | The VS Code editor engine running directly in the browser |
-| **Remote Compiler** | **Wandbox Sandbox API** | Zero-auth remote sandboxed code execution for C++, Java, Python, JS, C |
+| **Remote Compiler Engine** | **Judge0 CE + Wandbox Fallback** | Dual-engine sandboxed code execution (GCC 14.1, Python 3.12, JDK 17, Node 20) with automated failover |
 | **Canvas & Sketching** | **Excalidraw** | Embedded vector whiteboard with multi-scene autosaving |
 | **Cloud & Database** | **Firebase Auth & Firestore** | Google OAuth, Email/Password auth, and real-time cloud document sync |
 | **Icons & Typography** | **Lucide React & Akira** | Modern geometric iconography and custom display fonts |
@@ -61,7 +62,7 @@ graph TD
         
         Router --> Cache[(Local Storage Cache)]
         Search --> Cache
-        Editor --> Wandbox[Wandbox API Execution Sandbox]
+        Editor --> Runner[Judge0 CE Sandbox / Wandbox Fallback]
     end
 
     subgraph Cloud Persistence & Services
@@ -120,7 +121,8 @@ Prepare specifically for your dream company with real interview frequency datase
 ### 3. ⚡ In-App Monaco Code Playground & Multi-Language Runner
 Never break your flow switching to external IDEs:
 * **Integrated VS Code Monaco Editor:** Full syntax highlighting, auto-completion, bracket matching, and indentation for **C++, Java, Python, JavaScript, and C**.
-* **Zero-Auth Remote Sandbox (Wandbox API):** Run your algorithms in a secure sandbox with custom `stdin` input and real-time `stdout`/`stderr` output with execution timings.
+* **High-Availability Dual-Engine Execution (Judge0 CE + Wandbox Fallback):** Code executes on high-performance **Judge0 CE** (GCC 14.1, Python 3.12, OpenJDK 17, Node 20) with sub-millisecond execution times. If Judge0 experiences downtime or heavy network load, Heuristiq automatically re-routes your code to **Wandbox** as an instant failover fallback.
+* **Full I/O Support:** Custom `stdin` input, execution timing, memory telemetry, and real-time `stdout`/`stderr` reporting.
 * **Per-Question Draft Autosave:** Every draft you write is automatically saved to local storage and Firestore, so your solution is right there when you return.
 
 ### 4. 🔍 Interactive Algorithm Visualizer

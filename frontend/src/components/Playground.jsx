@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SquareCode, PictureInPicture2, Pin } from 'lucide-react';
+import { SquareCode, PictureInPicture2, Pin, Cpu } from 'lucide-react';
 import CodeEditor from './CodeEditor';
 import FloatingPanel from './FloatingPanel';
 
@@ -20,6 +20,14 @@ const Playground = ({ theme }) => {
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Code Playground</h1>
                         <p className="text-sm text-subtle sm:text-base">Write, run and keep scratch code. C++, Python, Java, JS and C.</p>
+                        <div className="mt-1 flex items-center gap-1.5">
+                            <span className="inline-flex items-center gap-1.5 rounded-md border border-line/60 bg-raised/50 px-2 py-0.5 text-[11px] font-medium text-subtle">
+                                <Cpu className="size-3 text-accent-hi" />
+                                <span>Engine: <strong className="font-semibold text-fg">Judge0 CE</strong></span>
+                                <span className="text-faint">·</span>
+                                <span className="text-emerald-400">Automatic Wandbox Fallback</span>
+                            </span>
+                        </div>
                     </div>
                 </div>
                 <button

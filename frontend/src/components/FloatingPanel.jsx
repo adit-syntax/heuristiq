@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Grip, Locate } from 'lucide-react';
+import { Grip, Locate, Maximize2, Minimize2, X } from 'lucide-react';
 
 // Keep at least this much visible on each axis so the panel can always be
 // grabbed and pulled back (or re-centred with the Locate button).
@@ -69,17 +69,53 @@ const FloatingPanel = ({
         bringPanelToFront(setZIndex);
     }, []);
 
-    const w0 = Math.min(initialWidth, window.innerWidth - 16);
+    const isMobileScreen = typeof window !== 'undefined' && window.innerWidth < 640;
+    const w0 = Math.min(initialWidth, typeof window !== 'undefined' ? window.innerWidth - 16 : 720);
     const [size, setSize] = useState({
         w: w0,
         h: initialHeight
-            ? Math.min(initialHeight, window.innerHeight - 80)
+            ? Math.min(initialHeight, typeof window !== 'undefined' ? window.innerHeight - 80 : 500)
             : Math.round(w0 / aspect),
     });
     const [pos, setPos] = useState(() => ({
-        x: Math.max(8, Math.round((window.innerWidth - w0) / 2)),
-        y: Math.max(8, Math.round((window.innerHeight - Math.round(w0 / aspect)) * 0.2)),
+        x: Math.max(8, Math.round(((typeof window !== 'undefined' ? window.innerWidth : 800) - w0) / 2)),
+        y: Math.max(8, Math.round(((typeof window !== 'undefined' ? window.innerHeight : 600) - Math.round(w0 / aspect)) * 0.15)),
     }));
+
+    // Auto-maximize on small screens (< 640px)
+    const [isMaximized, setIsMaximized] = useState(() => isMobileScreen);
+    const preMaxRef = useRef(null);
+
+    const toggleMaximize = useCallback(() => {
+        setIsMaximized((prev) => {
+            if (!prev) {
+                preMaxRef.current = { pos: liveRef.current.pos, size: liveRef.current.size };
+                return true;
+            } else {
+                if (preMaxRef.current) {
+                    setPos(preMaxRef.current.pos);
+                    setSize(preMaxRef.current.size);
+                }
+                return false;
+            }
+        });
+    }, []);
+
+    useEffect(() => {
+        const handleWindowResize = () => {
+            if (isMaximized) return;
+            setSize((s) => {
+                const maxW = Math.max(minW, window.innerWidth - 16);
+                const maxH = Math.max(minH, window.innerHeight - 80);
+                const w = Math.min(s.w, maxW);
+                const h = Math.min(s.h, maxH);
+                return (w === s.w && h === s.h) ? s : { w, h };
+            });
+            setPos((p) => clamp(p.x, p.y, Math.min(liveRef.current.size.w, window.innerWidth - 16)));
+        };
+        window.addEventListener('resize', handleWindowResize);
+        return () => window.removeEventListener('resize', handleWindowResize);
+    }, [clamp, isMaximized, minW, minH]);
     const dragRef = useRef(null);
     const panelRef = useRef(null);
     // Live geometry mirror: window listeners read this ref, never state
@@ -280,6 +316,16 @@ const FloatingPanel = ({
         return () => window.removeEventListener('keydown', onKey);
     }, [onClose, size.w, size.h, keepAspect, aspect, minW, minH, clamp]);
 
+    const actualPos = isMaximized
+        ? { x: 8, y: 8 }
+        : pos;
+    const actualWidth = isMaximized
+        ? (typeof window !== 'undefined' ? window.innerWidth - 16 : 720)
+        : Math.min(size.w, typeof window !== 'undefined' ? window.innerWidth - 16 : 720);
+    const actualBodyHeight = isMaximized
+        ? Math.max(180, (typeof window !== 'undefined' ? window.innerHeight : 600) - ((typeof window !== 'undefined' && window.innerWidth < 768) ? 128 : 64))
+        : Math.min(size.h, typeof window !== 'undefined' ? window.innerHeight - 80 : 500);
+
     // Portal to <body>: the panel must not live inside any animated or
     // transformed ancestor (page fade-ins, hover scales) - those turn
     // position:fixed into position:absolute-like behaviour and break free
@@ -287,16 +333,21 @@ const FloatingPanel = ({
     return createPortal(
         <div
             ref={panelRef}
-            className="fixed select-none overflow-hidden rounded-2xl border border-line bg-panel shadow-2xl transition-[box-shadow,border-color] duration-150"
-            style={{ left: pos.x, top: pos.y, width: size.w, zIndex, touchAction: 'none' }}
+            className={`fixed select-none overflow-hidden rounded-2xl border border-line bg-panel shadow-2xl transition-[box-shadow,border-color] duration-150 ${isMaximized ? 'transition-all duration-200' : ''}`}
+            style={{
+                left: actualPos.x,
+                top: actualPos.y,
+                width: actualWidth,
+                maxWidth: 'calc(100vw - 16px)',
+                zIndex,
+            }}
             onPointerDownCapture={bringToFront}
             onFocusCapture={bringToFront}
             onPointerDown={(e) => {
-                // Any non-interactive part of the body also moves the panel
-                // ("all non-working space drags"): title bar, paddings, empty
-                // areas. Interactive elements (buttons, inputs, links, text,
-                // the editor canvas...) keep their normal behaviour.
+                if (isMaximized) return;
                 if (e.button !== 0) return;
+                // On touchscreens (smartphones/tablets), touching body should scroll content, NOT drag the panel
+                if (e.pointerType === 'touch') return;
                 const el = e.target;
                 if (el.closest('button, a, input, textarea, select, iframe, [contenteditable], [data-no-drag]')) return;
                 if (el.closest('[data-drag-handle]') || el.closest('.monaco-editor') || el.closest('canvas') || el.closest('textarea')) return;
@@ -311,22 +362,38 @@ const FloatingPanel = ({
             {/* Drag bar */}
             <div
                 data-drag-handle
-                onPointerDown={onDragStart}
-                className="flex cursor-grab items-center gap-2 border-b border-line bg-raised/60 px-3 py-2 active:cursor-grabbing"
-                title="Drag to move · arrow keys nudge · +/- resizes"
+                style={{ touchAction: isMaximized ? 'auto' : 'none' }}
+                onPointerDown={isMaximized ? undefined : onDragStart}
+                className={`flex items-center gap-1.5 sm:gap-2 border-b border-line bg-raised/60 px-2.5 py-2 sm:px-3 ${isMaximized ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'}`}
+                title={isMaximized ? undefined : "Drag to move · arrow keys nudge · +/- resizes"}
             >
-                <Grip className="size-3.5 shrink-0 text-subtle" />
+                <Grip className={`size-3.5 shrink-0 text-subtle ${isMaximized ? 'hidden sm:block opacity-40' : ''}`} />
                 {icon}
                 <span className="min-w-0 flex-1 truncate text-xs font-medium">{title}</span>
+
+                {/* Recenter button (hidden when maximized) */}
+                {!isMaximized && (
+                    <button
+                        onPointerDown={(e) => e.stopPropagation()}
+                        onClick={recenter}
+                        title="Re-centre on screen"
+                        className={`flex size-7 shrink-0 items-center justify-center rounded-lg transition-colors
+                            ${isOffscreen ? 'bg-accent/15 text-accent-hi hover:bg-accent/25' : 'text-subtle hover:bg-raised hover:text-fg'}`}
+                    >
+                        <Locate className="size-3.5" />
+                    </button>
+                )}
+
+                {/* Maximize / Restore button */}
                 <button
                     onPointerDown={(e) => e.stopPropagation()}
-                    onClick={recenter}
-                    title="Re-centre on screen"
-                    className={`flex size-7 shrink-0 items-center justify-center rounded-lg transition-colors
-                        ${isOffscreen ? 'bg-accent/15 text-accent-hi hover:bg-accent/25' : 'text-subtle hover:bg-raised hover:text-fg'}`}
+                    onClick={toggleMaximize}
+                    title={isMaximized ? "Restore window size" : "Maximize (Full screen)"}
+                    className="flex size-7 shrink-0 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg"
                 >
-                    <Locate className="size-3.5" />
+                    {isMaximized ? <Minimize2 className="size-3.5" /> : <Maximize2 className="size-3.5" />}
                 </button>
+
                 {onExternal && (
                     <a
                         href={onExternal.url}
@@ -345,55 +412,58 @@ const FloatingPanel = ({
                     title="Close (Esc)"
                     className="flex size-7 shrink-0 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-rose-500/10 hover:text-rose-400"
                 >
-                    ✕
+                    <X className="size-3.5" />
                 </button>
             </div>
 
             {/* Body */}
-            <div className={bodyClassName} style={{ height: size.h }}>
+            <div className={bodyClassName} style={{ height: actualBodyHeight }}>
                 {children}
             </div>
 
-            {/* Body drag strip: a slim grabbable band at the very top of the
-                body (below the title bar). Even when the body is an
-                editor/canvas that refuses drags, this strip always moves the
-                panel - a second lifeline besides the title bar. */}
-            <div
-                onPointerDown={onDragStart}
-                className="absolute inset-x-[18px] top-[40px] z-[15] h-3 cursor-grab active:cursor-grabbing"
-                title="Drag to move"
-            />
+            {/* Body drag strip & resize zones (only active when not maximized) */}
+            {!isMaximized && (
+                <>
+                    {/* Body drag strip: a slim grabbable band below title bar */}
+                    <div
+                        onPointerDown={(e) => {
+                            if (e.pointerType === 'touch') return;
+                            onDragStart(e);
+                        }}
+                        className="absolute inset-x-[18px] top-[40px] z-[15] h-3 cursor-grab active:cursor-grabbing"
+                        title="Drag to move"
+                    />
 
-            {/* Resize zones: the entire border ring is a grab area (like a
-                desktop window). 8 regions tile the perimeter - 4 corner
-                squares + 4 edge bands covering the full length of each side.
-                The interior has no overlay, so the body keeps every click. */}
-            {[
-                // Corners (18px squares, layered above edges)
-                { dir: 'nw', cls: 'left-0 top-0 size-[18px] cursor-nwse-resize' },
-                { dir: 'ne', cls: 'right-0 top-0 size-[18px] cursor-nesw-resize' },
-                { dir: 'sw', cls: 'left-0 bottom-0 size-[18px] cursor-nesw-resize' },
-                { dir: 'se', cls: 'right-0 bottom-0 size-[18px] cursor-nwse-resize' },
-                // Edge bands - full length of each side, 8px deep
-                { dir: 'n', cls: 'left-[18px] right-[18px] top-0 h-2 cursor-ns-resize' },
-                { dir: 's', cls: 'left-[18px] right-[18px] bottom-0 h-2 cursor-ns-resize' },
-                { dir: 'w', cls: 'top-[18px] bottom-[18px] left-0 w-2 cursor-ew-resize' },
-                { dir: 'e', cls: 'top-[18px] bottom-[18px] right-0 w-2 cursor-ew-resize' },
-            ].map((h) => (
-                <div
-                    key={h.dir}
-                    onPointerDown={(e) => onResizeStart(e, h.dir)}
-                    className={`absolute z-10 ${h.cls}`}
-                    title="Drag to resize"
-                />
-            ))}
+                    {/* Resize zones: 4 corners + 4 edges */}
+                    {[
+                        // Corners (18px squares, layered above edges)
+                        { dir: 'nw', cls: 'left-0 top-0 size-[18px] cursor-nwse-resize' },
+                        { dir: 'ne', cls: 'right-0 top-0 size-[18px] cursor-nesw-resize' },
+                        { dir: 'sw', cls: 'left-0 bottom-0 size-[18px] cursor-nesw-resize' },
+                        { dir: 'se', cls: 'right-0 bottom-0 size-[18px] cursor-nwse-resize' },
+                        // Edge bands - full length of each side, 8px deep
+                        { dir: 'n', cls: 'left-[18px] right-[18px] top-0 h-2 cursor-ns-resize' },
+                        { dir: 's', cls: 'left-[18px] right-[18px] bottom-0 h-2 cursor-ns-resize' },
+                        { dir: 'w', cls: 'top-[18px] bottom-[18px] left-0 w-2 cursor-ew-resize' },
+                        { dir: 'e', cls: 'top-[18px] bottom-[18px] right-0 w-2 cursor-ew-resize' },
+                    ].map((h) => (
+                        <div
+                            key={h.dir}
+                            style={{ touchAction: 'none' }}
+                            onPointerDown={(e) => onResizeStart(e, h.dir)}
+                            className={`absolute z-10 ${h.cls}`}
+                            title="Drag to resize"
+                        />
+                    ))}
 
-            {/* Corner affordance on the se grip */}
-            <div className="pointer-events-none absolute bottom-0 right-0 size-4">
-                <svg viewBox="0 0 16 16" className="size-full text-subtle">
-                    <path d="M15 5 L5 15 M15 10 L10 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
-                </svg>
-            </div>
+                    {/* Corner affordance on the se grip */}
+                    <div className="pointer-events-none absolute bottom-0 right-0 size-4">
+                        <svg viewBox="0 0 16 16" className="size-full text-subtle">
+                            <path d="M15 5 L5 15 M15 10 L10 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
+                        </svg>
+                    </div>
+                </>
+            )}
         </div>,
         document.body
     );

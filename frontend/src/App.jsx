@@ -813,10 +813,10 @@ function AppContent() {
         <FloatingPanel
           title="Code Playground"
           icon={<SquareCode className="size-4 shrink-0 text-accent-hi" />}
-          initialWidth={860}
-          initialHeight={620}
-          minW={480}
-          minH={360}
+          initialWidth={typeof window !== 'undefined' ? Math.min(860, window.innerWidth - 16) : 860}
+          initialHeight={typeof window !== 'undefined' ? Math.min(620, window.innerHeight - 80) : 620}
+          minW={300}
+          minH={240}
           keepAspect={false}
           allowOffscreen
           onClose={() => setCodeOpen(false)}

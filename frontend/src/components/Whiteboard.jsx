@@ -170,10 +170,10 @@ const Whiteboard = ({ theme = 'dark', floating = false, onClose }) => {
             <FloatingPanel
                 title={`Whiteboard${active ? ` - ${active.name}` : ''}`}
                 icon={<PenLine className="size-4 shrink-0 text-accent-hi" />}
-                initialWidth={880}
-                initialHeight={560}
-                minW={420}
-                minH={320}
+                initialWidth={typeof window !== 'undefined' ? Math.min(880, window.innerWidth - 16) : 880}
+                initialHeight={typeof window !== 'undefined' ? Math.min(560, window.innerHeight - 80) : 560}
+                minW={300}
+                minH={220}
                 keepAspect={false}
                 allowOffscreen
                 onClose={onClose || (() => {})}

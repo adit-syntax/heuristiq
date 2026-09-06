@@ -703,9 +703,9 @@ const Notes = ({ jumpQuery, floating = false, onClose }) => {
     }, [active?.body]);
 
     const notesGrid = (
-        <div className={`grid gap-3.5 ${floating ? 'h-full min-h-0 grid-cols-[240px_1fr] sm:grid-cols-[280px_1fr]' : 'gap-4 lg:grid-cols-[300px_1fr] xl:grid-cols-[340px_1fr]'}`}>
-            {/* List - on mobile, hide if active note is being edited */}
-            <div className={`flex flex-col overflow-hidden rounded-2xl border border-line bg-panel ${floating ? 'h-full min-h-0' : 'max-h-[72vh]'} ${activeId && !floating ? 'hidden lg:flex' : 'flex'}`}>
+        <div className={`grid gap-3.5 ${floating ? 'h-full min-h-0 grid-cols-1 md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr]' : 'gap-4 lg:grid-cols-[300px_1fr] xl:grid-cols-[340px_1fr]'}`}>
+            {/* List - on narrow screens, hide if active note is being edited */}
+            <div className={`flex flex-col overflow-hidden rounded-2xl border border-line bg-panel ${floating ? 'h-full min-h-0' : 'max-h-[72vh]'} ${activeId ? (floating ? 'hidden md:flex' : 'hidden lg:flex') : 'flex'}`}>
                     <div className="border-b border-line p-3 space-y-2.5">
                         <div className="flex items-center gap-2">
                             <div className="relative flex-1">
@@ -816,8 +816,8 @@ const Notes = ({ jumpQuery, floating = false, onClose }) => {
                     </div>
                 </div>
 
-                {/* Editor - on mobile, hide if no note selected */}
-                <div className={`flex flex-col overflow-hidden rounded-2xl border border-line bg-panel ${floating ? 'h-full min-h-0' : 'min-h-[540px]'} ${!activeId && !floating ? 'hidden lg:flex' : 'flex'}`}>
+                {/* Editor - on narrow screens, hide if no note selected */}
+                <div className={`flex flex-col overflow-hidden rounded-2xl border border-line bg-panel ${floating ? 'h-full min-h-0' : 'min-h-[540px]'} ${!activeId ? (floating ? 'hidden md:flex' : 'hidden lg:flex') : 'flex'}`}>
                     {!active ? (
                         <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
                             <StickyNote className="mb-3 size-12 text-faint" />
@@ -829,7 +829,7 @@ const Notes = ({ jumpQuery, floating = false, onClose }) => {
                             <div className="flex items-center gap-2 border-b border-line p-3 sm:gap-3 sm:p-4">
                                 <button
                                     onClick={() => setActiveId(null)}
-                                    className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-line bg-raised/60 text-muted transition-colors hover:text-fg lg:hidden"
+                                    className={`flex size-9 shrink-0 items-center justify-center rounded-lg border border-line bg-raised/60 text-muted transition-colors hover:text-fg ${floating ? 'md:hidden' : 'lg:hidden'}`}
                                     title="Back to notes list"
                                 >
                                     <ChevronLeft className="size-4" />
@@ -1074,10 +1074,10 @@ const Notes = ({ jumpQuery, floating = false, onClose }) => {
             <FloatingPanel
                 title={active?.title ? `Notes - ${active.title}` : 'Notes'}
                 icon={<StickyNote className="size-4 shrink-0 text-accent-hi" />}
-                initialWidth={920}
-                initialHeight={620}
-                minW={480}
-                minH={360}
+                initialWidth={typeof window !== 'undefined' ? Math.min(920, window.innerWidth - 16) : 920}
+                initialHeight={typeof window !== 'undefined' ? Math.min(620, window.innerHeight - 80) : 620}
+                minW={300}
+                minH={220}
                 keepAspect={false}
                 allowOffscreen
                 onClose={onClose || (() => {})}

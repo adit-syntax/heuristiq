@@ -86,7 +86,7 @@ const GlobalSearch = ({ open, onClose, onSelect }) => {
     let lastType = null;
 
     return (
-        <div className="fixed inset-0 z-[110] flex items-start justify-center bg-black/70 p-4 pt-[10vh] backdrop-blur-sm" onClick={onClose}>
+        <div className="fixed inset-0 z-[110] flex items-start justify-center bg-black/70 p-3 pt-4 backdrop-blur-sm sm:p-4 sm:pt-[10vh]" onClick={onClose}>
             <div className="w-full max-w-xl overflow-hidden rounded-2xl border border-line bg-panel shadow-2xl" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center gap-3 border-b border-line px-4">
                     <Search className="size-5 shrink-0 text-subtle" />
@@ -96,14 +96,14 @@ const GlobalSearch = ({ open, onClose, onSelect }) => {
                         onChange={(e) => setQuery(e.target.value)}
                         onKeyDown={onKey}
                         placeholder="Search problems, companies, notes..."
-                        className="w-full bg-transparent py-4 text-base text-fg placeholder:text-subtle focus:outline-none"
+                        className="w-full bg-transparent py-3.5 text-base text-fg placeholder:text-subtle focus:outline-none sm:py-4"
                     />
                     <button onClick={onClose} className="flex size-8 shrink-0 items-center justify-center rounded-lg text-subtle hover:bg-raised hover:text-fg">
                         <X className="size-4" />
                     </button>
                 </div>
 
-                <div ref={listRef} className="max-h-[50vh] overflow-y-auto p-2">
+                <div ref={listRef} className="max-h-[60vh] overflow-y-auto p-2 sm:max-h-[50vh]">
                     {!query.trim() ? (
                         <div className="px-3 py-8 text-center text-sm text-subtle">
                             Search across {index ? `${index.problems.length}+ problems, ${index.companies.length} companies` : '...'}, and your notes.

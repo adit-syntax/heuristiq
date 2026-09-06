@@ -96,7 +96,7 @@ const CodeEditor = ({ storageKey = 'playground', theme = 'dark', heading = null,
 
             {/* Editor - fixed height inline, flexible when filling a panel */}
             <div className={`overflow-hidden rounded-xl border border-line bg-panel
-                ${fill ? 'min-h-[220px] flex-1' : compact ? 'h-[45vh] min-h-[280px]' : 'h-[55vh] min-h-[360px]'}`}>
+                ${fill ? 'min-h-[220px] flex-1' : compact ? 'h-[38vh] sm:h-[45vh] min-h-[240px]' : 'h-[42vh] sm:h-[55vh] min-h-[260px]'}`}>
                 <Editor
                     language={lang.monaco}
                     theme={theme === 'dark' ? 'vs-dark' : 'light'}
@@ -118,7 +118,7 @@ const CodeEditor = ({ storageKey = 'playground', theme = 'dark', heading = null,
             </div>
 
             {/* Stdin + output */}
-            <div className={`grid gap-3 ${fill ? 'shrink-0' : ''} md:grid-cols-2`}>
+            <div className={`grid gap-3 ${fill ? 'shrink-0' : ''} grid-cols-1 md:grid-cols-2`}>
                 <div>
                     <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-subtle">Input (stdin)</label>
                     <textarea
@@ -126,7 +126,7 @@ const CodeEditor = ({ storageKey = 'playground', theme = 'dark', heading = null,
                         onChange={(e) => setStdin(e.target.value)}
                         placeholder="Test input passed to your program..."
                         spellCheck="false"
-                        className="h-28 w-full resize-none rounded-xl border border-line bg-app/60 p-3 font-mono text-sm text-fg placeholder:text-faint focus:border-accent focus:outline-none"
+                        className="h-24 w-full resize-none rounded-xl border border-line bg-app/60 p-3 font-mono text-sm text-fg placeholder:text-faint focus:border-accent focus:outline-none sm:h-28"
                     />
                 </div>
                 <div>
@@ -134,7 +134,7 @@ const CodeEditor = ({ storageKey = 'playground', theme = 'dark', heading = null,
                         <Terminal className="size-3.5" /> Output
                     </label>
                     <pre
-                        className={`h-28 w-full overflow-auto whitespace-pre-wrap rounded-xl border p-3 font-mono text-sm
+                        className={`h-24 w-full overflow-auto whitespace-pre-wrap rounded-xl border p-3 font-mono text-sm sm:h-28
                             ${result?.error ? 'border-rose-500/30 bg-app/60 text-rose-400' : 'border-line bg-app/60 text-fg'}`}
                     >
                         {running ? 'Running...' : result ? (result.error ? `${result.error}\n${result.output}` : result.output) : 'Run your code to see output.'}

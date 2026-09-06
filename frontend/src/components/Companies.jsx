@@ -269,8 +269,17 @@ const Companies = ({
         );
     }
 
+    const [searchQuery, setSearchQuery] = useState('');
+
     const followedSet = new Set(followedCompanies);
-    const list = followedOnly ? registry.filter((c) => followedSet.has(`cj:${c.slug}`)) : registry;
+    const list = useMemo(() => {
+        let base = followedOnly ? registry.filter((c) => followedSet.has(`cj:${c.slug}`)) : registry;
+        if (searchQuery.trim()) {
+            const q = searchQuery.toLowerCase().trim();
+            base = base.filter((c) => c.name.toLowerCase().includes(q));
+        }
+        return base;
+    }, [registry, followedOnly, followedSet, searchQuery]);
 
     const solvedCountFor = (c) => (cidIndex && dsaProgress
         ? (solvedByCompany.get(c.id) || 0)
@@ -311,7 +320,7 @@ const Companies = ({
 
     return (
         <div className="space-y-6 px-1 sm:px-0">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div className="flex items-center gap-3.5">
                     <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-accent-hi to-accent-deep shadow-lg shadow-accent/20 sm:size-14">
                         <Building2 className="size-6 text-white sm:size-7" />
@@ -323,19 +332,36 @@ const Companies = ({
                         </p>
                     </div>
                 </div>
-                <button
-                    onClick={() => setFollowedOnly((v) => !v)}
-                    className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all
-                        ${followedOnly ? 'bg-accent text-white' : 'bg-raised/60 text-muted hover:bg-raised hover:text-fg'}`}
-                >
-                    {followedOnly ? <Eye className="size-4" /> : <EyeOff className="size-4" />}
-                    {followedOnly ? 'Following' : 'All companies'}
-                </button>
+
+                <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
+                    <div className="relative w-full sm:w-64">
+                        <Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-subtle" />
+                        <input
+                            type="text"
+                            placeholder="Filter company..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full rounded-xl border border-line bg-panel py-2 pl-9 pr-3 text-sm text-fg placeholder:text-subtle focus:border-accent focus:outline-none"
+                        />
+                    </div>
+                    <button
+                        onClick={() => setFollowedOnly((v) => !v)}
+                        className={`flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all
+                            ${followedOnly ? 'bg-accent text-white' : 'bg-raised/60 text-muted hover:bg-raised hover:text-fg'}`}
+                    >
+                        {followedOnly ? <Eye className="size-4" /> : <EyeOff className="size-4" />}
+                        {followedOnly ? 'Following' : 'All companies'}
+                    </button>
+                </div>
             </div>
 
             {followedOnly && list.length === 0 ? (
                 <p className="py-16 text-center text-subtle">
                     Not following any company yet - tap the star on a card.
+                </p>
+            ) : list.length === 0 ? (
+                <p className="py-16 text-center text-subtle">
+                    No companies match "{searchQuery}".
                 </p>
             ) : (
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

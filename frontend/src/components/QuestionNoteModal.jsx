@@ -36,8 +36,8 @@ const QuestionNoteModal = ({ question, note, tags, onSave, onTagsChange, onClose
     const userTags = tagValue.split(/[,;]+/).map((s) => s.trim()).filter(Boolean);
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={onClose}>
-            <div className="w-full max-w-2xl rounded-2xl border border-line bg-panel shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-3 backdrop-blur-sm sm:p-4" onClick={onClose}>
+            <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-line bg-panel shadow-2xl" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-start gap-4 border-b border-line p-4 sm:p-5">
                     <div className="min-w-0 flex-1">
                         <h2 className="text-lg font-semibold sm:text-xl">{question.problem}</h2>

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { StickyNote, Plus, Trash2, Search, Cloud, CloudOff, Loader2 } from 'lucide-react';
+import { StickyNote, Plus, Trash2, Search, Cloud, CloudOff, Loader2, ChevronLeft } from 'lucide-react';
 import useSyncedDoc from '../hooks/useSyncedDoc';
 import useToast from '../hooks/useToast';
 
@@ -115,8 +115,8 @@ const Notes = ({ jumpQuery }) => {
             </div>
 
             <div className="grid gap-4 lg:grid-cols-[320px_1fr]">
-                {/* List */}
-                <div className="flex max-h-[70vh] flex-col overflow-hidden rounded-2xl border border-line bg-panel">
+                {/* List - on mobile, hide if active note is being edited */}
+                <div className={`max-h-[70vh] flex-col overflow-hidden rounded-2xl border border-line bg-panel ${activeId ? 'hidden lg:flex' : 'flex'}`}>
                     <div className="relative border-b border-line p-3">
                         <Search className="absolute left-6 top-1/2 size-4 -translate-y-1/2 text-subtle" />
                         <input
@@ -149,8 +149,8 @@ const Notes = ({ jumpQuery }) => {
                     </div>
                 </div>
 
-                {/* Editor */}
-                <div className="flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-line bg-panel">
+                {/* Editor - on mobile, hide if no note selected */}
+                <div className={`min-h-[420px] flex-col overflow-hidden rounded-2xl border border-line bg-panel ${!activeId ? 'hidden lg:flex' : 'flex'}`}>
                     {!active ? (
                         <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
                             <StickyNote className="mb-3 size-12 text-faint" />
@@ -158,22 +158,29 @@ const Notes = ({ jumpQuery }) => {
                         </div>
                     ) : (
                         <>
-                            <div className="flex items-center gap-3 border-b border-line p-4">
+                            <div className="flex items-center gap-2 border-b border-line p-3 sm:gap-3 sm:p-4">
+                                <button
+                                    onClick={() => setActiveId(null)}
+                                    className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-line bg-raised/60 text-muted transition-colors hover:text-fg lg:hidden"
+                                    title="Back to notes list"
+                                >
+                                    <ChevronLeft className="size-4" />
+                                </button>
                                 <input
                                     value={active.title}
                                     onChange={(e) => patchNote(active.id, { title: e.target.value })}
                                     placeholder="Note title"
-                                    className="flex-1 bg-transparent text-lg font-semibold text-fg placeholder:text-faint focus:outline-none"
+                                    className="min-w-0 flex-1 bg-transparent text-base font-semibold text-fg placeholder:text-faint focus:outline-none sm:text-lg"
                                 />
                                 <input
                                     value={active.tag || ''}
                                     onChange={(e) => patchNote(active.id, { tag: e.target.value })}
                                     placeholder="tag"
-                                    className="w-24 rounded-lg border border-line bg-raised/50 px-2 py-1 text-xs text-muted focus:border-accent focus:outline-none"
+                                    className="w-16 shrink-0 rounded-lg border border-line bg-raised/50 px-2 py-1 text-xs text-muted focus:border-accent focus:outline-none sm:w-24"
                                 />
                                 <button
                                     onClick={() => deleteNote(active.id)}
-                                    className="flex size-9 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-rose-500/10 hover:text-rose-400"
+                                    className="flex size-9 shrink-0 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-rose-500/10 hover:text-rose-400"
                                     title="Delete note"
                                 >
                                     <Trash2 className="size-4" />
@@ -184,7 +191,7 @@ const Notes = ({ jumpQuery }) => {
                                 onChange={(e) => patchNote(active.id, { body: e.target.value })}
                                 onBlur={() => toast('Note saved', { kind: 'info' })}
                                 placeholder="Approach, edge cases, complexity, mistakes to avoid..."
-                                className="flex-1 w-full resize-none bg-transparent p-4 font-mono text-sm leading-relaxed text-fg placeholder:text-faint focus:outline-none"
+                                className="flex-1 w-full resize-none bg-transparent p-3 font-mono text-sm leading-relaxed text-fg placeholder:text-faint focus:outline-none sm:p-4"
                                 spellCheck="false"
                             />
                         </>

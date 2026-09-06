@@ -76,9 +76,9 @@ const Loading = ({ label = 'Loading...' }) => (
 );
 
 const Brand = ({ onClick }) => (
-  <button onClick={onClick} title="Dashboard" className="flex shrink-0 items-center gap-3 rounded-xl p-1 transition-transform hover:scale-[1.03] active:scale-95">
-    <img src={logo} alt="Heuristiq" className="size-10 rounded-xl" />
-    <span className="brand-title font-akira select-none text-base font-extrabold uppercase tracking-tight">
+  <button onClick={onClick} title="Dashboard" className="flex shrink-0 items-center gap-2 sm:gap-3 rounded-xl p-1 transition-transform hover:scale-[1.03] active:scale-95">
+    <img src={logo} alt="Heuristiq" className="size-8 sm:size-10 rounded-xl" />
+    <span className="brand-title font-akira select-none text-xs sm:text-base font-extrabold uppercase tracking-tight">
       Heuristiq
     </span>
   </button>
@@ -177,7 +177,13 @@ function AppContent() {
     deleteDailyTodo,
   } = useUserData();
 
-  const primaryTabs = TABS.filter((t) => t.primary);
+  const mobileCoreTabs = useMemo(() => [
+    TABS.find((t) => t.id === 'dashboard'),
+    TABS.find((t) => t.id === 'dsa'),
+    TABS.find((t) => t.id === 'companies'),
+    TABS.find((t) => t.id === 'playground'),
+  ].filter(Boolean), []);
+  const coreTabIds = useMemo(() => new Set(mobileCoreTabs.map((t) => t.id)), [mobileCoreTabs]);
   const { toast, confirm } = useToast();
 
   const handleReset = async () => {
@@ -456,21 +462,37 @@ function AppContent() {
       )}
 
       {/* ============ Mobile bottom nav ============ */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex border-t border-line bg-panel/95 backdrop-blur md:hidden">
-        {primaryTabs.map((tab) => {
+      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t border-line bg-panel/95 px-1 py-1.5 backdrop-blur md:hidden">
+        {mobileCoreTabs.map((tab) => {
           const active = activeTab === tab.id;
           return (
             <button
               key={tab.id}
               onClick={() => goTo(tab.id)}
-              className={`flex flex-1 flex-col items-center gap-1 py-2.5 text-[11px] font-medium
-                ${active ? 'text-accent-hi' : 'text-subtle'}`}
+              className={`flex flex-1 flex-col items-center gap-1 py-1 text-[10px] sm:text-[11px] font-medium transition-colors
+                ${active ? 'font-semibold text-accent-hi' : 'text-subtle hover:text-fg'}`}
             >
-              <tab.icon className="size-5" />
-              <span className="truncate">{tab.label}</span>
+              <tab.icon className={`size-5 shrink-0 ${active ? 'text-accent-hi' : 'text-subtle'}`} />
+              <span className="max-w-[62px] truncate">{tab.label}</span>
             </button>
           );
         })}
+        <button
+          onClick={() => setMobileMenuOpen(true)}
+          className={`flex flex-1 flex-col items-center gap-1 py-1 text-[10px] sm:text-[11px] font-medium transition-colors
+            ${!coreTabIds.has(activeTab) ? 'font-semibold text-accent-hi' : 'text-subtle hover:text-fg'}`}
+        >
+          {(() => {
+            const currentTab = TABS.find((t) => t.id === activeTab);
+            const Icon = !coreTabIds.has(activeTab) && currentTab ? currentTab.icon : Menu;
+            return (
+              <>
+                <Icon className={`size-5 shrink-0 ${!coreTabIds.has(activeTab) ? 'text-accent-hi' : 'text-subtle'}`} />
+                <span className="max-w-[62px] truncate">{!coreTabIds.has(activeTab) && currentTab ? currentTab.label : 'More'}</span>
+              </>
+            );
+          })()}
+        </button>
       </nav>
 
       {/* In-app contest alerts (toasts when a contest is <=15 min away or

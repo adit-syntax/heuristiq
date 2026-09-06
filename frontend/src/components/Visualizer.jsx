@@ -38,7 +38,7 @@ const Visualizer = () => {
                         <p className="text-sm text-subtle sm:text-base">Step through each comparison, swap and visit</p>
                     </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                     {[
                         { id: 'array', label: 'Sorting & search', icon: BarChart3 },
                         { id: 'grid', label: 'Pathfinding', icon: Grid3x3 },
@@ -46,7 +46,7 @@ const Visualizer = () => {
                         <button
                             key={m.id}
                             onClick={() => setMode(m.id)}
-                            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all
+                            className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium transition-all sm:gap-2 sm:px-4 sm:text-sm
                                 ${mode === m.id ? 'bg-accent text-white' : 'bg-raised/60 text-muted hover:bg-raised hover:text-fg'}`}
                         >
                             <m.icon className="size-4" /> {m.label}

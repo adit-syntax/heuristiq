@@ -65,7 +65,7 @@ const StreakHeader = ({ activityDates }) => {
     }, [active]);
 
     return (
-        <div className="mb-4 grid grid-cols-2 gap-3">
+        <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
             {/* Current streak - flame */}
             <div className={`flex items-center gap-3 rounded-2xl border px-4 py-3
                 ${current > 0 ? 'border-accent/25 bg-accent/10' : 'border-line bg-raised/40'}`}>

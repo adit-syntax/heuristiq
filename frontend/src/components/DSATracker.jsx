@@ -238,9 +238,11 @@ const DSATracker = ({ updateDSAStatus, getDSAStatus, getQuestionNote, updateQues
                 </div>
 
                 {/* Sheet + view toggles, search */}
-                <div className="flex w-full items-center gap-3 lg:w-auto">
-                    {/* Sheet picker - dropdown with all sheets */}
-                    <div className="relative shrink-0">
+                <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center lg:w-auto">
+                    {/* Sheet picker & View toggle row */}
+                    <div className="flex w-full items-center justify-between gap-2.5 sm:w-auto sm:justify-start">
+                        {/* Sheet picker - dropdown with all sheets */}
+                        <div className="relative shrink-0">
                         <button
                             onClick={() => setShowSheetDropdown(!showSheetDropdown)}
                             className="flex items-center gap-2 rounded-xl border border-line bg-panel px-4 py-2.5 text-sm font-medium text-fg transition-colors hover:bg-raised"
@@ -292,6 +294,7 @@ const DSATracker = ({ updateDSAStatus, getDSAStatus, getQuestionNote, updateQues
                                 <span className="hidden sm:inline">{v.label}</span>
                             </button>
                         ))}
+                    </div>
                     </div>
 
                     {effectiveView === 'sheet' && (
@@ -720,8 +723,8 @@ const DSATracker = ({ updateDSAStatus, getDSAStatus, getQuestionNote, updateQues
                                                                         </div>
 
                                                                         {/* Links Row */}
-                                                                        <div className="mt-4 flex items-center justify-between border-t border-line pt-3">
-                                                                            <div className="flex items-center gap-2">
+                                                                        <div className="mt-4 flex flex-wrap items-center justify-between gap-2.5 border-t border-line pt-3">
+                                                                            <div className="flex flex-wrap items-center gap-2">
                                                                                 {question.questionLink && (
                                                                                     <a href={question.questionLink} target="_blank" rel="noopener noreferrer"
                                                                                         className="flex size-10 items-center justify-center rounded-xl border border-cyan-500/20 bg-cyan-500/10 text-cyan-500 transition-transform active:scale-95">

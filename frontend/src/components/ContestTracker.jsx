@@ -221,7 +221,7 @@ const ContestTracker = () => {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                     {/* Upcoming / Past toggle */}
                     <div className="flex shrink-0 rounded-xl border border-line bg-panel p-1">
                         {['upcoming', 'past'].map((w) => (
@@ -241,7 +241,7 @@ const ContestTracker = () => {
                         <button
                             key={p.id}
                             onClick={() => setPlatform(p.id)}
-                            className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-sm font-medium transition-all
+                            className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-medium transition-all sm:px-3.5 sm:py-2
                                 ${platform === p.id ? 'bg-accent text-white' : 'bg-raised/60 text-muted hover:bg-raised hover:text-fg'}`}
                         >
                             {p.id !== 'all' && <PlatformLogo platform={p.id} className="size-4" />}
@@ -296,9 +296,9 @@ const ContestTracker = () => {
                     </div>
 
                     <div className="overflow-hidden rounded-2xl border border-line bg-panel shadow-xl">
-                        <div className="grid grid-cols-7 border-b border-line bg-raised/40 text-center text-xs font-semibold uppercase tracking-wider text-subtle">
+                        <div className="grid grid-cols-7 border-b border-line bg-raised/40 text-center text-[10px] font-semibold uppercase tracking-wider text-subtle sm:text-xs">
                             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
-                                <div key={d} className="px-1 py-2.5">{d}</div>
+                                <div key={d} className="px-0.5 py-2 sm:px-1 sm:py-2.5">{d}</div>
                             ))}
                         </div>
                         <div className="grid grid-cols-7">
@@ -312,11 +312,11 @@ const ContestTracker = () => {
                                     <button
                                         key={k}
                                         onClick={() => setSelectedDay(k)}
-                                        className={`relative flex min-h-[64px] flex-col items-center border-b border-r border-line/40 p-1.5 transition-colors last:border-r-0 sm:min-h-[76px]
+                                        className={`relative flex min-h-[52px] flex-col items-center border-b border-r border-line/40 p-1 transition-colors last:border-r-0 sm:min-h-[76px] sm:p-1.5
                                             ${inMonth ? 'text-fg' : 'text-faint'}
                                             ${isSel ? 'bg-accent/10' : 'hover:bg-raised/30'}`}
                                     >
-                                        <span className={`mt-0.5 flex size-6 items-center justify-center rounded-full text-xs font-medium sm:size-7 sm:text-sm
+                                        <span className={`mt-0.5 flex size-5 items-center justify-center rounded-full text-[11px] font-medium sm:size-7 sm:text-sm
                                             ${isToday ? 'bg-accent font-bold text-white' : ''}`}>
                                             {d.getDate()}
                                         </span>

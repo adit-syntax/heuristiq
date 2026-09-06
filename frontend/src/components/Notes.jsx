@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import {
     StickyNote, Plus, Trash2, Search, Cloud, CloudOff, Loader2, ChevronLeft,
-    Undo2, Redo2, Eye, Edit3, Columns2, Copy, Check
+    Undo2, Redo2, Eye, Edit3, Columns2, Copy, Check, CheckSquare, Square, MinusSquare
 } from 'lucide-react';
 import useSyncedDoc from '../hooks/useSyncedDoc';
 import useToast from '../hooks/useToast';
@@ -279,6 +279,88 @@ const Notes = ({ jumpQuery }) => {
     }, [notes, query]);
 
     const active = activeId ? doc.items?.[activeId] : null;
+
+    // Multi-select state
+    const [isSelecting, setIsSelecting] = useState(false);
+    const [selectedIds, setSelectedIds] = useState(new Set());
+
+    const allSelected = visible.length > 0 && visible.every((n) => selectedIds.has(n.id));
+    const someSelected = !allSelected && visible.some((n) => selectedIds.has(n.id));
+
+    const toggleSelectAll = () => {
+        if (allSelected) {
+            setSelectedIds(new Set());
+        } else {
+            const next = new Set(selectedIds);
+            visible.forEach((n) => next.add(n.id));
+            setSelectedIds(next);
+        }
+    };
+
+    const toggleSelectNote = (id, e) => {
+        e?.stopPropagation();
+        setSelectedIds((prev) => {
+            const next = new Set(prev);
+            if (next.has(id)) {
+                next.delete(id);
+            } else {
+                next.add(id);
+            }
+            return next;
+        });
+    };
+
+    const deleteSelectedNotes = async () => {
+        if (selectedIds.size === 0) return;
+        const count = selectedIds.size;
+        const confirmed = await confirm(
+            `Delete ${count} note${count === 1 ? '' : 's'}?`,
+            {
+                body: count === 1
+                    ? (doc.items?.[Array.from(selectedIds)[0]]?.title || 'Untitled note')
+                    : `This will permanently remove ${count} selected notes.`,
+                confirmLabel: `Delete ${count}`,
+                danger: true,
+            }
+        );
+        if (!confirmed) return;
+
+        const backup = {};
+        selectedIds.forEach((id) => {
+            if (doc.items?.[id]) {
+                backup[id] = doc.items[id];
+            }
+        });
+
+        setDoc((prev) => {
+            const nextItems = { ...prev.items };
+            selectedIds.forEach((id) => {
+                delete nextItems[id];
+            });
+            return { ...prev, items: nextItems };
+        });
+
+        if (selectedIds.has(activeId)) {
+            setActiveId(null);
+        }
+        setSelectedIds(new Set());
+        setIsSelecting(false);
+
+        toast(`Deleted ${count} note${count === 1 ? '' : 's'}`, {
+            kind: 'danger',
+            duration: 5000,
+            action: {
+                label: 'Undo',
+                onClick: () => {
+                    setDoc((prev) => ({
+                        ...prev,
+                        items: { ...prev.items, ...backup },
+                    }));
+                    toast(`Restored ${count} note${count === 1 ? '' : 's'}`);
+                },
+            },
+        });
+    };
 
     // Reset undo/redo when switching active note
     useEffect(() => {
@@ -645,35 +727,113 @@ const Notes = ({ jumpQuery }) => {
             <div className="grid gap-4 lg:grid-cols-[300px_1fr] xl:grid-cols-[340px_1fr]">
                 {/* List - on mobile, hide if active note is being edited */}
                 <div className={`max-h-[72vh] flex-col overflow-hidden rounded-2xl border border-line bg-panel ${activeId ? 'hidden lg:flex' : 'flex'}`}>
-                    <div className="relative border-b border-line p-3">
-                        <Search className="absolute left-6 top-1/2 size-4 -translate-y-1/2 text-subtle" />
-                        <input
-                            value={query}
-                            onChange={(e) => setQuery(e.target.value)}
-                            placeholder="Search notes..."
-                            className="w-full rounded-xl border border-line bg-raised/50 py-2 pl-9 pr-3 text-sm text-fg placeholder:text-subtle focus:border-accent focus:outline-none"
-                        />
+                    <div className="border-b border-line p-3 space-y-2.5">
+                        <div className="flex items-center gap-2">
+                            <div className="relative flex-1">
+                                <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-subtle" />
+                                <input
+                                    value={query}
+                                    onChange={(e) => setQuery(e.target.value)}
+                                    placeholder="Search notes..."
+                                    className="w-full rounded-xl border border-line bg-raised/50 py-1.5 pl-9 pr-3 text-sm text-fg placeholder:text-subtle focus:border-accent focus:outline-none"
+                                />
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setIsSelecting((prev) => !prev);
+                                    setSelectedIds(new Set());
+                                }}
+                                className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-colors shrink-0 ${
+                                    isSelecting
+                                        ? 'border-accent bg-accent/15 text-accent-hi shadow-xs'
+                                        : 'border-line bg-raised/40 text-muted hover:border-accent/40 hover:text-fg'
+                                }`}
+                                title={isSelecting ? 'Exit selection' : 'Select multiple notes'}
+                            >
+                                <CheckSquare className="size-3.5" />
+                                <span>{isSelecting ? 'Done' : 'Select'}</span>
+                            </button>
+                        </div>
+
+                        {/* Multi-select Action Bar */}
+                        {isSelecting && (
+                            <div className="flex items-center justify-between gap-2 border-t border-line/60 pt-2 text-xs">
+                                <button
+                                    type="button"
+                                    onClick={toggleSelectAll}
+                                    className="flex items-center gap-1.5 font-medium text-subtle hover:text-fg transition-colors"
+                                >
+                                    {allSelected ? (
+                                        <CheckSquare className="size-4 text-accent-hi" />
+                                    ) : someSelected ? (
+                                        <MinusSquare className="size-4 text-accent-hi" />
+                                    ) : (
+                                        <Square className="size-4 text-subtle" />
+                                    )}
+                                    <span>{allSelected ? 'Deselect all' : `Select all (${visible.length})`}</span>
+                                </button>
+
+                                <div className="flex items-center gap-2">
+                                    <span className="font-mono text-[11px] text-subtle">
+                                        {selectedIds.size} selected
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={deleteSelectedNotes}
+                                        disabled={selectedIds.size === 0}
+                                        className="flex items-center gap-1 rounded-lg bg-rose-500/90 px-2.5 py-1 font-semibold text-white transition-opacity hover:bg-rose-500 disabled:opacity-30 disabled:cursor-not-allowed shadow-xs"
+                                    >
+                                        <Trash2 className="size-3" />
+                                        <span>Delete{selectedIds.size > 0 ? ` (${selectedIds.size})` : ''}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
+
                     <div className="flex-1 overflow-y-auto divide-y divide-line/40">
                         {visible.length === 0 && (
                             <p className="px-4 py-12 text-center text-sm text-subtle">
                                 {notes.length === 0 ? 'No notes yet. Create one.' : 'No matches found.'}
                             </p>
                         )}
-                        {visible.map((n) => (
-                            <button
-                                key={n.id}
-                                onClick={() => setActiveId(n.id)}
-                                className={`w-full px-4 py-3 text-left transition-colors
-                                    ${activeId === n.id ? 'bg-accent/10' : 'hover:bg-raised/40'}`}
-                            >
-                                <div className="truncate text-sm font-semibold text-fg">{n.title || 'Untitled note'}</div>
-                                <div className="mt-0.5 truncate text-xs text-subtle">{n.body.slice(0, 70) || 'Empty note'}</div>
-                                {n.tag && (
-                                    <span className="mt-1.5 inline-block rounded-md border border-line/60 bg-raised px-1.5 py-0.5 text-[10px] font-medium text-subtle">{n.tag}</span>
-                                )}
-                            </button>
-                        ))}
+                        {visible.map((n) => {
+                            const isSelected = selectedIds.has(n.id);
+                            return (
+                                <button
+                                    key={n.id}
+                                    onClick={(e) => {
+                                        if (isSelecting) {
+                                            toggleSelectNote(n.id, e);
+                                        } else {
+                                            setActiveId(n.id);
+                                        }
+                                    }}
+                                    className={`w-full px-4 py-3 text-left transition-colors flex items-start gap-3
+                                        ${isSelecting && isSelected ? 'bg-accent/15 border-l-2 border-l-accent' : ''}
+                                        ${!isSelecting && activeId === n.id ? 'bg-accent/10' : ''}
+                                        ${!(isSelecting && isSelected) && (!(!isSelecting && activeId === n.id)) ? 'hover:bg-raised/40' : ''}`}
+                                >
+                                    {isSelecting && (
+                                        <div className="mt-0.5 shrink-0">
+                                            {isSelected ? (
+                                                <CheckSquare className="size-4 text-accent-hi" />
+                                            ) : (
+                                                <Square className="size-4 text-subtle/70" />
+                                            )}
+                                        </div>
+                                    )}
+                                    <div className="min-w-0 flex-1">
+                                        <div className="truncate text-sm font-semibold text-fg">{n.title || 'Untitled note'}</div>
+                                        <div className="mt-0.5 truncate text-xs text-subtle">{n.body.slice(0, 70) || 'Empty note'}</div>
+                                        {n.tag && (
+                                            <span className="mt-1.5 inline-block rounded-md border border-line/60 bg-raised px-1.5 py-0.5 text-[10px] font-medium text-subtle">{n.tag}</span>
+                                        )}
+                                    </div>
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
 

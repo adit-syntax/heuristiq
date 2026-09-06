@@ -7,16 +7,29 @@ import {
     ChevronRight,
     ChevronDown,
     Flame,
-    Medal
+    Medal,
+    PenTool,
+    History as HistoryIcon,
+    PlusCircle,
+    ListTodo,
+    Check,
+    Plus,
+    Trash2
 } from 'lucide-react';
 import DayDetails from './DayDetails';
 import NoteHistory from './NoteHistory';
 import LiveClock from './LiveClock';
 import { SHEETS, getSheet } from '../lib/sheets';
-import { useMemo, useState, useEffect } from 'react';
-import { PenTool, History as HistoryIcon, PlusCircle } from 'lucide-react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import LiveContestBanner from './LiveContestBanner';
 import ContestReminderBanner from './ContestReminderBanner';
+
+const getLocalDateKey = (d = new Date()) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${dd}`;
+};
 
 const Stat = ({ value, label }) => (
     <div className="rounded-2xl border border-line bg-panel p-4">
@@ -235,6 +248,70 @@ const Dashboard = ({
     const [historyOpen, setHistoryOpen] = useState(false);
     const [goalOpen, setGoalOpen] = useState(false);
     const [sheetMenuOpen, setSheetMenuOpen] = useState(false);
+
+    // Daily task & calendar selection state
+    const todayStr = useMemo(() => getLocalDateKey(), []);
+    const [activeDate, setActiveDate] = useState(todayStr);
+    const [taskInput, setTaskInput] = useState('');
+    const tasksSliderRef = useRef(null);
+
+    const isToday = activeDate === todayStr;
+    const activeDateObj = useMemo(() => {
+        if (!activeDate) return new Date();
+        const [y, m, d] = activeDate.split('-').map(Number);
+        return new Date(y, m - 1, d);
+    }, [activeDate]);
+
+    const formattedActiveDate = useMemo(() => {
+        return activeDateObj.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric'
+        });
+    }, [activeDateObj]);
+
+    const currentTodos = useMemo(() => {
+        return data.dailyTodos?.[activeDate] || [];
+    }, [data.dailyTodos, activeDate]);
+
+    const completedTodosCount = useMemo(() => {
+        return currentTodos.filter((t) => t.completed).length;
+    }, [currentTodos]);
+
+    const handleAddTask = (e) => {
+        e.preventDefault();
+        if (!taskInput.trim()) return;
+        addDailyTodo(activeDate, taskInput.trim());
+        setTaskInput('');
+        setTimeout(() => {
+            if (tasksSliderRef.current) {
+                tasksSliderRef.current.scrollTo({
+                    left: tasksSliderRef.current.scrollWidth,
+                    behavior: 'smooth'
+                });
+            }
+        }, 100);
+    };
+
+    const slideTasks = (dir) => {
+        if (tasksSliderRef.current) {
+            tasksSliderRef.current.scrollBy({ left: dir * 230, behavior: 'smooth' });
+        }
+    };
+
+    // Allow horizontal scrolling on mouse wheel
+    useEffect(() => {
+        const el = tasksSliderRef.current;
+        if (!el) return;
+        const onWheel = (e) => {
+            if (e.deltaY !== 0 && el.scrollWidth > el.clientWidth) {
+                e.preventDefault();
+                el.scrollLeft += e.deltaY;
+            }
+        };
+        el.addEventListener('wheel', onWheel, { passive: false });
+        return () => el.removeEventListener('wheel', onWheel);
+    }, [currentTodos.length]);
 
     // Calculate days info - fully flexible goal:
     //   endDate set   -> pace the sheet across start..end
@@ -593,65 +670,211 @@ const Dashboard = ({
                     )}
                 </div>
 
-                {/* Right column: calendar with streak header (Duolingo-style) */}
-                <div className="rounded-2xl border border-line bg-panel p-5 lg:col-span-2">
-                    {/* Streak strip */}
-                    <StreakHeader activityDates={data.activityDates} />
+                {/* Right column: calendar with streak header (Duolingo-style) & daily tasks */}
+                <div className="flex flex-col justify-between rounded-2xl border border-line bg-panel p-5 lg:col-span-2">
+                    <div>
+                        {/* Streak strip */}
+                        <StreakHeader activityDates={data.activityDates} />
 
-                    <div className="mb-4 flex items-center justify-between">
-                        <h3 className="font-semibold">{getMonthName(currentMonth)}</h3>
-                        <div className="flex gap-1">
-                            <button
-                                onClick={() => navigateMonth(-1)}
-                                className="flex size-8 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg"
-                            >
-                                <ChevronLeft className="size-4" />
-                            </button>
-                            <button
-                                onClick={() => navigateMonth(1)}
-                                className="flex size-8 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg"
-                            >
-                                <ChevronRight className="size-4" />
-                            </button>
+                        <div className="mb-4 flex items-center justify-between">
+                            <h3 className="font-semibold">{getMonthName(currentMonth)}</h3>
+                            <div className="flex gap-1">
+                                <button
+                                    onClick={() => navigateMonth(-1)}
+                                    className="flex size-8 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg"
+                                >
+                                    <ChevronLeft className="size-4" />
+                                </button>
+                                <button
+                                    onClick={() => navigateMonth(1)}
+                                    className="flex size-8 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg"
+                                >
+                                    <ChevronRight className="size-4" />
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-7 gap-1.5">
+                            {weekDays.map((day) => (
+                                <div key={day} className="pb-1 text-center text-[10px] font-semibold uppercase tracking-wider text-subtle">
+                                    {day}
+                                </div>
+                            ))}
+
+                            {calendarData.flat().map((day, index) => {
+                                if (day.empty) return <div key={index} className="aspect-square" />;
+                                const isSelected = day.dateStr === activeDate;
+                                const hasTodos = (data.dailyTodos?.[day.dateStr]?.length || 0) > 0;
+                                return (
+                                    <button
+                                        key={index}
+                                        onClick={() => {
+                                            if (activeDate === day.dateStr) {
+                                                setSelectedDate(day.dateStr);
+                                            } else {
+                                                setActiveDate(day.dateStr);
+                                            }
+                                        }}
+                                        title={`${day.dateStr} - ${day.isActive ? 'active' : 'inactive'}${hasTodos ? ' (has tasks)' : ''}`}
+                                        className={`relative flex aspect-square items-center justify-center rounded-lg font-mono text-sm transition-all
+                                            ${isSelected ? 'ring-2 ring-accent ring-offset-2 ring-offset-panel font-bold z-10' : ''}
+                                            ${day.isActive
+                                                ? 'bg-data/25 font-semibold text-fg hover:bg-data/35'
+                                                : day.isToday
+                                                    ? 'font-semibold text-accent-hi hover:bg-raised'
+                                                    : day.isPast
+                                                        ? 'text-faint hover:bg-raised'
+                                                        : 'text-muted hover:bg-raised'}`}
+                                    >
+                                        {day.day}
+                                        {hasTodos && (
+                                            <span className="absolute bottom-1 size-1 rounded-full bg-accent-hi" />
+                                        )}
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        <div className="mt-4 flex items-center justify-between border-t border-line pt-3 text-xs text-subtle">
+                            <div className="flex items-center gap-3 sm:gap-4">
+                                <span className="flex items-center gap-1.5">
+                                    <span className="size-2.5 rounded bg-data/40" /> Active ({activeDaysInMonth})
+                                </span>
+                                <span className="flex items-center gap-1.5">
+                                    <span className="size-2.5 rounded bg-raised ring-1 ring-inset ring-line" /> Missed
+                                </span>
+                            </div>
+                            {activeDate !== todayStr && (
+                                <button
+                                    onClick={() => setActiveDate(todayStr)}
+                                    className="text-[11px] font-medium text-accent-hi transition-colors hover:underline"
+                                >
+                                    Back to today
+                                </button>
+                            )}
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-7 gap-1.5">
-                        {weekDays.map((day) => (
-                            <div key={day} className="pb-1 text-center text-[10px] font-semibold uppercase tracking-wider text-subtle">
-                                {day}
+                    {/* Daily Tasks to be done - embedded directly below calendar */}
+                    <div className="mt-5 flex flex-col border-t border-line pt-4">
+                        {/* Tasks Header */}
+                        <div className="mb-3 flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                                <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-accent/15 text-accent-hi">
+                                    <ListTodo className="size-4" />
+                                </div>
+                                <div className="min-w-0">
+                                    <div className="flex items-center gap-1.5">
+                                        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted">Tasks to be done</h4>
+                                        <span className={`rounded-full px-2 py-0.5 font-mono text-[10px] font-medium ${isToday ? 'bg-accent/15 text-accent-hi' : 'bg-raised text-subtle'}`}>
+                                            {isToday ? 'Today' : formattedActiveDate}
+                                        </span>
+                                    </div>
+                                    {currentTodos.length > 0 && (
+                                        <p className="text-[11px] text-subtle">
+                                            {completedTodosCount} of {currentTodos.length} completed
+                                        </p>
+                                    )}
+                                </div>
                             </div>
-                        ))}
 
-                        {calendarData.flat().map((day, index) => {
-                            if (day.empty) return <div key={index} className="aspect-square" />;
-                            return (
+                            {/* Slider navigation & Open Details */}
+                            <div className="flex items-center gap-1.5 shrink-0">
+                                {currentTodos.length > 1 && (
+                                    <div className="flex items-center gap-1 mr-1">
+                                        <button
+                                            onClick={() => slideTasks(-1)}
+                                            title="Slide left"
+                                            className="flex size-7 items-center justify-center rounded-lg border border-line bg-raised/40 text-subtle transition-colors hover:bg-raised hover:text-fg"
+                                        >
+                                            <ChevronLeft className="size-3.5" />
+                                        </button>
+                                        <button
+                                            onClick={() => slideTasks(1)}
+                                            title="Slide right"
+                                            className="flex size-7 items-center justify-center rounded-lg border border-line bg-raised/40 text-subtle transition-colors hover:bg-raised hover:text-fg"
+                                        >
+                                            <ChevronRight className="size-3.5" />
+                                        </button>
+                                    </div>
+                                )}
                                 <button
-                                    key={index}
-                                    onClick={() => setSelectedDate(day.dateStr)}
-                                    title={`${day.dateStr} - ${day.isActive ? 'active' : 'inactive'}`}
-                                    className={`flex aspect-square items-center justify-center rounded-lg font-mono text-sm transition-colors
-                                        ${day.isActive
-                                            ? 'bg-data/25 font-semibold text-fg hover:bg-data/35'
-                                            : day.isToday
-                                                ? 'font-semibold text-accent-hi hover:bg-raised'
-                                                : day.isPast
-                                                    ? 'text-faint hover:bg-raised'
-                                                    : 'text-muted hover:bg-raised'}`}
+                                    onClick={() => setSelectedDate(activeDate)}
+                                    title="Open day notes & full planner"
+                                    className="flex size-7 items-center justify-center rounded-lg border border-line bg-raised/40 text-subtle transition-colors hover:bg-raised hover:text-fg"
                                 >
-                                    {day.day}
+                                    <PenTool className="size-3.5" />
                                 </button>
-                            );
-                        })}
-                    </div>
+                            </div>
+                        </div>
 
-                    <div className="mt-4 flex items-center gap-4 border-t border-line pt-3 text-xs text-subtle">
-                        <span className="flex items-center gap-1.5">
-                            <span className="size-2.5 rounded bg-data/40" /> Active ({activeDaysInMonth})
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                            <span className="size-2.5 rounded bg-raised ring-1 ring-inset ring-line" /> Missed
-                        </span>
+                        {/* Quick Add Task Input */}
+                        <form onSubmit={handleAddTask} className="mb-3 flex items-center gap-2">
+                            <input
+                                type="text"
+                                value={taskInput}
+                                onChange={(e) => setTaskInput(e.target.value)}
+                                placeholder={`Add task for ${isToday ? 'today' : formattedActiveDate}...`}
+                                className="flex-1 rounded-xl border border-line bg-raised/40 px-3 py-1.5 text-xs text-fg placeholder:text-subtle transition-colors focus:border-accent focus:outline-none"
+                            />
+                            <button
+                                type="submit"
+                                disabled={!taskInput.trim()}
+                                className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-accent text-white transition-colors hover:bg-accent-hi disabled:opacity-40"
+                                title="Add task"
+                            >
+                                <Plus className="size-4" />
+                            </button>
+                        </form>
+
+                        {/* Horizontal Scroll / Slide for Tasks */}
+                        {currentTodos.length > 0 ? (
+                            <div
+                                ref={tasksSliderRef}
+                                className="flex gap-2.5 overflow-x-auto scrollbar-hide py-1 snap-x snap-mandatory scroll-smooth"
+                            >
+                                {currentTodos.map((todo) => (
+                                    <div
+                                        key={todo.id}
+                                        className={`group flex min-w-[200px] max-w-[240px] shrink-0 snap-start items-center justify-between gap-2.5 rounded-xl border p-2.5 transition-all
+                                            ${todo.completed
+                                                ? 'border-line/40 bg-raised/20 text-subtle'
+                                                : 'border-line bg-raised/50 text-fg hover:border-accent/40 hover:bg-raised'
+                                            }`}
+                                    >
+                                        <button
+                                            onClick={() => toggleDailyTodo(activeDate, todo.id)}
+                                            className={`flex size-5 shrink-0 items-center justify-center rounded-md border transition-colors
+                                                ${todo.completed
+                                                    ? 'border-emerald-500 bg-emerald-500 text-white'
+                                                    : 'border-subtle/60 text-transparent hover:border-accent'
+                                                }`}
+                                            title={todo.completed ? 'Mark incomplete' : 'Mark complete'}
+                                        >
+                                            <Check className="size-3" strokeWidth={3} />
+                                        </button>
+                                        <span
+                                            className={`min-w-0 flex-1 text-xs font-medium leading-snug line-clamp-2 select-none ${todo.completed ? 'line-through text-subtle' : 'text-fg'}`}
+                                            title={todo.text}
+                                        >
+                                            {todo.text}
+                                        </span>
+                                        <button
+                                            onClick={() => deleteDailyTodo(activeDate, todo.id)}
+                                            className="shrink-0 rounded p-1 text-subtle opacity-50 transition-all hover:text-rose-400 group-hover:opacity-100"
+                                            title="Delete task"
+                                        >
+                                            <Trash2 className="size-3.5" />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="flex items-center justify-center gap-2 rounded-xl border border-dashed border-line/60 bg-raised/20 py-3.5 px-3 text-center text-xs text-subtle">
+                                <ListTodo className="size-4 text-faint" />
+                                <span>No tasks added yet. Add one above!</span>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

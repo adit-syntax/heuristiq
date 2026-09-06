@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef, lazy, Suspense } from 'react';
 import {
   LayoutDashboard,
   Code2,
@@ -21,6 +21,8 @@ import {
   Search,
   UserRound,
   MessageSquare,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import AuthPage from './components/AuthPage';
@@ -104,6 +106,77 @@ function AppContent() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [jump, setJump] = useState({}); // { dsaQuery?, companySlug?, notesQuery? }
   const [theme, setTheme] = useState(() => localStorage.getItem('preptracker-theme') || 'dark');
+
+  // Desktop sidebar collapse & auto-collapse on inactivity
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    return localStorage.getItem('preptracker-sidebar-collapsed') === 'true';
+  });
+  const [sidebarHovered, setSidebarHovered] = useState(false);
+  const hoverTimeoutRef = useRef(null);
+  const inactivityTimerRef = useRef(null);
+
+  const isSidebarOpen = !sidebarCollapsed || sidebarHovered;
+
+  const toggleSidebar = useCallback(() => {
+    setSidebarCollapsed((prev) => {
+      const next = !prev;
+      localStorage.setItem('preptracker-sidebar-collapsed', String(next));
+      return next;
+    });
+  }, []);
+
+  // Reset inactivity timer: auto-collapses sidebar after 20s of no interaction on sidebar
+  const resetInactivityTimer = useCallback(() => {
+    if (inactivityTimerRef.current) {
+      clearTimeout(inactivityTimerRef.current);
+    }
+    // Only arm auto-collapse if sidebar is currently uncollapsed
+    if (!sidebarCollapsed) {
+      inactivityTimerRef.current = setTimeout(() => {
+        setSidebarCollapsed(true);
+        localStorage.setItem('preptracker-sidebar-collapsed', 'true');
+      }, 20000);
+    }
+  }, [sidebarCollapsed]);
+
+  useEffect(() => {
+    resetInactivityTimer();
+    return () => {
+      if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
+    };
+  }, [resetInactivityTimer]);
+
+  // Window activity detection to start inactivity timer if user works outside sidebar
+  useEffect(() => {
+    const onUserActivity = (e) => {
+      const sidebarEl = document.getElementById('desktop-sidebar');
+      if (sidebarEl && !sidebarEl.contains(e.target)) {
+        resetInactivityTimer();
+      }
+    };
+    window.addEventListener('click', onUserActivity);
+    window.addEventListener('keydown', onUserActivity);
+    return () => {
+      window.removeEventListener('click', onUserActivity);
+      window.removeEventListener('keydown', onUserActivity);
+    };
+  }, [resetInactivityTimer]);
+
+  const handleSidebarMouseEnter = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
+    if (sidebarCollapsed) {
+      setSidebarHovered(true);
+    }
+  };
+
+  const handleSidebarMouseLeave = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    hoverTimeoutRef.current = setTimeout(() => {
+      setSidebarHovered(false);
+      resetInactivityTimer();
+    }, 250);
+  };
 
   // Ctrl+K / Cmd+K opens global search from anywhere.
   useEffect(() => {
@@ -294,8 +367,27 @@ function AppContent() {
   const displayName = profileName || user?.name || user?.displayName || 'Guest';
   const initials = extractInitials(displayName);
 
-  const navItem = (tab, onClick) => {
+  const navItem = (tab, onClick, isCollapsedRail = false) => {
     const active = activeTab === tab.id;
+    if (isCollapsedRail) {
+      return (
+        <button
+          key={tab.id}
+          onClick={onClick}
+          title={tab.label}
+          className={`group relative flex size-11 mx-auto items-center justify-center rounded-xl transition-all
+            ${active
+              ? 'bg-accent/15 text-accent-hi shadow-xs'
+              : 'text-muted hover:bg-raised/70 hover:text-fg'}`}
+        >
+          <tab.icon className={`size-5 shrink-0 ${active ? 'text-accent-hi' : 'text-subtle group-hover:text-fg'}`} />
+          {active && (
+            <span className="absolute left-1 top-1/2 -translate-y-1/2 h-4 w-1 rounded-r-full bg-accent-hi" />
+          )}
+        </button>
+      );
+    }
+
     return (
       <button
         key={tab.id}
@@ -345,38 +437,127 @@ function AppContent() {
     </div>
   );
 
+  const collapsedActionButtons = (
+    <div className="flex flex-col items-center gap-1.5">
+      <button
+        onClick={() => setSearchOpen(true)}
+        title="Global search (Ctrl+K)"
+        className="flex size-8.5 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg"
+      >
+        <Search className="size-4" />
+      </button>
+      <button
+        onClick={toggleTheme}
+        title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        className="flex size-8.5 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg"
+      >
+        {theme === 'dark' ? <Sun className="size-4" /> : <Moon className="size-4" />}
+      </button>
+      <button
+        onClick={handleLogout}
+        title="Logout"
+        className="flex size-8.5 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-rose-500/10 hover:text-rose-400"
+      >
+        <LogOut className="size-4" />
+      </button>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-app text-fg">
       {/* ============ Desktop sidebar ============ */}
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-line bg-panel md:flex">
-        <div className="px-5 pb-4 pt-6">
-          <Brand onClick={() => goTo('dashboard')} />
+      <aside
+        id="desktop-sidebar"
+        onMouseEnter={handleSidebarMouseEnter}
+        onMouseLeave={handleSidebarMouseLeave}
+        onMouseMove={() => {
+          if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
+        }}
+        className={`fixed inset-y-0 left-0 z-40 hidden flex-col border-r border-line bg-panel transition-all duration-300 ease-in-out md:flex
+          ${isSidebarOpen ? 'w-64' : 'w-20'}
+          ${sidebarCollapsed && sidebarHovered ? 'z-50 shadow-2xl ring-1 ring-accent/20' : ''}`}
+      >
+        {/* Sidebar Header */}
+        <div className={`pb-3 pt-5 transition-all duration-300 ${isSidebarOpen ? 'px-4' : 'px-2'}`}>
+          {isSidebarOpen ? (
+            <div className="flex items-center justify-between">
+              <Brand onClick={() => goTo('dashboard')} />
+              <button
+                onClick={toggleSidebar}
+                title={sidebarCollapsed ? "Pin sidebar open" : "Collapse sidebar"}
+                className="flex size-8 shrink-0 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg"
+              >
+                {sidebarCollapsed ? <PanelLeftOpen className="size-4.5 text-accent-hi" /> : <PanelLeftClose className="size-4.5" />}
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-2">
+              <button
+                onClick={() => goTo('dashboard')}
+                title="Heuristiq Dashboard"
+                className="flex size-10 shrink-0 items-center justify-center rounded-xl p-1 transition-transform hover:scale-105 active:scale-95"
+              >
+                <img src={logo} alt="Heuristiq" className="size-8 rounded-lg" />
+              </button>
+              <button
+                onClick={toggleSidebar}
+                title="Expand sidebar"
+                className="flex size-7 shrink-0 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-raised hover:text-fg"
+              >
+                <PanelLeftOpen className="size-3.5" />
+              </button>
+            </div>
+          )}
         </div>
 
-        <nav className="flex-1 space-y-1 overflow-y-auto px-3">
-          {TABS.map((tab) => navItem(tab, () => goTo(tab.id)))}
+        {/* Navigation list */}
+        <nav className={`flex-1 space-y-1 overflow-y-auto ${isSidebarOpen ? 'px-3' : 'px-2'}`}>
+          {TABS.map((tab) => navItem(tab, () => goTo(tab.id), !isSidebarOpen))}
         </nav>
 
-        <div className="space-y-3 border-t border-line p-4">
-          <a href="#profile" onClick={(e) => { e.preventDefault(); goTo('profile'); }} className="group flex items-center gap-3" title="Open profile">
-            {avatarUrl && !avatarError ? (
-              <img
-                src={avatarUrl}
-                alt={displayName}
-                onError={() => setAvatarError(true)}
-                className="size-9 shrink-0 rounded-full border border-line object-cover"
-              />
-            ) : (
-              <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent/15 font-mono text-sm font-semibold text-accent-hi transition-colors group-hover:bg-accent/25 select-none">
-                {initials}
-              </div>
-            )}
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold transition-colors group-hover:text-accent-hi">{displayName}</p>
-              <p className="truncate text-xs text-subtle">{user?.email || 'Local data only'}</p>
-            </div>
-          </a>
-          {actionButtons}
+        {/* Sidebar Footer */}
+        <div className={`border-t border-line transition-all duration-300 ${isSidebarOpen ? 'p-4 space-y-3' : 'py-3 px-2 flex flex-col items-center gap-3'}`}>
+          {isSidebarOpen ? (
+            <>
+              <a href="#profile" onClick={(e) => { e.preventDefault(); goTo('profile'); }} className="group flex items-center gap-3" title="Open profile">
+                {avatarUrl && !avatarError ? (
+                  <img
+                    src={avatarUrl}
+                    alt={displayName}
+                    onError={() => setAvatarError(true)}
+                    className="size-9 shrink-0 rounded-full border border-line object-cover"
+                  />
+                ) : (
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent/15 font-mono text-sm font-semibold text-accent-hi transition-colors group-hover:bg-accent/25 select-none">
+                    {initials}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold transition-colors group-hover:text-accent-hi">{displayName}</p>
+                  <p className="truncate text-xs text-subtle">{user?.email || 'Local data only'}</p>
+                </div>
+              </a>
+              {actionButtons}
+            </>
+          ) : (
+            <>
+              <a href="#profile" onClick={(e) => { e.preventDefault(); goTo('profile'); }} className="group flex items-center justify-center" title={`Open profile (${displayName})`}>
+                {avatarUrl && !avatarError ? (
+                  <img
+                    src={avatarUrl}
+                    alt={displayName}
+                    onError={() => setAvatarError(true)}
+                    className="size-9 shrink-0 rounded-full border border-line object-cover transition-transform group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent/15 font-mono text-sm font-semibold text-accent-hi transition-transform group-hover:scale-105 select-none">
+                    {initials}
+                  </div>
+                )}
+              </a>
+              {collapsedActionButtons}
+            </>
+          )}
         </div>
       </aside>
 
@@ -447,7 +628,7 @@ function AppContent() {
       )}
 
       {/* ============ Content ============ */}
-      <div className="md:pl-64">
+      <div className={`transition-[padding] duration-300 ease-in-out ${sidebarCollapsed ? 'md:pl-20' : 'md:pl-64'}`}>
         <main className="mx-auto max-w-6xl px-3 pb-28 pt-5 sm:px-6 md:pb-12 md:pt-8">
           {/* Local-only warning: progress is saved, but only on this device. */}
           {(isGuest || !isFirebaseConfigured) && (

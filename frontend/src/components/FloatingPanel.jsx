@@ -82,6 +82,37 @@ const FloatingPanel = ({
         y: Math.max(8, Math.round(((typeof window !== 'undefined' ? window.innerHeight : 600) - Math.round(w0 / aspect)) * 0.15)),
     }));
 
+    const dragRef = useRef(null);
+    const panelRef = useRef(null);
+    // Live geometry mirror: window listeners read this ref, never state
+    // closures. Sanitised on every update - a NaN anywhere (however it
+    // appears) is healed from the panel's real DOM rect before it can
+    // poison a gesture.
+    const sanitize = (p, fallbackSize) => ({
+        size: {
+            w: Number.isFinite(fallbackSize?.w) ? fallbackSize.w : (panelRef.current?.offsetWidth || 600),
+            h: Number.isFinite(fallbackSize?.h) ? fallbackSize.h : (panelRef.current?.offsetHeight || 400),
+        },
+        pos: {
+            x: Number.isFinite(p?.x) ? p.x : (panelRef.current ? parseFloat(getComputedStyle(panelRef.current).left) || 0 : 0),
+            y: Number.isFinite(p?.y) ? p.y : (panelRef.current ? parseFloat(getComputedStyle(panelRef.current).top) || 0 : 0),
+        },
+    });
+    const liveRef = useRef(sanitize(pos, size));
+    liveRef.current = sanitize(pos, size);
+
+    const clamp = useCallback((x, y, w) => {
+        // Free horizontal movement: any sliver of the panel is fine because
+        // the title bar spans the full width - part of it stays grabbable.
+        // Vertically the TITLE BAR must stay visible (y in [0, vh-40]) so the
+        // panel always has a grabbable handle - prevents the "frozen panel".
+        // Hard NaN rejection: NaN/Infinity fall back to the safe centre, so
+        // no bad value can EVER reach the style attribute.
+        const cx = Number.isFinite(x) ? Math.min(Math.max(GRAB_X - w, x), window.innerWidth - GRAB_X) : Math.round((window.innerWidth - w) / 2);
+        const cy = Number.isFinite(y) ? Math.min(Math.max(0, y), window.innerHeight - GRAB_Y) : Math.round(window.innerHeight * 0.2);
+        return { x: Math.round(cx), y: Math.round(cy) };
+    }, []);
+
     // Auto-maximize on small screens (< 640px)
     const [isMaximized, setIsMaximized] = useState(() => isMobileScreen);
     const preMaxRef = useRef(null);
@@ -116,36 +147,6 @@ const FloatingPanel = ({
         window.addEventListener('resize', handleWindowResize);
         return () => window.removeEventListener('resize', handleWindowResize);
     }, [clamp, isMaximized, minW, minH]);
-    const dragRef = useRef(null);
-    const panelRef = useRef(null);
-    // Live geometry mirror: window listeners read this ref, never state
-    // closures. Sanitised on every update - a NaN anywhere (however it
-    // appears) is healed from the panel's real DOM rect before it can
-    // poison a gesture.
-    const sanitize = (p, fallbackSize) => ({
-        size: {
-            w: Number.isFinite(fallbackSize?.w) ? fallbackSize.w : (panelRef.current?.offsetWidth || 600),
-            h: Number.isFinite(fallbackSize?.h) ? fallbackSize.h : (panelRef.current?.offsetHeight || 400),
-        },
-        pos: {
-            x: Number.isFinite(p?.x) ? p.x : (panelRef.current ? parseFloat(getComputedStyle(panelRef.current).left) || 0 : 0),
-            y: Number.isFinite(p?.y) ? p.y : (panelRef.current ? parseFloat(getComputedStyle(panelRef.current).top) || 0 : 0),
-        },
-    });
-    const liveRef = useRef(sanitize(pos, size));
-    liveRef.current = sanitize(pos, size);
-
-    const clamp = useCallback((x, y, w) => {
-        // Free horizontal movement: any sliver of the panel is fine because
-        // the title bar spans the full width - part of it stays grabbable.
-        // Vertically the TITLE BAR must stay visible (y in [0, vh-40]) so the
-        // panel always has a grabbable handle - prevents the "frozen panel".
-        // Hard NaN rejection: NaN/Infinity fall back to the safe centre, so
-        // no bad value can EVER reach the style attribute.
-        const cx = Number.isFinite(x) ? Math.min(Math.max(GRAB_X - w, x), window.innerWidth - GRAB_X) : Math.round((window.innerWidth - w) / 2);
-        const cy = Number.isFinite(y) ? Math.min(Math.max(0, y), window.innerHeight - GRAB_Y) : Math.round(window.innerHeight * 0.2);
-        return { x: Math.round(cx), y: Math.round(cy) };
-    }, []);
 
     const [dragging, setDragging] = useState(false);
 

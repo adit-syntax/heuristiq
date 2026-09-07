@@ -25,6 +25,10 @@
   ],
   "rewrites": [
     {
+      "source": "/__/auth/:path*",
+      "destination": "https://heuristiq-f5c8f.firebaseapp.com/__/auth/:path*"
+    },
+    {
       "source": "/lc-graphql/:path*",
       "destination": "https://leetcode.com/:path*"
     },

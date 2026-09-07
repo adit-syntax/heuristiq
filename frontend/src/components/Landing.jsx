@@ -495,13 +495,13 @@ const Landing = () => {
       {/* 1. TOP APP BAR / RESPONSIVE NAVIGATION                       */}
       {/* ============================================================ */}
       <header className="fixed top-0 left-0 right-0 w-full z-50 bg-[#08090D]/90 backdrop-blur-xl border-b border-white/[0.06]">
-        <div className="max-w-6xl mx-auto px-3.5 sm:px-6 h-15 sm:h-16 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-3.5 sm:px-6 h-18 sm:h-20 flex items-center justify-between">
           <div className="flex items-center gap-6 sm:gap-8 lg:gap-10">
-            <a href="#" className="flex items-center gap-2.5 group shrink-0">
+            <a href="#" className="flex items-center gap-2.5 sm:gap-3.5 group shrink-0">
               <img
                 src={logoHorizontal}
-                alt="Heuristiq"
-                className="h-8 sm:h-10 w-auto object-contain brightness-125 contrast-125"
+                alt="Heuristiq - Elevate Insight"
+                className="h-11 sm:h-13 md:h-14 w-auto object-contain brightness-125 contrast-125 transition-transform duration-200 group-hover:scale-105"
               />
               <span className="font-mono text-[10px] sm:text-[11px] tracking-widest text-zinc-500 font-medium uppercase hidden sm:inline-block border-l border-white/10 pl-2.5 sm:pl-3">
                 Workspace
@@ -589,7 +589,7 @@ const Landing = () => {
       {/* ============================================================ */}
       {/* 2. MAIN HERO CONTAINER                                        */}
       {/* ============================================================ */}
-      <main className="relative pt-24 sm:pt-36 lg:pt-40">
+      <main className="relative pt-28 sm:pt-36 lg:pt-40">
         {/* Backdrop radial lights */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[90vw] max-w-[760px] h-[350px] sm:h-[400px] bg-gradient-to-b from-[#DE4444]/[0.08] via-transparent to-transparent blur-[110px] sm:blur-[130px] pointer-events-none -z-10" />
         <div className="absolute top-36 sm:top-44 left-1/2 -translate-x-1/2 w-full h-[550px] grid-pattern -z-20 opacity-60 pointer-events-none" />
@@ -1791,13 +1791,13 @@ const Landing = () => {
       {/* ============================================================ */}
       <footer className="w-full border-t border-white/[0.06] py-10 sm:py-12 bg-[#06070B]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-5 sm:gap-6 text-center sm:text-left">
-          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-3.5 sm:gap-5">
             <img
               src={logoHorizontal}
-              alt="Heuristiq"
-              className="h-8 sm:h-10 w-auto object-contain brightness-125 contrast-125"
+              alt="Heuristiq - Elevate Insight"
+              className="h-12 sm:h-15 md:h-16 w-auto object-contain brightness-125 contrast-125 transition-transform duration-200 hover:scale-105"
             />
-            <span className="font-mono text-xs text-zinc-500">
+            <span className="font-mono text-xs text-zinc-500 sm:border-l sm:border-white/10 sm:pl-4">
               © {new Date().getFullYear()} Heuristiq. Engineered for quiet execution.
             </span>
           </div>

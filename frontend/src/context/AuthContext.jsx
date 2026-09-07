@@ -142,15 +142,19 @@ export function AuthProvider({ children }) {
     const loginWithGoogle = useCallback(async () => {
         if (!isFirebaseConfigured) return NOT_CONFIGURED;
         try {
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-                || window.matchMedia('(display-mode: standalone)').matches;
-
-            if (isMobile) {
-                await signInWithRedirect(auth, googleProvider);
-                return { success: true };
+            // Use popup first - avoids third-party cookie/partitioned storage loss on mobile browsers
+            let result;
+            try {
+                result = await signInWithPopup(auth, googleProvider);
+            } catch (popupErr) {
+                if (popupErr.code === 'auth/popup-blocked' || popupErr.code === 'auth/cancelled-popup-request') {
+                    // Fallback to redirect only if popup was blocked by browser
+                    await signInWithRedirect(auth, googleProvider);
+                    return { success: true };
+                }
+                throw popupErr;
             }
 
-            const result = await signInWithPopup(auth, googleProvider);
             localStorage.removeItem(GUEST_FLAG);
             const firebaseUser = result.user;
 

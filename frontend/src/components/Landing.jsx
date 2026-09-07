@@ -4,7 +4,7 @@ import {
   Circle, Play, Pause, Maximize2, PictureInPicture2, Plus, Trash2,
   FileText, Terminal, Send, AlertTriangle, Menu, X, Search,
   Edit3, Cloud, CloudCheck, Layers, Cpu, Globe, Activity, ExternalLink,
-  Code2, Building2, Calendar, BookOpen, Undo2
+  Code2, Building2, Calendar, BookOpen, Undo2, CheckSquare
 } from 'lucide-react';
 import AuthPage from './AuthPage';
 import logoHorizontal from '../assets/logo-horizontal.png';
@@ -318,6 +318,9 @@ const Landing = () => {
   const [googleBusy, setGoogleBusy] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Mobile Workspace Preview sub-tab: 'code' | 'tasks' | 'notes'
+  const [mobilePreviewTab, setMobilePreviewTab] = useState('code');
+
   // Interactive Hero & Workspace state
   const [currentSectionIdx, setCurrentSectionIdx] = useState(2); // Google Graphs by default
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(1); // Redundant Connection by default
@@ -347,7 +350,6 @@ const Landing = () => {
     title: '',
     description: ''
   });
-  const [feedbackSent, setFeedbackSent] = useState(false);
 
   // Current selected section & question
   const currentSection = WORKSPACE_SECTIONS[currentSectionIdx];
@@ -482,35 +484,30 @@ const Landing = () => {
 
   const onSendFeedback = (e) => {
     e.preventDefault();
-    if (!feedback.email.trim() || !feedback.description.trim()) {
-      toast('Please provide your email and a message', { kind: 'danger' });
-      return;
-    }
-    setFeedbackSent(true);
-    toast('Feedback received! Our engineering team will review it.', { kind: 'success', duration: 5000 });
-    setFeedback({ name: '', email: '', title: '', description: '' });
+    setSignInOpen(true);
+    toast('You must be logged in first to submit feedback. Please sign in.', { kind: 'info', duration: 5000 });
   };
 
   return (
     <div className="min-h-screen bg-[#08090D] text-[#F8FAFC] font-sans antialiased selection:bg-[#DE4444] selection:text-white overflow-x-hidden">
       
       {/* ============================================================ */}
-      {/* 1. TOP APP BAR / MINIMAL NAVIGATION                           */}
+      {/* 1. TOP APP BAR / RESPONSIVE NAVIGATION                       */}
       {/* ============================================================ */}
-      <header className="fixed top-0 left-0 right-0 w-full z-50 bg-[#08090D]/85 backdrop-blur-xl border-b border-white/[0.06]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-8 lg:gap-10">
-            <a href="#" className="flex items-center gap-3 group">
+      <header className="fixed top-0 left-0 right-0 w-full z-50 bg-[#08090D]/90 backdrop-blur-xl border-b border-white/[0.06]">
+        <div className="max-w-6xl mx-auto px-3.5 sm:px-6 h-15 sm:h-16 flex items-center justify-between">
+          <div className="flex items-center gap-6 sm:gap-8 lg:gap-10">
+            <a href="#" className="flex items-center gap-2.5 group shrink-0">
               <img
                 src={logoHorizontal}
                 alt="Heuristiq"
-                className="h-10 sm:h-11 w-auto object-contain brightness-125 contrast-125"
+                className="h-8 sm:h-10 w-auto object-contain brightness-125 contrast-125"
               />
-              <span className="font-mono text-[11px] tracking-widest text-zinc-500 font-medium uppercase hidden sm:inline-block border-l border-white/10 pl-3">
+              <span className="font-mono text-[10px] sm:text-[11px] tracking-widest text-zinc-500 font-medium uppercase hidden sm:inline-block border-l border-white/10 pl-2.5 sm:pl-3">
                 Workspace
               </span>
             </a>
-            <nav className="hidden md:flex items-center gap-7 text-xs font-mono tracking-wider uppercase text-zinc-400">
+            <nav className="hidden md:flex items-center gap-6 lg:gap-7 text-xs font-mono tracking-wider uppercase text-zinc-400">
               <a href="#sheets" className="hover:text-white transition-colors duration-200">Sheets</a>
               <a href="#roadmap" className="hover:text-white transition-colors duration-200">Roadmap</a>
               <a href="#architecture" className="hover:text-white transition-colors duration-200">Architecture</a>
@@ -519,10 +516,10 @@ const Landing = () => {
             </nav>
           </div>
 
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <a
               href="#preview"
-              className="hidden sm:inline-flex items-center gap-2 text-xs font-mono text-zinc-400 hover:text-white transition-colors"
+              className="hidden lg:inline-flex items-center gap-1.5 text-xs font-mono text-zinc-400 hover:text-white transition-colors"
             >
               <span>Explore Engine</span>
               <span className="text-zinc-600">/</span>
@@ -530,58 +527,58 @@ const Landing = () => {
 
             <button
               onClick={() => setSignInOpen(true)}
-              className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-lg text-xs font-mono font-medium tracking-wide text-white bg-[#DE4444] hover:bg-[#c93636] transition-all shadow-[0_0_18px_rgba(222,68,68,0.3)] active:scale-95"
+              className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs font-mono font-medium tracking-wide text-white bg-[#DE4444] hover:bg-[#c93636] transition-all shadow-[0_0_18px_rgba(222,68,68,0.3)] active:scale-95 shrink-0"
             >
-              <span>Launch Workspace</span>
+              <span>Launch<span className="hidden sm:inline"> Workspace</span></span>
               <ArrowRight className="size-3.5" />
             </button>
 
-            {/* Mobile menu hamburger toggle */}
+            {/* Mobile menu hamburger button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg text-zinc-400 hover:text-white bg-white/[0.03] border border-white/10"
-              aria-label="Toggle menu"
+              className="md:hidden p-2 rounded-lg text-zinc-400 hover:text-white bg-white/[0.03] border border-white/10 shrink-0"
+              aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="size-4" /> : <Menu className="size-4" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Dropdown Drawer */}
+        {/* Mobile Dropdown Menu Drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-b border-white/[0.08] bg-[#0A0C12] px-6 py-4 space-y-3 font-mono text-xs uppercase tracking-wider">
+          <div className="md:hidden border-b border-white/[0.08] bg-[#0A0C12] px-5 py-4 space-y-2.5 font-mono text-xs uppercase tracking-wider animate-fade-in">
             <a
               href="#sheets"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-zinc-300 hover:text-white"
+              className="block py-2 text-zinc-300 hover:text-white transition-colors"
             >
               Sheets
             </a>
             <a
               href="#roadmap"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-zinc-300 hover:text-white"
+              className="block py-2 text-zinc-300 hover:text-white transition-colors"
             >
               Roadmap
             </a>
             <a
               href="#architecture"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-zinc-300 hover:text-white"
+              className="block py-2 text-zinc-300 hover:text-white transition-colors"
             >
               Architecture
             </a>
             <a
               href="#workflow"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-zinc-300 hover:text-white"
+              className="block py-2 text-zinc-300 hover:text-white transition-colors"
             >
               Workspace
             </a>
             <a
               href="#feedback"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-zinc-300 hover:text-white"
+              className="block py-2 text-zinc-300 hover:text-white transition-colors"
             >
               Feedback
             </a>
@@ -592,43 +589,43 @@ const Landing = () => {
       {/* ============================================================ */}
       {/* 2. MAIN HERO CONTAINER                                        */}
       {/* ============================================================ */}
-      <main className="relative pt-28 sm:pt-36 lg:pt-40">
-        {/* Subtle Atmospheric Backdrop Glow & Grid */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[760px] h-[400px] bg-gradient-to-b from-[#DE4444]/[0.08] via-transparent to-transparent blur-[130px] pointer-events-none -z-10" />
-        <div className="absolute top-44 left-1/2 -translate-x-1/2 w-full h-[550px] grid-pattern -z-20 opacity-60 pointer-events-none" />
+      <main className="relative pt-24 sm:pt-36 lg:pt-40">
+        {/* Backdrop radial lights */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[90vw] max-w-[760px] h-[350px] sm:h-[400px] bg-gradient-to-b from-[#DE4444]/[0.08] via-transparent to-transparent blur-[110px] sm:blur-[130px] pointer-events-none -z-10" />
+        <div className="absolute top-36 sm:top-44 left-1/2 -translate-x-1/2 w-full h-[550px] grid-pattern -z-20 opacity-60 pointer-events-none" />
 
         <section className="max-w-5xl mx-auto px-4 sm:px-6 text-center flex flex-col items-center">
-          {/* Minimalist Tag Badge */}
-          <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/[0.025] border border-white/[0.08] mb-7 backdrop-blur-md">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#DE4444]" />
-            <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-300 font-medium">
+          {/* Tag badge */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.025] border border-white/[0.08] mb-6 sm:mb-7 backdrop-blur-md">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#DE4444] animate-pulse" />
+            <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.2em] text-zinc-300 font-medium">
               ELEVATE INSIGHT
             </span>
           </div>
 
           {/* Hero Headline */}
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-[-0.035em] text-white leading-[1.08] max-w-4xl">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-[-0.03em] text-white leading-[1.12] sm:leading-[1.08] max-w-4xl">
             Your favorite sheet, contest and note.{' '}
             <span className="text-[#F87171] block sm:inline">One quiet workspace.</span>
           </h1>
 
           {/* Editorial Subtitle */}
-          <p className="mt-6 text-base sm:text-xl text-zinc-400 max-w-2xl font-light leading-relaxed">
+          <p className="mt-4 sm:mt-6 text-sm sm:text-lg md:text-xl text-zinc-400 max-w-2xl font-light leading-relaxed px-1">
             The question lists you already prep from, the contests you already compete in — tracked, annotated and paced in one place.
           </p>
 
-          {/* Minimal Dual CTAs */}
-          <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
+          {/* Dual CTAs */}
+          <div className="mt-8 sm:mt-9 flex flex-wrap items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto">
             <button
               onClick={() => setSignInOpen(true)}
-              className="inline-flex items-center gap-2.5 px-7 py-3 rounded-lg text-sm font-mono font-medium tracking-wide text-white bg-[#DE4444] hover:bg-[#c93636] transition-all shadow-[0_2px_22px_rgba(222,68,68,0.35)] active:scale-95"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 sm:px-7 py-3 rounded-lg text-sm font-mono font-medium tracking-wide text-white bg-[#DE4444] hover:bg-[#c93636] transition-all shadow-[0_2px_22px_rgba(222,68,68,0.35)] active:scale-95"
             >
               <span>Get Started</span>
               <ArrowRight className="size-4" />
             </button>
             <a
               href="#preview"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-mono text-zinc-300 hover:text-white bg-white/[0.02] hover:bg-white/[0.05] border border-white/10 transition-all"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 rounded-lg text-sm font-mono text-zinc-300 hover:text-white bg-white/[0.02] hover:bg-white/[0.05] border border-white/10 transition-all"
             >
               <span>See how it works</span>
               <span className="text-zinc-500">→</span>
@@ -636,10 +633,10 @@ const Landing = () => {
           </div>
 
           {/* Live Sheets Banner Pills (Interactive with Active Indicator) */}
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-2 max-w-3xl" id="sheets">
+          <div className="mt-9 sm:mt-10 flex flex-wrap items-center justify-center gap-2 max-w-3xl" id="sheets">
             <button
               onClick={() => selectSection(0)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-mono transition-all cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-md text-xs font-mono transition-all cursor-pointer ${
                 currentSectionIdx === 0
                   ? 'bg-[#DE4444]/10 border border-[#DE4444]/50 text-white shadow-[0_0_12px_rgba(222,68,68,0.2)]'
                   : 'bg-white/[0.02] border border-white/[0.07] text-zinc-300 hover:border-[#DE4444]/50'
@@ -653,7 +650,7 @@ const Landing = () => {
 
             <button
               onClick={() => selectSection(1)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-mono transition-all cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-md text-xs font-mono transition-all cursor-pointer ${
                 currentSectionIdx === 1
                   ? 'bg-[#DE4444]/10 border border-[#DE4444]/50 text-white shadow-[0_0_12px_rgba(222,68,68,0.2)]'
                   : 'bg-white/[0.02] border border-white/[0.07] text-zinc-300 hover:border-[#DE4444]/50'
@@ -667,7 +664,7 @@ const Landing = () => {
 
             <button
               onClick={() => selectSection(2)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-mono transition-all cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-md text-xs font-mono transition-all cursor-pointer ${
                 currentSectionIdx === 2
                   ? 'bg-[#DE4444]/10 border border-[#DE4444]/50 text-white shadow-[0_0_12px_rgba(222,68,68,0.2)]'
                   : 'bg-white/[0.02] border border-white/[0.07] text-zinc-300 hover:border-[#DE4444]/50'
@@ -679,61 +676,99 @@ const Landing = () => {
               <span className="text-[10px] px-1 rounded bg-[#DE4444]/15 text-[#F87171]">Google</span>
             </button>
 
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/[0.02] border border-white/[0.07] text-xs font-mono text-zinc-300">
+            <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-md bg-white/[0.02] border border-white/[0.07] text-xs font-mono text-zinc-300">
               <span className="text-zinc-300">Blind 75</span>
               <span className="text-zinc-500 text-[11px]">75</span>
             </div>
 
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/[0.02] border border-white/[0.07] text-xs font-mono text-zinc-300">
+            <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-md bg-white/[0.02] border border-white/[0.07] text-xs font-mono text-zinc-300">
               <span className="text-[#F87171] font-medium">System Design</span>
               <span className="text-[10px] px-1 rounded bg-[#DE4444]/15 text-[#F87171]">Roadmap</span>
             </div>
 
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/[0.02] border border-white/[0.07] text-xs font-mono text-zinc-300">
+            <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-md bg-white/[0.02] border border-white/[0.07] text-xs font-mono text-zinc-300">
               <span className="text-zinc-300">Core CS Fundamentals</span>
             </div>
 
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/[0.02] border border-white/[0.07] text-xs font-mono text-zinc-300">
+            <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-md bg-white/[0.02] border border-white/[0.07] text-xs font-mono text-zinc-300">
               <span className="text-zinc-300">CP Ladder</span>
               <span className="text-zinc-500 text-[11px]">1600+</span>
             </div>
           </div>
 
           {/* ============================================================ */}
-          {/* 3. CLEAN HERO WORKSPACE FRAME (Interactive Engine Preview)   */}
+          {/* 3. CLEAN HERO WORKSPACE FRAME (Responsive Engine Preview)    */}
           {/* ============================================================ */}
           <div
-            className="w-full mt-12 rounded-xl border border-white/[0.08] bg-[#0A0C11] shadow-2xl overflow-hidden text-left relative"
+            className="w-full mt-10 sm:mt-12 rounded-xl border border-white/[0.08] bg-[#0A0C11] shadow-2xl overflow-hidden text-left relative"
             id="preview"
           >
-            {/* Minimal Chrome Bar */}
-            <div className="h-10 px-4 bg-[#08090D] border-b border-white/[0.05] flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-white/[0.14] inline-block" />
-                <span className="w-2.5 h-2.5 rounded-full bg-white/[0.08] inline-block" />
-                <span className="w-2.5 h-2.5 rounded-full bg-white/[0.08] inline-block" />
-                <span className="ml-3 font-mono text-[11px] text-zinc-500 tracking-wider truncate max-w-[220px] sm:max-w-none">
+            {/* Chrome Bar */}
+            <div className="h-10 px-3 sm:px-4 bg-[#08090D] border-b border-white/[0.05] flex items-center justify-between">
+              <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 pr-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-white/[0.14] inline-block shrink-0" />
+                <span className="w-2.5 h-2.5 rounded-full bg-white/[0.08] inline-block shrink-0" />
+                <span className="w-2.5 h-2.5 rounded-full bg-white/[0.08] inline-block shrink-0" />
+                <span className="ml-2 sm:ml-3 font-mono text-[10px] sm:text-[11px] text-zinc-500 tracking-wider truncate">
                   heuristiq.app / <span className="text-zinc-400">{currentSection.path}</span>
                 </span>
               </div>
-              <div className="flex items-center gap-4 font-mono text-[11px] text-zinc-500">
+              <div className="flex items-center gap-2.5 sm:gap-4 font-mono text-[10px] sm:text-[11px] text-zinc-500 shrink-0">
                 <span className="hidden sm:inline-flex items-center gap-1.5 text-zinc-400">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   @aditsyntax
                 </span>
                 <span className="inline-flex items-center gap-1 text-zinc-400">
-                  <Cloud className="size-3.5 text-emerald-400" />
+                  <Cloud className="size-3 text-emerald-400" />
                   IndexedDB
                 </span>
               </div>
             </div>
 
-            {/* Editor Shell Interior */}
+            {/* Mobile-Only Feature Sub-Tab Toolbar (< md) */}
+            <div className="md:hidden flex items-center border-b border-white/[0.06] bg-[#07080C] px-2 py-1.5 text-xs font-mono gap-1">
+              <button
+                onClick={() => setMobilePreviewTab('code')}
+                className={`flex-1 py-1 px-2 rounded text-center transition-all ${
+                  mobilePreviewTab === 'code'
+                    ? 'bg-white/[0.08] text-white font-medium shadow-sm'
+                    : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                Code & Run
+              </button>
+              <button
+                onClick={() => setMobilePreviewTab('tasks')}
+                className={`flex-1 py-1 px-2 rounded text-center transition-all ${
+                  mobilePreviewTab === 'tasks'
+                    ? 'bg-white/[0.08] text-white font-medium shadow-sm'
+                    : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                Tasks ({tasks.filter((t) => t.checked).length}/{tasks.length})
+              </button>
+              <button
+                onClick={() => setMobilePreviewTab('notes')}
+                className={`flex-1 py-1 px-2 rounded text-center transition-all ${
+                  mobilePreviewTab === 'notes'
+                    ? 'bg-white/[0.08] text-white font-medium shadow-sm'
+                    : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                Notes ({NOTE_SNIPPETS.length})
+              </button>
+            </div>
+
+            {/* Editor Interior Grid */}
             <div className="grid grid-cols-12 min-h-[460px] relative bg-[#090B10]">
               
-              {/* Left Slim Navigation */}
-              <div className="hidden md:flex md:col-span-3 border-r border-white/[0.05] p-5 flex-col justify-between bg-[#07080D]/80">
-                <div className="space-y-5">
+              {/* Left Slim Navigation (Visible on md+, or when 'tasks' tab active on mobile) */}
+              <div
+                className={`${
+                  mobilePreviewTab === 'tasks' ? 'col-span-12 flex' : 'hidden md:flex'
+                } md:col-span-3 border-r border-white/[0.05] p-4 sm:p-5 flex-col justify-between bg-[#07080D]/80`}
+              >
+                <div className="space-y-4 sm:space-y-5">
                   <div className="flex items-center justify-between font-mono text-[10px] text-zinc-500 uppercase tracking-widest">
                     <span>Curated Track</span>
                     <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/[0.03] text-zinc-400 border border-white/5">
@@ -787,8 +822,8 @@ const Landing = () => {
                   </div>
 
                   {/* Pace Target */}
-                  <div className="pt-4 border-t border-white/[0.05]">
-                    <div className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest mb-2.5">
+                  <div className="pt-3 sm:pt-4 border-t border-white/[0.05]">
+                    <div className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest mb-2">
                       Pace Target
                     </div>
                     <div className="p-3 rounded-lg bg-white/[0.015] border border-white/[0.04]">
@@ -802,12 +837,12 @@ const Landing = () => {
                     </div>
                   </div>
 
-                  {/* Interactive Dynamic Tasks Widget */}
-                  <div className="pt-4 border-t border-white/[0.05]">
-                    <div className="rounded-xl bg-[#090A0F] border border-[#DE4444]/25 p-3.5 font-mono text-xs shadow-xl relative overflow-hidden">
+                  {/* Dynamic Tasks Widget */}
+                  <div className="pt-3 sm:pt-4 border-t border-white/[0.05]">
+                    <div className="rounded-xl bg-[#090A0F] border border-[#DE4444]/25 p-3 sm:p-3.5 font-mono text-xs shadow-xl relative overflow-hidden">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded bg-[#DE4444]/15 text-[#F87171] flex items-center justify-center">
+                          <div className="w-6 h-6 rounded bg-[#DE4444]/15 text-[#F87171] flex items-center justify-center shrink-0">
                             <CheckCircle2 className="size-3.5" />
                           </div>
                           <div>
@@ -833,7 +868,7 @@ const Landing = () => {
                           value={taskInput}
                           onChange={(e) => setTaskInput(e.target.value)}
                           placeholder="Add task for today..."
-                          className="w-full bg-[#121318] border border-[#DE4444]/60 focus:border-[#DE4444] rounded-lg px-3 py-1.5 text-zinc-200 text-[11px] placeholder-zinc-500 focus:outline-none transition-colors"
+                          className="w-full bg-[#121318] border border-[#DE4444]/60 focus:border-[#DE4444] rounded-lg px-2.5 sm:px-3 py-1.5 text-zinc-200 text-[11px] placeholder-zinc-500 focus:outline-none transition-colors"
                         />
                         <button
                           type="submit"
@@ -845,7 +880,7 @@ const Landing = () => {
                       </form>
 
                       {/* Task item list */}
-                      <div className="space-y-1.5 max-h-[140px] overflow-y-auto pr-0.5 scrollbar-hide">
+                      <div className="space-y-1.5 max-h-[160px] overflow-y-auto pr-0.5 scrollbar-hide">
                         {tasks.map((task) => (
                           <div
                             key={task.id}
@@ -872,7 +907,7 @@ const Landing = () => {
                             </div>
                             <button
                               onClick={() => deleteTask(task.id)}
-                              className="text-zinc-600 hover:text-zinc-400 opacity-60 group-hover:opacity-100 transition-opacity shrink-0"
+                              className="text-zinc-600 hover:text-zinc-400 opacity-60 group-hover:opacity-100 transition-opacity shrink-0 p-1"
                               title="Delete"
                             >
                               <Trash2 className="size-3.5" />
@@ -884,7 +919,7 @@ const Landing = () => {
                   </div>
                 </div>
 
-                <div className="font-mono text-[11px] text-zinc-500 flex items-center justify-between pt-3 border-t border-white/[0.05]">
+                <div className="font-mono text-[11px] text-zinc-500 flex items-center justify-between pt-3 border-t border-white/[0.05] mt-4">
                   <span>Judge0 Sandbox</span>
                   <span className="text-emerald-400 text-[10px] flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -894,79 +929,83 @@ const Landing = () => {
               </div>
 
               {/* Main Canvas with Rows, Code Runner & Notes Module */}
-              <div className="col-span-12 md:col-span-9 p-4 sm:p-6 lg:p-7 relative flex flex-col justify-between">
-                <div>
-                  {/* Problem Section Header */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/[0.05]">
-                    <div>
-                      <div className="flex items-center gap-2.5">
-                        <h3 className="text-sm font-mono uppercase tracking-wider text-zinc-200">
+              <div
+                className={`${
+                  mobilePreviewTab === 'tasks' ? 'hidden md:flex' : 'flex'
+                } col-span-12 md:col-span-9 p-3 sm:p-5 lg:p-7 flex-col justify-between`}
+              >
+                <div className="w-full">
+                  {/* Problem Section Header (shown on desktop or when 'code' active on mobile) */}
+                  <div className={`${mobilePreviewTab === 'notes' ? 'hidden md:flex' : 'flex'} flex-wrap items-center justify-between gap-2.5 pb-3 sm:pb-4 border-b border-white/[0.05]`}>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-xs sm:text-sm font-mono uppercase tracking-wider text-zinc-200 truncate max-w-[200px] xs:max-w-none">
                           {currentSection.title}
                         </h3>
-                        <span className="px-2 py-0.5 rounded bg-white/[0.03] border border-white/[0.06] text-[#F87171] text-[10px] font-mono">
+                        <span className="px-1.5 sm:px-2 py-0.5 rounded bg-white/[0.03] border border-white/[0.06] text-[#F87171] text-[9px] sm:text-[10px] font-mono shrink-0">
                           {currentSection.company}
                         </span>
                       </div>
-                      <p className="text-xs text-zinc-500 mt-1 font-mono">{currentSection.focus}</p>
+                      <p className="text-[11px] sm:text-xs text-zinc-500 mt-1 font-mono truncate">{currentSection.focus}</p>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3">
                       <div className="flex items-center gap-1 font-mono text-xs">
                         <button
                           onClick={() => navigateQuestion(-1)}
-                          className="w-7 h-7 rounded flex items-center justify-center bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.08] text-zinc-400 hover:text-white transition-colors"
+                          className="w-6 h-6 sm:w-7 sm:h-7 rounded flex items-center justify-center bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.08] text-zinc-400 hover:text-white transition-colors"
                           title="Previous Question [K]"
                         >
-                          <ChevronLeft className="size-4" />
+                          <ChevronLeft className="size-3.5 sm:size-4" />
                         </button>
                         <button
                           onClick={() => navigateQuestion(1)}
-                          className="w-7 h-7 rounded flex items-center justify-center bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.08] text-zinc-400 hover:text-white transition-colors"
+                          className="w-6 h-6 sm:w-7 sm:h-7 rounded flex items-center justify-center bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.08] text-zinc-400 hover:text-white transition-colors"
                           title="Next Question [J]"
                         >
-                          <ChevronRight className="size-4" />
+                          <ChevronRight className="size-3.5 sm:size-4" />
                         </button>
                         <span className="text-[10px] text-zinc-500 font-mono hidden md:inline ml-1">[J/K]</span>
                       </div>
-                      <span className="font-mono text-xs px-2.5 py-1 rounded bg-white/[0.03] border border-white/[0.06] text-zinc-400 flex items-center gap-1.5">
+                      <span className="font-mono text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 rounded bg-white/[0.03] border border-white/[0.06] text-zinc-400 flex items-center gap-1.5 shrink-0">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                         C++ 20
                       </span>
                     </div>
                   </div>
 
-                  {/* Question Rows */}
-                  <div className="space-y-2 font-mono text-xs mt-4">
+                  {/* Problem Rows (shown on desktop or when 'code' active on mobile) */}
+                  <div className={`${mobilePreviewTab === 'notes' ? 'hidden md:block' : 'block'} space-y-1.5 sm:space-y-2 font-mono text-xs mt-3 sm:mt-4`}>
                     {currentSection.questions.map((q, idx) => {
                       const isActive = idx === currentQuestionIdx;
                       return (
                         <div
                           key={q.id}
                           onClick={() => selectQuestion(idx)}
-                          className={`flex items-center justify-between px-3.5 py-2.5 rounded-md transition-all duration-300 cursor-pointer group ${
+                          className={`flex items-center justify-between px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-md transition-all duration-300 cursor-pointer group ${
                             isActive
                               ? 'bg-white/[0.04] border border-[#DE4444]/60 text-white active-row-indicator'
                               : 'bg-white/[0.015] border border-white/[0.04] text-zinc-400 hover:bg-white/[0.03] hover:border-white/[0.08]'
                           }`}
                         >
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2.5 min-w-0 pr-2">
                             {q.status === 'Solved' ? (
-                              <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
+                              <CheckCircle2 className="size-3.5 sm:size-4 text-emerald-400 shrink-0" />
                             ) : isActive ? (
-                              <Circle className="size-4 text-[#DE4444] fill-[#DE4444]/20 shrink-0" />
+                              <Circle className="size-3.5 sm:size-4 text-[#DE4444] fill-[#DE4444]/20 shrink-0" />
                             ) : (
-                              <Circle className="size-4 text-zinc-600 shrink-0" />
+                              <Circle className="size-3.5 sm:size-4 text-zinc-600 shrink-0" />
                             )}
-                            <span className={`font-medium transition-colors ${isActive ? 'text-white' : 'text-zinc-300 group-hover:text-white'}`}>
+                            <span className={`font-medium truncate text-xs sm:text-sm ${isActive ? 'text-white' : 'text-zinc-300 group-hover:text-white'}`}>
                               {q.id}
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-4 text-zinc-500 text-[11px]">
+                          <div className="flex items-center gap-2.5 sm:gap-4 text-zinc-500 text-[10px] sm:text-[11px] shrink-0">
                             <span className={q.diffColor}>{q.diff}</span>
                             <span className="hidden sm:inline text-zinc-400">{q.tag}</span>
                             {isActive ? (
-                              <span className="text-[#F87171] flex items-center gap-1.5 text-[11px]">
+                              <span className="text-[#F87171] flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px]">
                                 <span className="w-1.5 h-1.5 rounded-full bg-[#DE4444] animate-pulse" />
                                 Active
                               </span>
@@ -981,81 +1020,81 @@ const Landing = () => {
                     })}
                   </div>
 
-                  {/* Code Runner Box */}
-                  <div className="mt-4 rounded-lg border border-white/[0.07] bg-[#07080C] p-4 font-mono text-xs relative overflow-hidden">
-                    <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/[0.05] text-zinc-400 text-[11px]">
-                      <div className="flex items-center gap-2">
-                        <span className="text-zinc-300 font-medium">Judge0 Runner</span>
+                  {/* Code Runner Box (shown on desktop or when 'code' active on mobile) */}
+                  <div className={`${mobilePreviewTab === 'notes' ? 'hidden md:block' : 'block'} mt-3 sm:mt-4 rounded-lg border border-white/[0.07] bg-[#07080C] p-3 sm:p-4 font-mono text-xs relative overflow-hidden`}>
+                    <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-white/[0.05] text-zinc-400 text-[10px] sm:text-[11px]">
+                      <div className="flex items-center gap-1.5 sm:gap-2 truncate mr-2">
+                        <span className="text-zinc-300 font-medium">Judge0</span>
                         <span className="text-zinc-600">/</span>
-                        <span className="text-zinc-400">{currentQuestion.filename}</span>
+                        <span className="text-zinc-400 truncate">{currentQuestion.filename}</span>
                       </div>
-                      <div className="flex items-center gap-3 font-mono text-[11px]">
-                        <span className="text-zinc-500">{currentQuestion.execTime}</span>
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-medium flex items-center gap-1.5 border ${currentQuestion.badgeColor}`}>
+                      <div className="flex items-center gap-2 sm:gap-3 font-mono text-[10px] sm:text-[11px] shrink-0">
+                        <span className="text-zinc-500 hidden xs:inline">{currentQuestion.execTime}</span>
+                        <span className={`px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-medium flex items-center gap-1 sm:gap-1.5 border ${currentQuestion.badgeColor}`}>
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                           {currentQuestion.badge}
                         </span>
                       </div>
                     </div>
 
-                    <div className="text-zinc-400 space-y-1 text-[11px] leading-relaxed min-h-[140px] select-text">
+                    <div className="text-zinc-400 space-y-1 text-[10px] sm:text-[11px] leading-relaxed min-h-[120px] sm:min-h-[140px] select-text overflow-x-auto pb-1 scrollbar-hide">
                       {currentQuestion.codeLines.map((line, lIdx) => (
                         <div
                           key={lIdx}
-                          style={{ paddingLeft: `${line.indent * 1.25}rem` }}
-                          className={line.isComment ? 'text-zinc-500' : 'text-zinc-300'}
+                          style={{ paddingLeft: `${line.indent * 1}rem` }}
+                          className={`whitespace-nowrap ${line.isComment ? 'text-zinc-500' : 'text-zinc-300'}`}
                         >
                           {line.code}
                           {lIdx === currentQuestion.codeLines.length - 1 && (
-                            <span className="inline-block w-1.5 h-3.5 bg-[#DE4444] ml-1.5 animate-cursor-blink align-middle" />
+                            <span className="inline-block w-1.5 h-3 bg-[#DE4444] ml-1.5 animate-cursor-blink align-middle" />
                           )}
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  {/* Interactive Notes Preview Bar & Split Pane */}
-                  <div className="mt-5 rounded-xl border border-white/[0.08] bg-[#090A0F] overflow-hidden shadow-2xl font-mono relative">
-                    <div className="p-4 border-b border-white/[0.06] flex items-center justify-between bg-[#08090D]">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-[#DE4444]/15 text-[#F87171] flex items-center justify-center">
-                          <FileText className="size-4" />
+                  {/* Interactive Notes Module (shown on desktop or when 'notes' active on mobile) */}
+                  <div className={`${mobilePreviewTab === 'code' ? 'hidden md:block' : 'block'} mt-4 sm:mt-5 rounded-xl border border-white/[0.08] bg-[#090A0F] overflow-hidden shadow-2xl font-mono relative`}>
+                    <div className="p-3 sm:p-4 border-b border-white/[0.06] flex items-center justify-between bg-[#08090D]">
+                      <div className="flex items-center gap-2.5 sm:gap-3">
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#DE4444]/15 text-[#F87171] flex items-center justify-center shrink-0">
+                          <FileText className="size-3.5 sm:size-4" />
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-bold text-sm text-white">Notes</span>
-                            <span className="text-xs text-zinc-500 font-normal">
+                            <span className="font-bold text-xs sm:text-sm text-white">Notes</span>
+                            <span className="text-[11px] sm:text-xs text-zinc-500 font-normal">
                               {NOTE_SNIPPETS.length} notes
                             </span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3">
-                        <span className="text-zinc-500 text-xs flex items-center gap-1">
-                          <Cloud className="size-3.5 text-zinc-400" />
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <span className="text-zinc-500 text-[10px] sm:text-xs flex items-center gap-1">
+                          <Cloud className="size-3 text-zinc-400" />
                           <span>{notesAutosaveState}</span>
                         </span>
                         <button
                           onClick={() => switchNote((currentNoteIdx + 1) % NOTE_SNIPPETS.length)}
-                          className="px-3 py-1.5 rounded-lg text-xs font-mono font-medium text-white bg-[#DE4444] hover:bg-[#c93636] transition-all flex items-center gap-1 active:scale-95"
+                          className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-mono font-medium text-white bg-[#DE4444] hover:bg-[#c93636] transition-all flex items-center gap-1 active:scale-95"
                         >
-                          <Plus className="size-3.5" /> New note
+                          <Plus className="size-3" /> New note
                         </button>
                       </div>
                     </div>
 
                     {/* Notes Split Layout */}
-                    <div className="grid grid-cols-12 min-h-[240px]">
+                    <div className="grid grid-cols-12 min-h-[220px]">
                       {/* Left Notes List */}
-                      <div className="col-span-12 md:col-span-5 border-r border-white/[0.05] p-3 space-y-2 bg-[#08090D]/50">
+                      <div className="col-span-12 md:col-span-5 border-b md:border-b-0 md:border-r border-white/[0.05] p-3 space-y-2 bg-[#08090D]/50">
                         <div className="flex items-center gap-2">
                           <input
                             type="text"
                             placeholder="Search notes..."
-                            className="w-full bg-[#121318] border border-white/10 rounded-md px-3 py-1.5 text-zinc-200 text-[11px] placeholder-zinc-500 focus:outline-none"
+                            className="w-full bg-[#121318] border border-white/10 rounded-md px-2.5 sm:px-3 py-1 text-zinc-200 text-[11px] placeholder-zinc-500 focus:outline-none"
                           />
-                          <button className="px-2.5 py-1.5 rounded bg-[#DE4444]/15 border border-[#DE4444]/40 text-[#F87171] text-[10px] font-medium flex items-center gap-1">
+                          <button className="px-2 py-1 rounded bg-[#DE4444]/15 border border-[#DE4444]/40 text-[#F87171] text-[10px] font-medium flex items-center gap-1 shrink-0">
                             <Edit3 className="size-3" /> Done
                           </button>
                         </div>
@@ -1083,17 +1122,17 @@ const Landing = () => {
                               <div
                                 key={snippet.title}
                                 onClick={() => switchNote(sIdx)}
-                                className={`p-2.5 rounded-lg cursor-pointer flex flex-col gap-0.5 transition-all ${
+                                className={`p-2 sm:p-2.5 rounded-lg cursor-pointer flex flex-col gap-0.5 transition-all ${
                                   isNoteActive
                                     ? 'bg-[#DE4444]/10 border border-[#DE4444]/40 text-white'
                                     : 'bg-white/[0.02] border border-white/[0.04] text-zinc-400 hover:bg-white/[0.04]'
                                 }`}
                               >
                                 <div className="flex items-center justify-between">
-                                  <span className={`font-medium ${isNoteActive ? 'text-white' : 'text-zinc-300'}`}>
+                                  <span className={`font-medium truncate ${isNoteActive ? 'text-white' : 'text-zinc-300'}`}>
                                     {snippet.title}
                                   </span>
-                                  <span className={`text-[9px] px-1.5 py-0.5 rounded ${isNoteActive ? 'bg-[#DE4444]/20 text-[#F87171]' : 'bg-white/[0.05] text-zinc-400'}`}>
+                                  <span className={`text-[9px] px-1.5 py-0.5 rounded shrink-0 ml-1 ${isNoteActive ? 'bg-[#DE4444]/20 text-[#F87171]' : 'bg-white/[0.05] text-zinc-400'}`}>
                                     {snippet.badge}
                                   </span>
                                 </div>
@@ -1105,20 +1144,20 @@ const Landing = () => {
                       </div>
 
                       {/* Right Note Viewer */}
-                      <div className="col-span-12 md:col-span-7 p-4 bg-[#090B10] flex flex-col justify-between relative">
+                      <div className="col-span-12 md:col-span-7 p-3 sm:p-4 bg-[#090B10] flex flex-col justify-between relative">
                         <div>
-                          <div className="flex items-center justify-between pb-3 border-b border-white/[0.05]">
-                            <div>
-                              <h4 className="text-sm font-bold text-zinc-200">{currentNote.title}</h4>
-                              <div className="flex items-center gap-2 mt-1 text-[10px] text-zinc-500">
-                                <span>Document</span>
+                          <div className="flex items-center justify-between pb-2.5 border-b border-white/[0.05]">
+                            <div className="min-w-0 pr-2">
+                              <h4 className="text-xs sm:text-sm font-bold text-zinc-200 truncate">{currentNote.title}</h4>
+                              <div className="flex items-center gap-2 mt-0.5 text-[10px] text-zinc-500">
+                                <span>Doc</span>
                                 <span className="text-zinc-700">•</span>
-                                <span className="px-1.5 py-0.5 rounded bg-[#DE4444]/15 text-[#F87171]">
+                                <span className="px-1.5 py-0.5 rounded bg-[#DE4444]/15 text-[#F87171] truncate">
                                   {currentNote.badge}
                                 </span>
                               </div>
                             </div>
-                            <div className="flex items-center gap-2 text-zinc-400">
+                            <div className="flex items-center gap-1.5 text-zinc-400 shrink-0">
                               <span className="text-[10px] px-2 py-0.5 rounded bg-white/[0.04] text-zinc-300">
                                 Write
                               </span>
@@ -1129,42 +1168,42 @@ const Landing = () => {
                           </div>
 
                           {/* Markdown Format Bar */}
-                          <div className="flex items-center gap-2 py-2 border-b border-white/[0.04] text-zinc-400 text-xs">
+                          <div className="flex items-center gap-2 py-1.5 border-b border-white/[0.04] text-zinc-400 text-xs overflow-x-auto scrollbar-hide">
                             <span className="px-1 py-0.5 font-bold hover:text-white cursor-pointer">B</span>
                             <span className="px-1 py-0.5 italic hover:text-white cursor-pointer">I</span>
-                            <Code2 className="size-3.5 hover:text-white cursor-pointer" />
+                            <Code2 className="size-3 hover:text-white cursor-pointer" />
                             <span className="text-zinc-700">|</span>
                             <span className="text-[10px] text-zinc-500 hover:text-white cursor-pointer">H1</span>
                             <span className="text-[10px] text-zinc-500 hover:text-white cursor-pointer">H2</span>
                             <span className="text-zinc-700">|</span>
-                            <Edit3 className="size-3.5 hover:text-white cursor-pointer" />
+                            <Edit3 className="size-3 hover:text-white cursor-pointer" />
                           </div>
 
-                          {/* Simulated Live Real-time Typing Editor Content */}
-                          <div className="pt-3 text-[11px] text-zinc-300 leading-relaxed font-mono space-y-2">
+                          {/* Simulated Typing Editor */}
+                          <div className="pt-2 sm:pt-3 text-[10px] sm:text-[11px] text-zinc-300 leading-relaxed font-mono space-y-1.5">
                             <div className="text-zinc-200">{currentNote.line1}</div>
-                            <div className="text-zinc-500">{currentNote.line2}</div>
-                            <div className="p-2.5 rounded bg-white/[0.02] border border-white/[0.04] text-[#F87171] relative font-mono text-[10px] whitespace-pre-wrap">
+                            <div className="text-zinc-500 text-[10px]">{currentNote.line2}</div>
+                            <div className="p-2 sm:p-2.5 rounded bg-white/[0.02] border border-white/[0.04] text-[#F87171] relative font-mono text-[9px] sm:text-[10px] whitespace-pre-wrap overflow-x-auto">
                               {currentNote.code}
                               <span className="inline-block w-1.5 h-3 bg-[#DE4444] ml-1 align-middle animate-cursor-blink" />
                             </div>
                           </div>
                         </div>
 
-                        <div className="pt-3 border-t border-white/[0.05] flex items-center justify-between text-[10px] text-zinc-500">
-                          <span>{currentNote.words}</span>
-                          <span className="flex items-center gap-1 text-emerald-400">
+                        <div className="pt-2.5 border-t border-white/[0.05] flex items-center justify-between text-[10px] text-zinc-500 mt-2">
+                          <span className="truncate mr-2">{currentNote.words}</span>
+                          <span className="flex items-center gap-1 text-emerald-400 shrink-0">
                             <CheckCircle2 className="size-3" /> Autosaved
                           </span>
                         </div>
 
-                        {/* Floating Undo Notification Toast */}
+                        {/* Floating Undo Toast */}
                         {showUndoToast && (
-                          <div className="absolute bottom-4 right-4 bg-[#141822] border border-white/10 rounded-lg px-3 py-2 text-xs font-mono shadow-2xl flex items-center gap-3 z-20 animate-fade-in">
-                            <span className="text-zinc-300 text-[11px]">Deleted 1 note</span>
+                          <div className="absolute bottom-3 right-3 bg-[#141822] border border-white/10 rounded-lg px-2.5 py-1.5 text-xs font-mono shadow-2xl flex items-center gap-2.5 z-20 animate-fade-in">
+                            <span className="text-zinc-300 text-[10px]">Deleted note</span>
                             <button
                               onClick={() => setShowUndoToast(false)}
-                              className="text-[#F87171] hover:text-white font-medium text-[11px] uppercase tracking-wider underline flex items-center gap-1"
+                              className="text-[#F87171] hover:text-white font-medium text-[10px] uppercase tracking-wider underline flex items-center gap-1"
                             >
                               <Undo2 className="size-3" /> Undo
                             </button>
@@ -1182,18 +1221,18 @@ const Landing = () => {
         {/* ============================================================ */}
         {/* 4. MANIFESTO & PHILOSOPHY STATEMENT                           */}
         {/* ============================================================ */}
-        <section className="py-24 sm:py-32 border-t border-white/[0.06] mt-24" id="manifesto">
+        <section className="py-16 sm:py-28 md:py-32 border-t border-white/[0.06] mt-16 sm:mt-24" id="manifesto">
           <div className="max-w-4xl mx-auto px-4 sm:px-6">
-            <div className="font-mono text-xs text-[#DE4444] tracking-[0.2em] uppercase mb-6 font-semibold">
+            <div className="font-mono text-xs text-[#DE4444] tracking-[0.2em] uppercase mb-4 sm:mb-6 font-semibold">
               00 / Manifesto
             </div>
-            <blockquote className="text-2xl sm:text-4xl md:text-5xl font-light text-zinc-100 tracking-[-0.025em] leading-[1.25]">
+            <blockquote className="text-xl sm:text-3xl md:text-5xl font-light text-zinc-100 tracking-[-0.025em] leading-[1.3] sm:leading-[1.25]">
               Beyond algorithms. Beyond messy tabs.{' '}
               <span className="text-zinc-500">
                 Heuristiq is evolving into the complete quiet workspace for data structures, scalable system design, core computer science, and real-world engineering intuition.
               </span>
             </blockquote>
-            <p className="mt-8 text-base sm:text-lg text-zinc-400 font-light leading-relaxed max-w-2xl">
+            <p className="mt-6 sm:mt-8 text-sm sm:text-base md:text-lg text-zinc-400 font-light leading-relaxed max-w-2xl">
               We stripped away distracting badges, XP counters, and cluttered feeds. From fundamental tree traversals to distributed message queues, database internals, and concurrency patterns, everything is designed to prepare you for high-impact technical rounds without cognitive fatigue.
             </p>
           </div>
@@ -1202,29 +1241,29 @@ const Landing = () => {
         {/* ============================================================ */}
         {/* 5. CORE ARCHITECTURE / 6 REFINED PILLARS                      */}
         {/* ============================================================ */}
-        <section className="py-24 border-t border-white/[0.06] bg-[#0A0C11]/50" id="architecture">
+        <section className="py-16 sm:py-24 border-t border-white/[0.06] bg-[#0A0C11]/50" id="architecture">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 sm:mb-16 gap-3 sm:gap-4">
               <div>
-                <div className="font-mono text-xs text-zinc-400 tracking-[0.2em] uppercase mb-3">
+                <div className="font-mono text-xs text-zinc-400 tracking-[0.2em] uppercase mb-2 sm:mb-3">
                   Engine Architecture
                 </div>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white">
                   Quiet by architecture.
                 </h2>
               </div>
-              <p className="text-sm font-mono text-zinc-500">ENGINEERED FOR DEEP COGNITIVE WORK</p>
+              <p className="text-xs sm:text-sm font-mono text-zinc-500">ENGINEERED FOR DEEP COGNITIVE WORK</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
               {/* Pillar 1 */}
-              <div className="p-8 rounded-xl bg-[#0E1117] border border-white/[0.06] hover:border-white/15 transition-all duration-300">
-                <div className="font-mono text-xs text-[#DE4444] tracking-wider uppercase mb-4">01 / Practice</div>
-                <h3 className="text-lg font-semibold text-white tracking-tight">Curated Problem Sheets.</h3>
-                <p className="mt-3 text-sm text-zinc-400 leading-relaxed font-light">
+              <div className="p-5 sm:p-7 lg:p-8 rounded-xl bg-[#0E1117] border border-white/[0.06] hover:border-white/15 transition-all duration-300">
+                <div className="font-mono text-xs text-[#DE4444] tracking-wider uppercase mb-3 sm:mb-4">01 / Practice</div>
+                <h3 className="text-base sm:text-lg font-semibold text-white tracking-tight">Curated Problem Sheets.</h3>
+                <p className="mt-2.5 text-xs sm:text-sm text-zinc-400 leading-relaxed font-light">
                   Work through handpicked problem sets covering Blind 75, NeetCode, Core SDE tracks, and CP ladders with clear progress tracking.
                 </p>
-                <div className="mt-6 pt-4 border-t border-white/[0.05] flex flex-wrap items-center gap-2 font-mono text-[11px] text-zinc-400">
+                <div className="mt-5 pt-3.5 border-t border-white/[0.05] flex flex-wrap items-center gap-1.5 sm:gap-2 font-mono text-[10px] sm:text-[11px] text-zinc-400">
                   <span className="px-2 py-0.5 rounded bg-white/[0.03] border border-white/5">Blind 75</span>
                   <span className="px-2 py-0.5 rounded bg-white/[0.03] border border-white/5">NeetCode 150</span>
                   <span className="px-2 py-0.5 rounded bg-white/[0.03] border border-white/5">Top Sheets</span>
@@ -1232,13 +1271,13 @@ const Landing = () => {
               </div>
 
               {/* Pillar 2 */}
-              <div className="p-8 rounded-xl bg-[#0E1117] border border-white/[0.06] hover:border-white/15 transition-all duration-300">
-                <div className="font-mono text-xs text-[#DE4444] tracking-wider uppercase mb-4">02 / Real Interviews</div>
-                <h3 className="text-lg font-semibold text-white tracking-tight">290+ Company Question Banks.</h3>
-                <p className="mt-3 text-sm text-zinc-400 leading-relaxed font-light">
+              <div className="p-5 sm:p-7 lg:p-8 rounded-xl bg-[#0E1117] border border-white/[0.06] hover:border-white/15 transition-all duration-300">
+                <div className="font-mono text-xs text-[#DE4444] tracking-wider uppercase mb-3 sm:mb-4">02 / Real Interviews</div>
+                <h3 className="text-base sm:text-lg font-semibold text-white tracking-tight">290+ Company Question Banks.</h3>
+                <p className="mt-2.5 text-xs sm:text-sm text-zinc-400 leading-relaxed font-light">
                   Filter top asked questions asked recently by Google, Amazon, Meta, Uber, Bloomberg, and Goldman Sachs.
                 </p>
-                <div className="mt-6 pt-4 border-t border-white/[0.05] flex items-center gap-2 font-mono text-[11px] text-zinc-400">
+                <div className="mt-5 pt-3.5 border-t border-white/[0.05] flex items-center gap-2 font-mono text-[10px] sm:text-[11px] text-zinc-400">
                   <span className="text-[#F87171] font-medium">Google</span>
                   <span className="text-zinc-600">/</span>
                   <span>Meta</span>
@@ -1250,13 +1289,13 @@ const Landing = () => {
               </div>
 
               {/* Pillar 3 */}
-              <div className="p-8 rounded-xl bg-[#0E1117] border border-white/[0.06] hover:border-white/15 transition-all duration-300">
-                <div className="font-mono text-xs text-[#DE4444] tracking-wider uppercase mb-4">03 / Fast Execution</div>
-                <h3 className="text-lg font-semibold text-white tracking-tight">Built-in Code Runner.</h3>
-                <p className="mt-3 text-sm text-zinc-400 leading-relaxed font-light">
+              <div className="p-5 sm:p-7 lg:p-8 rounded-xl bg-[#0E1117] border border-white/[0.06] hover:border-white/15 transition-all duration-300">
+                <div className="font-mono text-xs text-[#DE4444] tracking-wider uppercase mb-3 sm:mb-4">03 / Fast Execution</div>
+                <h3 className="text-base sm:text-lg font-semibold text-white tracking-tight">Built-in Code Runner.</h3>
+                <p className="mt-2.5 text-xs sm:text-sm text-zinc-400 leading-relaxed font-light">
                   Compile C++, Python, Java, and TypeScript instantly against your custom test cases right on the same screen.
                 </p>
-                <div className="mt-6 pt-4 border-t border-white/[0.05] flex items-center gap-3 font-mono text-[11px] text-zinc-500">
+                <div className="mt-5 pt-3.5 border-t border-white/[0.05] flex items-center gap-3 font-mono text-[10px] sm:text-[11px] text-zinc-500">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   <span>Custom Tests</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
@@ -1265,13 +1304,13 @@ const Landing = () => {
               </div>
 
               {/* Pillar 4 */}
-              <div className="p-8 rounded-xl bg-[#0E1117] border border-white/[0.06] hover:border-white/15 transition-all duration-300">
-                <div className="font-mono text-xs text-[#DE4444] tracking-wider uppercase mb-4">04 / Visual Learning</div>
-                <h3 className="text-lg font-semibold text-white tracking-tight">Interactive Algorithm Steps.</h3>
-                <p className="mt-3 text-sm text-zinc-400 leading-relaxed font-light">
+              <div className="p-5 sm:p-7 lg:p-8 rounded-xl bg-[#0E1117] border border-white/[0.06] hover:border-white/15 transition-all duration-300">
+                <div className="font-mono text-xs text-[#DE4444] tracking-wider uppercase mb-3 sm:mb-4">04 / Visual Learning</div>
+                <h3 className="text-base sm:text-lg font-semibold text-white tracking-tight">Interactive Algorithm Steps.</h3>
+                <p className="mt-2.5 text-xs sm:text-sm text-zinc-400 leading-relaxed font-light">
                   Step through BFS, Dijkstra, tree traversals, and recursion visually to understand how logic flows before coding.
                 </p>
-                <div className="mt-6 pt-4 border-t border-white/[0.05] flex items-center gap-3 font-mono text-[11px] text-zinc-500">
+                <div className="mt-5 pt-3.5 border-t border-white/[0.05] flex items-center gap-3 font-mono text-[10px] sm:text-[11px] text-zinc-500">
                   <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
                   <span>Step-by-Step</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
@@ -1280,13 +1319,13 @@ const Landing = () => {
               </div>
 
               {/* Pillar 5 */}
-              <div className="p-8 rounded-xl bg-[#0E1117] border border-white/[0.06] hover:border-white/15 transition-all duration-300">
-                <div className="font-mono text-xs text-[#DE4444] tracking-wider uppercase mb-4">05 / Calendar</div>
-                <h3 className="text-lg font-semibold text-white tracking-tight">Live Contest Calendar.</h3>
-                <p className="mt-3 text-sm text-zinc-400 leading-relaxed font-light">
+              <div className="p-5 sm:p-7 lg:p-8 rounded-xl bg-[#0E1117] border border-white/[0.06] hover:border-white/15 transition-all duration-300">
+                <div className="font-mono text-xs text-[#DE4444] tracking-wider uppercase mb-3 sm:mb-4">05 / Calendar</div>
+                <h3 className="text-base sm:text-lg font-semibold text-white tracking-tight">Live Contest Calendar.</h3>
+                <p className="mt-2.5 text-xs sm:text-sm text-zinc-400 leading-relaxed font-light">
                   Never miss an upcoming contest from LeetCode, Codeforces, or AtCoder, automatically converted to your local time.
                 </p>
-                <div className="mt-6 pt-4 border-t border-white/[0.05] flex items-center gap-2 font-mono text-[11px] text-zinc-400">
+                <div className="mt-5 pt-3.5 border-t border-white/[0.05] flex items-center gap-2 font-mono text-[10px] sm:text-[11px] text-zinc-400">
                   <span>LeetCode</span>
                   <span className="text-zinc-600">●</span>
                   <span>Codeforces</span>
@@ -1296,13 +1335,13 @@ const Landing = () => {
               </div>
 
               {/* Pillar 6 */}
-              <div className="p-8 rounded-xl bg-[#0E1117] border border-white/[0.06] hover:border-white/15 transition-all duration-300">
-                <div className="font-mono text-xs text-[#DE4444] tracking-wider uppercase mb-4">06 / Sync</div>
-                <h3 className="text-lg font-semibold text-white tracking-tight">1-Click Profile Sync.</h3>
-                <p className="mt-3 text-sm text-zinc-400 leading-relaxed font-light">
+              <div className="p-5 sm:p-7 lg:p-8 rounded-xl bg-[#0E1117] border border-white/[0.06] hover:border-white/15 transition-all duration-300">
+                <div className="font-mono text-xs text-[#DE4444] tracking-wider uppercase mb-3 sm:mb-4">06 / Sync</div>
+                <h3 className="text-base sm:text-lg font-semibold text-white tracking-tight">1-Click Profile Sync.</h3>
+                <p className="mt-2.5 text-xs sm:text-sm text-zinc-400 leading-relaxed font-light">
                   Your notes and code stay saved on your device offline. Simply link your public username to sync solved problems.
                 </p>
-                <div className="mt-6 pt-4 border-t border-white/[0.05] flex items-center gap-3 font-mono text-[11px] text-zinc-500">
+                <div className="mt-5 pt-3.5 border-t border-white/[0.05] flex items-center gap-3 font-mono text-[10px] sm:text-[11px] text-zinc-500">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   <span>Offline First</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
@@ -1316,49 +1355,49 @@ const Landing = () => {
         {/* ============================================================ */}
         {/* 6. CLEAN WORKSPACE SHOWCASE (Floating Whiteboard & Video PiP)*/}
         {/* ============================================================ */}
-        <section className="py-24 border-t border-white/[0.06]" id="workflow">
+        <section className="py-16 sm:py-24 border-t border-white/[0.06]" id="workflow">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            <div className="max-w-3xl mb-16">
-              <div className="font-mono text-xs text-zinc-400 tracking-[0.2em] uppercase mb-3">
+            <div className="max-w-3xl mb-10 sm:mb-16">
+              <div className="font-mono text-xs text-zinc-400 tracking-[0.2em] uppercase mb-2 sm:mb-3">
                 Designed for Focus
               </div>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white">
                 Floating tools. Zero window shuffling.
               </h2>
-              <p className="mt-3 text-zinc-400 font-light text-base sm:text-lg">
+              <p className="mt-2.5 sm:mt-3 text-zinc-400 font-light text-sm sm:text-base md:text-lg">
                 Keep lectures, intuition notes, and whiteboard scratchpads floating in picture-in-picture right beside your code.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 items-stretch">
               
               {/* Feature 1: Draggable Whiteboard & Scratchpad */}
-              <div className="p-8 rounded-xl bg-[#0E1117] border border-white/[0.06] flex flex-col justify-between">
+              <div className="p-5 sm:p-7 lg:p-8 rounded-xl bg-[#0E1117] border border-white/[0.06] flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-3 sm:mb-4">
                     <span className="font-mono text-xs text-zinc-400 tracking-wider uppercase">
                       Infinite Canvas
                     </span>
                     <span className="w-2 h-2 rounded-full bg-[#DE4444]" />
                   </div>
-                  <h3 className="text-xl font-bold text-white">Draggable Whiteboard & Scratchpad.</h3>
-                  <p className="mt-3 text-sm text-zinc-400 font-light leading-relaxed">
+                  <h3 className="text-lg sm:text-xl font-bold text-white">Draggable Whiteboard & Scratchpad.</h3>
+                  <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-zinc-400 font-light leading-relaxed">
                     Sketch pointer movements, tree rotations, or monotonic queue states on an infinite canvas with markdown intuition notes autosaved directly to local storage.
                   </p>
                 </div>
 
-                <div className="mt-8 p-4 rounded-lg bg-[#07090E] border border-white/[0.05] font-mono text-xs">
-                  <div className="flex items-center justify-between text-zinc-500 pb-2 border-b border-white/[0.05] mb-3">
+                <div className="mt-6 sm:mt-8 p-3.5 sm:p-4 rounded-lg bg-[#07090E] border border-white/[0.05] font-mono text-xs">
+                  <div className="flex items-center justify-between text-zinc-500 pb-2 border-b border-white/[0.05] mb-2.5 sm:mb-3">
                     <span className="flex items-center gap-1.5 text-zinc-300">
                       <Edit3 className="size-3.5 text-[#F87171]" />
                       scratchpad.canvas
                     </span>
                     <span className="text-zinc-600 text-[10px]">Autosaved to IndexedDB</span>
                   </div>
-                  <div className="text-zinc-400 space-y-2 text-[11px]">
+                  <div className="text-zinc-400 space-y-1.5 sm:space-y-2 text-[10px] sm:text-[11px] overflow-x-auto">
                     <div className="text-zinc-300"># Monotonic Queue Sliding Window Property</div>
                     <div className="text-zinc-500">// Elements stored in strictly descending order</div>
-                    <div className="p-2.5 rounded bg-white/[0.02] border border-white/[0.04] text-zinc-300 font-mono text-[11px] leading-relaxed">
+                    <div className="p-2 sm:p-2.5 rounded bg-white/[0.02] border border-white/[0.04] text-zinc-300 font-mono text-[10px] sm:text-[11px] leading-relaxed">
                       <div>[1, 3, -1, -3, 5, 3, 6, 7] &nbsp;k = 3</div>
                       <div className="text-[#F87171] mt-1">Deque indices: &lt;1 (3), 2 (-1)&gt; → Current Window Max: 3</div>
                     </div>
@@ -1367,9 +1406,9 @@ const Landing = () => {
               </div>
 
               {/* Feature 2: Lecture Companion Mode with Animated Avatar & Audio Wave */}
-              <div className="p-8 rounded-xl bg-[#0E1117] border border-white/[0.06] hover:border-white/15 transition-all duration-300 flex flex-col justify-between group">
+              <div className="p-5 sm:p-7 lg:p-8 rounded-xl bg-[#0E1117] border border-white/[0.06] hover:border-white/15 transition-all duration-300 flex flex-col justify-between group">
                 <div>
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-3 sm:mb-4">
                     <span className="font-mono text-xs text-zinc-400 tracking-wider uppercase">
                       Picture-in-Picture Tutor
                     </span>
@@ -1378,25 +1417,25 @@ const Landing = () => {
                       <span className="font-mono text-[10px] text-zinc-400">Stream Live</span>
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-white">
+                  <h3 className="text-lg sm:text-xl font-bold text-white">
                     Curated video explanations right beside your code.
                   </h3>
-                  <p className="mt-3 text-sm text-zinc-400 font-light leading-relaxed">
+                  <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-zinc-400 font-light leading-relaxed">
                     Watch top tutor problem breakdowns without switching tabs. The draggable mini-player floats right next to your editor with synced code walkthroughs.
                   </p>
                 </div>
 
                 {/* Picture-in-Picture Stream Pane */}
-                <div className="mt-8 rounded-lg bg-[#06080C] border border-white/[0.07] font-mono text-xs overflow-hidden shadow-2xl relative">
+                <div className="mt-6 sm:mt-8 rounded-lg bg-[#06080C] border border-white/[0.07] font-mono text-xs overflow-hidden shadow-2xl relative">
                   {/* Stream Header Bar */}
-                  <div className="flex items-center justify-between px-3.5 py-2.5 bg-[#090B10] border-b border-white/[0.05] text-zinc-400 text-[11px]">
-                    <div className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#DE4444] animate-ping" />
-                      <span className="text-zinc-200 font-medium">lecture-stream.pip</span>
-                      <span className="text-zinc-600">/</span>
-                      <span className="text-zinc-400 truncate max-w-[150px] sm:max-w-none">Sliding Window Maximum (LC 239)</span>
+                  <div className="flex items-center justify-between px-3 py-2 sm:px-3.5 sm:py-2.5 bg-[#090B10] border-b border-white/[0.05] text-zinc-400 text-[10px] sm:text-[11px]">
+                    <div className="flex items-center gap-1.5 sm:gap-2 truncate pr-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#DE4444] animate-ping shrink-0" />
+                      <span className="text-zinc-200 font-medium truncate">lecture-stream.pip</span>
+                      <span className="text-zinc-600 hidden xs:inline">/</span>
+                      <span className="text-zinc-400 truncate hidden xs:inline">LC 239 Max</span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 shrink-0">
                       <span className="px-1.5 py-0.5 rounded bg-white/[0.03] text-zinc-400 border border-white/[0.06] text-[9px] uppercase tracking-wider">
                         1080p
                       </span>
@@ -1407,46 +1446,46 @@ const Landing = () => {
                     </div>
                   </div>
 
-                  {/* Visualizer Canvas with Teacher Avatar Overlay & Subtitles */}
-                  <div className="p-4 bg-[#080A10] relative min-h-[220px] flex flex-col justify-between">
+                  {/* Visualizer Canvas with Responsive Avatar & Subtitles */}
+                  <div className="p-3 sm:p-4 bg-[#080A10] relative min-h-[200px] sm:min-h-[220px] flex flex-col justify-between">
                     {/* Code walkthrough line */}
-                    <div className="text-[11px] font-mono leading-relaxed select-none text-zinc-400/90 mb-3">
+                    <div className="text-[10px] sm:text-[11px] font-mono leading-relaxed select-none text-zinc-400/90 mb-2 sm:mb-3">
                       <div>
                         <span className="text-[#F87171]">while</span> (!dq.empty() && nums[dq.back()] &lt; nums[i])
                       </div>
-                      <div className="pl-4 text-zinc-300 flex items-center gap-2 mt-0.5">
-                        <span>dq.pop_back(); <span className="text-zinc-500">// Prune smaller candidates</span></span>
+                      <div className="pl-3 sm:pl-4 text-zinc-300 flex items-center gap-2 mt-0.5 truncate">
+                        <span>dq.pop_back(); <span className="text-zinc-500">// Prune</span></span>
                       </div>
                       <div className="text-zinc-400 mt-0.5">dq.push_back(i);</div>
                     </div>
 
                     {/* Sliding Window Array Visualizer */}
-                    <div className="p-3 rounded-lg bg-[#05060A] border border-white/[0.05] pr-28 sm:pr-32 relative">
-                      <div className="flex items-center justify-between text-[10px] text-zinc-400 mb-2">
-                        <div className="flex items-center gap-2">
+                    <div className="p-2.5 sm:p-3 rounded-lg bg-[#05060A] border border-white/[0.05] pr-20 sm:pr-32 relative">
+                      <div className="flex items-center justify-between text-[9px] sm:text-[10px] text-zinc-400 mb-1.5 sm:mb-2">
+                        <div className="flex items-center gap-1.5 sm:gap-2">
                           <span className="text-[#DE4444] font-medium">WINDOW [L, R]</span>
-                          <span className="text-zinc-500 font-mono">k = 3</span>
+                          <span className="text-zinc-500 font-mono">k=3</span>
                         </div>
-                        <span className="text-emerald-400 font-mono">Max = 3</span>
+                        <span className="text-emerald-400 font-mono">Max=3</span>
                       </div>
 
                       <div className="relative py-1">
-                        <div className="absolute top-0 bottom-0 w-[56px] sm:w-[68px] border border-[#DE4444]/70 bg-[#DE4444]/10 rounded pointer-events-none animate-sliding-window" />
-                        <div className="grid grid-cols-6 gap-1.5 text-center text-xs font-mono">
-                          <div className="py-1 rounded bg-white/[0.02] text-zinc-300 border border-white/[0.03]">1</div>
-                          <div className="py-1 rounded bg-white/[0.02] text-zinc-200 border border-white/[0.03]">3</div>
-                          <div className="py-1 rounded bg-white/[0.02] text-zinc-400 border border-white/[0.03]">-1</div>
-                          <div className="py-1 rounded bg-white/[0.02] text-zinc-400 border border-white/[0.03]">-3</div>
-                          <div className="py-1 rounded bg-white/[0.02] text-zinc-300 border border-white/[0.03]">5</div>
-                          <div className="py-1 rounded bg-white/[0.02] text-zinc-300 border border-white/[0.03]">3</div>
+                        <div className="absolute top-0 bottom-0 w-[42px] xs:w-[50px] sm:w-[68px] border border-[#DE4444]/70 bg-[#DE4444]/10 rounded pointer-events-none animate-sliding-window" />
+                        <div className="grid grid-cols-6 gap-1 sm:gap-1.5 text-center text-[11px] sm:text-xs font-mono">
+                          <div className="py-0.5 sm:py-1 rounded bg-white/[0.02] text-zinc-300 border border-white/[0.03]">1</div>
+                          <div className="py-0.5 sm:py-1 rounded bg-white/[0.02] text-zinc-200 border border-white/[0.03]">3</div>
+                          <div className="py-0.5 sm:py-1 rounded bg-white/[0.02] text-zinc-400 border border-white/[0.03]">-1</div>
+                          <div className="py-0.5 sm:py-1 rounded bg-white/[0.02] text-zinc-400 border border-white/[0.03]">-3</div>
+                          <div className="py-0.5 sm:py-1 rounded bg-white/[0.02] text-zinc-300 border border-white/[0.03]">5</div>
+                          <div className="py-0.5 sm:py-1 rounded bg-white/[0.02] text-zinc-300 border border-white/[0.03]">3</div>
                         </div>
                       </div>
                     </div>
 
-                    {/* Synced Closed Captions / Subtitle Bar */}
-                    <div className="mt-2 pr-28 sm:pr-32">
-                      <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-black/60 border border-white/10 backdrop-blur-md text-[10px] text-zinc-300 max-w-full">
-                        <span className="text-[#F87171] font-bold flex items-center gap-1">
+                    {/* Closed Captions Bar */}
+                    <div className="mt-2 pr-20 sm:pr-32">
+                      <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-2.5 py-1 rounded bg-black/60 border border-white/10 backdrop-blur-md text-[9px] sm:text-[10px] text-zinc-300 max-w-full">
+                        <span className="text-[#F87171] font-bold flex items-center gap-1 shrink-0">
                           <span className="w-1.5 h-1.5 rounded-full bg-[#DE4444]" />
                           CC:
                         </span>
@@ -1456,48 +1495,48 @@ const Landing = () => {
                       </div>
                     </div>
 
-                    {/* Instructor Circular Camera Feed Overlay with Breathing & Equalizer */}
-                    <div className="absolute right-3.5 bottom-3.5 flex flex-col items-center">
-                      <div className="relative w-18 h-18 sm:w-22 sm:h-22 rounded-full p-0.5 bg-gradient-to-tr from-[#DE4444]/80 via-[#F87171]/40 to-transparent shadow-[0_0_24px_rgba(222,68,68,0.28)] animate-tutor-float">
+                    {/* Responsive Instructor Circular Feed Overlay */}
+                    <div className="absolute right-2 sm:right-3.5 bottom-2 sm:bottom-3.5 flex flex-col items-center">
+                      <div className="relative w-15 h-15 sm:w-22 sm:h-22 rounded-full p-0.5 bg-gradient-to-tr from-[#DE4444]/80 via-[#F87171]/40 to-transparent shadow-[0_0_24px_rgba(222,68,68,0.28)] animate-tutor-float">
                         <img
                           src="https://lh3.googleusercontent.com/aida/AEtjO1VHNBCzDf3OQSFANOApHdju-G9WmyKyIpSW7BuNaZulJT62AbG1hHm-5MWR5wPhhp25AFtzhGyPDPQwgkBrBkrWVs2u56XItRKotpM9KXnWVTs-yHc7xSNDC6xAAo8f1Jx6fIGcbuV45R8AUo_ghHzpy59m4eICC108PRlDbH6M25cIYeSZjLG2ZSdwbpcOdh2HJ1FWkV2olFEi47NbVv_czlaDuFuwC2pIhrZCtXkbUSFvSBo9Rs0-gVsj"
                           alt="Tutor Feed"
                           className="w-full h-full object-cover rounded-full brightness-105 contrast-105"
                         />
                         {/* Audio Equalizer */}
-                        <div className="absolute top-0 right-0 px-1.5 py-0.5 rounded-full bg-black/80 backdrop-blur-sm border border-white/10 flex items-end gap-[2px] h-4">
-                          <span className="w-[2px] bg-[#F87171] rounded-full anim-bar-1 inline-block" />
-                          <span className="w-[2px] bg-[#F87171] rounded-full anim-bar-2 inline-block" />
-                          <span className="w-[2px] bg-emerald-400 rounded-full anim-bar-3 inline-block" />
-                          <span className="w-[2px] bg-[#F87171] rounded-full anim-bar-4 inline-block" />
+                        <div className="absolute top-0 right-0 px-1 py-0.5 rounded-full bg-black/80 backdrop-blur-sm border border-white/10 flex items-end gap-[1.5px] h-3.5 sm:h-4">
+                          <span className="w-[1.5px] sm:w-[2px] bg-[#F87171] rounded-full anim-bar-1 inline-block" />
+                          <span className="w-[1.5px] sm:w-[2px] bg-[#F87171] rounded-full anim-bar-2 inline-block" />
+                          <span className="w-[1.5px] sm:w-[2px] bg-emerald-400 rounded-full anim-bar-3 inline-block" />
+                          <span className="w-[1.5px] sm:w-[2px] bg-[#F87171] rounded-full anim-bar-4 inline-block" />
                         </div>
                         {/* Online indicator */}
-                        <span className="absolute bottom-1 right-1 w-3 h-3 rounded-full bg-[#08090D] flex items-center justify-center">
-                          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping absolute" />
-                          <span className="w-2 h-2 rounded-full bg-emerald-400 relative" />
+                        <span className="absolute bottom-0 right-0 sm:bottom-1 sm:right-1 w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#08090D] flex items-center justify-center">
+                          <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-400 animate-ping absolute" />
+                          <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-400 relative" />
                         </span>
                       </div>
-                      <span className="mt-1 px-2 py-0.5 rounded-full bg-black/80 backdrop-blur-md text-[9px] font-mono text-zinc-300 border border-white/10 flex items-center gap-1 shadow-md">
+                      <span className="mt-1 px-1.5 sm:px-2 py-0.5 rounded-full bg-black/80 backdrop-blur-md text-[8px] sm:text-[9px] font-mono text-zinc-300 border border-white/10 flex items-center gap-1 shadow-md">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#DE4444] animate-pulse" />
-                        Tutor • Live
+                        Live
                       </span>
                     </div>
                   </div>
 
-                  {/* Clean Video Scrubber & Controls */}
-                  <div className="px-3.5 py-2.5 bg-[#07080D] border-t border-white/[0.05]">
+                  {/* Video Scrubber & Controls */}
+                  <div className="px-3 py-2 sm:px-3.5 sm:py-2.5 bg-[#07080D] border-t border-white/[0.05]">
                     <div className="w-full bg-white/[0.06] h-1 rounded-full overflow-hidden relative">
                       <div className="bg-[#DE4444] h-full rounded-full animate-video-scrub" />
                     </div>
-                    <div className="flex items-center justify-between text-[10px] text-zinc-400 mt-2 font-mono">
+                    <div className="flex items-center justify-between text-[10px] text-zinc-400 mt-1.5 sm:mt-2 font-mono">
                       <div className="flex items-center gap-2">
-                        <Pause className="size-3.5 text-zinc-200" />
+                        <Pause className="size-3 text-zinc-200" />
                         <span>14:20 / 22:45</span>
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2.5 sm:gap-3">
                         <span className="px-1.5 py-0.5 rounded bg-white/[0.03] text-zinc-300 text-[9px]">1.25x</span>
-                        <PictureInPicture2 className="size-3.5 hover:text-white cursor-pointer" />
-                        <Maximize2 className="size-3.5 hover:text-white cursor-pointer" />
+                        <PictureInPicture2 className="size-3 hover:text-white cursor-pointer" />
+                        <Maximize2 className="size-3 hover:text-white cursor-pointer" />
                       </div>
                     </div>
                   </div>
@@ -1510,26 +1549,26 @@ const Landing = () => {
         {/* ============================================================ */}
         {/* 7. ROADMAP / ENGINEERING SCOPE                               */}
         {/* ============================================================ */}
-        <section className="py-24 border-t border-white/[0.06] bg-[#07080C] relative" id="roadmap">
+        <section className="py-16 sm:py-24 border-t border-white/[0.06] bg-[#07080C] relative" id="roadmap">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 sm:mb-16 gap-3 sm:gap-4">
               <div>
-                <div className="font-mono text-xs text-[#DE4444] tracking-[0.2em] uppercase mb-3">
+                <div className="font-mono text-xs text-[#DE4444] tracking-[0.2em] uppercase mb-2 sm:mb-3">
                   Engineering Scope & Roadmaps
                 </div>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white">
                   Built for the full software engineering journey.
                 </h2>
               </div>
-              <p className="text-sm font-mono text-zinc-500">
+              <p className="text-xs sm:text-sm font-mono text-zinc-500">
                 FROM FIRST PRINCIPLES TO DISTRIBUTED ARCHITECTURE
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {/* Track 1 */}
-              <div className="p-6 rounded-xl bg-[#0E1117] border border-white/[0.06] hover:border-white/15 transition-all duration-300 flex flex-col justify-between">
-                <div className="space-y-3">
+              <div className="p-5 sm:p-6 rounded-xl bg-[#0E1117] border border-white/[0.06] hover:border-white/15 transition-all duration-300 flex flex-col justify-between">
+                <div className="space-y-2.5 sm:space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-[11px] text-[#DE4444] uppercase tracking-wider font-semibold">Track 01</span>
                     <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Active Now</span>
@@ -1539,7 +1578,7 @@ const Landing = () => {
                     Curated sheets, 290+ company banks, instant sandboxed code runner, and visual algorithm walkthroughs.
                   </p>
                 </div>
-                <div className="mt-6 pt-4 border-t border-white/[0.05] font-mono text-[11px] text-zinc-400 flex flex-wrap gap-1.5">
+                <div className="mt-5 pt-3.5 border-t border-white/[0.05] font-mono text-[10px] sm:text-[11px] text-zinc-400 flex flex-wrap gap-1.5">
                   <span className="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">Blind 75</span>
                   <span className="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">NeetCode</span>
                   <span className="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">Company Tags</span>
@@ -1547,8 +1586,8 @@ const Landing = () => {
               </div>
 
               {/* Track 2 */}
-              <div className="p-6 rounded-xl bg-[#0E1117] border border-white/[0.06] hover:border-white/15 transition-all duration-300 flex flex-col justify-between">
-                <div className="space-y-3">
+              <div className="p-5 sm:p-6 rounded-xl bg-[#0E1117] border border-white/[0.06] hover:border-white/15 transition-all duration-300 flex flex-col justify-between">
+                <div className="space-y-2.5 sm:space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-[11px] text-[#F87171] uppercase tracking-wider font-semibold">Track 02</span>
                     <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-[#DE4444]/10 text-[#F87171] border border-[#DE4444]/25">In Preview</span>
@@ -1558,7 +1597,7 @@ const Landing = () => {
                     Design YouTube, TinyURL, Uber backend, and rate limiters with interactive architecture diagrams and trade-off checklists.
                   </p>
                 </div>
-                <div className="mt-6 pt-4 border-t border-white/[0.05] font-mono text-[11px] text-zinc-400 flex flex-wrap gap-1.5">
+                <div className="mt-5 pt-3.5 border-t border-white/[0.05] font-mono text-[10px] sm:text-[11px] text-zinc-400 flex flex-wrap gap-1.5">
                   <span className="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">Scalability</span>
                   <span className="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">Caching</span>
                   <span className="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">Schema Design</span>
@@ -1566,8 +1605,8 @@ const Landing = () => {
               </div>
 
               {/* Track 3 */}
-              <div className="p-6 rounded-xl bg-[#0E1117] border border-white/[0.06] hover:border-white/15 transition-all duration-300 flex flex-col justify-between">
-                <div className="space-y-3">
+              <div className="p-5 sm:p-6 rounded-xl bg-[#0E1117] border border-white/[0.06] hover:border-white/15 transition-all duration-300 flex flex-col justify-between">
+                <div className="space-y-2.5 sm:space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-[11px] text-zinc-400 uppercase tracking-wider font-semibold">Track 03</span>
                     <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-white/[0.04] text-zinc-400 border border-white/10">Upcoming</span>
@@ -1577,7 +1616,7 @@ const Landing = () => {
                     Operating systems, database internals, computer networks, and concurrency patterns made intuitive and testable.
                   </p>
                 </div>
-                <div className="mt-6 pt-4 border-t border-white/[0.05] font-mono text-[11px] text-zinc-400 flex flex-wrap gap-1.5">
+                <div className="mt-5 pt-3.5 border-t border-white/[0.05] font-mono text-[10px] sm:text-[11px] text-zinc-400 flex flex-wrap gap-1.5">
                   <span className="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">OS & Threads</span>
                   <span className="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">DBMS Indexing</span>
                   <span className="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">TCP/IP</span>
@@ -1585,8 +1624,8 @@ const Landing = () => {
               </div>
 
               {/* Track 4 */}
-              <div className="p-6 rounded-xl bg-[#0E1117] border border-white/[0.06] hover:border-white/15 transition-all duration-300 flex flex-col justify-between">
-                <div className="space-y-3">
+              <div className="p-5 sm:p-6 rounded-xl bg-[#0E1117] border border-white/[0.06] hover:border-white/15 transition-all duration-300 flex flex-col justify-between">
+                <div className="space-y-2.5 sm:space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-[11px] text-zinc-400 uppercase tracking-wider font-semibold">Track 04</span>
                     <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-white/[0.04] text-zinc-400 border border-white/10">Upcoming</span>
@@ -1596,7 +1635,7 @@ const Landing = () => {
                     Real-world production engineering breakdowns, API design principles, and end-to-end architecture walkthroughs.
                   </p>
                 </div>
-                <div className="mt-6 pt-4 border-t border-white/[0.05] font-mono text-[11px] text-zinc-400 flex flex-wrap gap-1.5">
+                <div className="mt-5 pt-3.5 border-t border-white/[0.05] font-mono text-[10px] sm:text-[11px] text-zinc-400 flex flex-wrap gap-1.5">
                   <span className="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">REST & gRPC</span>
                   <span className="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">Microservices</span>
                   <span className="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">DevOps</span>
@@ -1609,71 +1648,87 @@ const Landing = () => {
         {/* ============================================================ */}
         {/* 8. FEEDBACK & SUGGESTIONS MODULE                              */}
         {/* ============================================================ */}
-        <section className="py-24 border-t border-white/[0.06] bg-[#090B10]" id="feedback">
+        <section className="py-16 sm:py-24 border-t border-white/[0.06] bg-[#090B10]" id="feedback">
           <div className="max-w-3xl mx-auto px-4 sm:px-6">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-9 h-9 rounded-lg bg-[#DE4444]/10 border border-[#DE4444]/25 flex items-center justify-center text-[#F87171]">
+              <div className="w-9 h-9 rounded-lg bg-[#DE4444]/10 border border-[#DE4444]/25 flex items-center justify-center text-[#F87171] shrink-0">
                 <Send className="size-4" />
               </div>
               <div>
-                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Feedback & Suggestions</h2>
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-white">Feedback & Suggestions</h2>
                 <p className="text-xs font-mono text-zinc-400 mt-0.5">Bugs, ideas, missing sheets — direct to engineering.</p>
               </div>
             </div>
 
-            <div className="mt-8 p-6 sm:p-8 rounded-xl bg-[#0E1117] border border-white/[0.06] shadow-2xl">
-              <form onSubmit={onSendFeedback} className="space-y-5 font-mono text-xs">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Note that user must be logged in first */}
+            <div className="mt-4 flex items-start gap-2.5 rounded-lg border border-amber-500/25 bg-amber-500/10 px-3.5 py-2.5 text-xs font-mono text-amber-400">
+              <AlertTriangle className="size-4 shrink-0 mt-0.5" />
+              <span>
+                <strong>Note:</strong> You must be logged in first to submit feedback. This form is for demo preview —{' '}
+                <button
+                  type="button"
+                  onClick={() => setSignInOpen(true)}
+                  className="underline text-white hover:text-amber-300 font-medium cursor-pointer"
+                >
+                  log in here
+                </button>{' '}
+                to submit feedback directly to engineering.
+              </span>
+            </div>
+
+            <div className="mt-6 p-4 sm:p-6 lg:p-8 rounded-xl bg-[#0E1117] border border-white/[0.06] shadow-2xl">
+              <form onSubmit={onSendFeedback} className="space-y-4 sm:space-y-5 font-mono text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <label className="block text-zinc-400 uppercase text-[10px] tracking-wider mb-2">Your name</label>
+                    <label className="block text-zinc-400 uppercase text-[10px] tracking-wider mb-1.5 sm:mb-2">Your name</label>
                     <input
                       type="text"
                       value={feedback.name}
                       onChange={(e) => setFeedback((f) => ({ ...f, name: e.target.value }))}
                       placeholder="Alex Chen"
-                      className="w-full bg-[#07080C] border border-white/10 rounded-lg px-3.5 py-2.5 text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-[#DE4444] text-xs transition-colors"
+                      className="w-full bg-[#07080C] border border-white/10 rounded-lg px-3 sm:px-3.5 py-2 sm:py-2.5 text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-[#DE4444] text-xs transition-colors"
                     />
                   </div>
                   <div>
-                    <label className="block text-zinc-400 uppercase text-[10px] tracking-wider mb-2">Your email *</label>
+                    <label className="block text-zinc-400 uppercase text-[10px] tracking-wider mb-1.5 sm:mb-2">Your email *</label>
                     <input
                       type="email"
                       required
                       value={feedback.email}
                       onChange={(e) => setFeedback((f) => ({ ...f, email: e.target.value }))}
                       placeholder="alex.chen@example.com"
-                      className="w-full bg-[#07080C] border border-white/10 rounded-lg px-3.5 py-2.5 text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-[#DE4444] text-xs transition-colors"
+                      className="w-full bg-[#07080C] border border-white/10 rounded-lg px-3 sm:px-3.5 py-2 sm:py-2.5 text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-[#DE4444] text-xs transition-colors"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-zinc-400 uppercase text-[10px] tracking-wider mb-2">Title</label>
+                  <label className="block text-zinc-400 uppercase text-[10px] tracking-wider mb-1.5 sm:mb-2">Title</label>
                   <input
                     type="text"
                     value={feedback.title}
                     onChange={(e) => setFeedback((f) => ({ ...f, title: e.target.value }))}
                     placeholder="Short summary — e.g. Add Striver 79 Sheet or CSES Tree Algorithms"
-                    className="w-full bg-[#07080C] border border-white/10 rounded-lg px-3.5 py-2.5 text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-[#DE4444] text-xs transition-colors"
+                    className="w-full bg-[#07080C] border border-white/10 rounded-lg px-3 sm:px-3.5 py-2 sm:py-2.5 text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-[#DE4444] text-xs transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-zinc-400 uppercase text-[10px] tracking-wider mb-2">Description *</label>
+                  <label className="block text-zinc-400 uppercase text-[10px] tracking-wider mb-1.5 sm:mb-2">Description *</label>
                   <textarea
                     rows={4}
                     required
                     value={feedback.description}
                     onChange={(e) => setFeedback((f) => ({ ...f, description: e.target.value }))}
                     placeholder="What happened, what you expected, or what you'd love to see..."
-                    className="w-full bg-[#07080C] border border-white/10 rounded-lg px-3.5 py-2.5 text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-[#DE4444] text-xs transition-colors leading-relaxed resize-none"
+                    className="w-full bg-[#07080C] border border-white/10 rounded-lg px-3 sm:px-3.5 py-2 sm:py-2.5 text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-[#DE4444] text-xs transition-colors leading-relaxed resize-none"
                   />
                 </div>
 
-                <div className="flex items-center justify-between pt-2">
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-1 sm:pt-2">
                   <button
                     type="submit"
-                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg text-xs font-mono font-medium tracking-wide text-white bg-[#DE4444] hover:bg-[#c93636] transition-all shadow-[0_0_18px_rgba(222,68,68,0.3)] active:scale-95"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg text-xs font-mono font-medium tracking-wide text-white bg-[#DE4444] hover:bg-[#c93636] transition-all shadow-[0_0_18px_rgba(222,68,68,0.3)] active:scale-95"
                   >
                     <Send className="size-3.5" />
                     <span>Send feedback</span>
@@ -1684,7 +1739,7 @@ const Landing = () => {
             </div>
 
             {/* Transparency Note */}
-            <div className="mt-6 p-4 rounded-xl bg-[#07080C] border border-white/[0.04] text-[11px] font-mono text-zinc-500 space-y-1.5">
+            <div className="mt-5 sm:mt-6 p-3.5 sm:p-4 rounded-xl bg-[#07080C] border border-white/[0.04] text-[10px] sm:text-[11px] font-mono text-zinc-500 space-y-1.5">
               <div className="text-zinc-300 font-medium text-xs mb-1">How your data is handled:</div>
               <div className="flex items-start gap-2">
                 <span className="text-zinc-600">●</span>
@@ -1705,22 +1760,22 @@ const Landing = () => {
         {/* ============================================================ */}
         {/* 9. UNDERSTATED BOTTOM CTA                                     */}
         {/* ============================================================ */}
-        <section className="py-28 border-t border-white/[0.06] relative overflow-hidden" id="launch">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[280px] bg-[#DE4444]/[0.08] blur-[130px] pointer-events-none" />
+        <section className="py-20 sm:py-28 border-t border-white/[0.06] relative overflow-hidden" id="launch">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-[600px] h-[250px] sm:h-[280px] bg-[#DE4444]/[0.08] blur-[100px] sm:blur-[130px] pointer-events-none" />
           <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center relative z-10">
             <span className="font-mono text-xs text-[#DE4444] uppercase tracking-[0.2em] font-semibold">
               Ready to begin
             </span>
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-[-0.03em] mt-3">
-              Ready to master software engineering?<br />Open your workspace in one click.
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-[-0.03em] mt-3 leading-snug sm:leading-tight">
+              Ready to master software engineering?<br className="hidden sm:inline" /> Open your workspace in one click.
             </h2>
-            <p className="mt-4 text-zinc-400 text-sm sm:text-base font-light max-w-md mx-auto">
+            <p className="mt-3.5 sm:mt-4 text-zinc-400 text-xs sm:text-base font-light max-w-md mx-auto">
               Experience interview preparation without the noise. Start solving directly in your browser with zero setup required.
             </p>
-            <div className="mt-9 flex items-center justify-center gap-4">
+            <div className="mt-7 sm:mt-9 flex items-center justify-center gap-4">
               <button
                 onClick={() => setSignInOpen(true)}
-                className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-lg text-sm font-mono font-medium tracking-wide text-white bg-[#DE4444] hover:bg-[#c93636] transition-all shadow-[0_2px_26px_rgba(222,68,68,0.35)] active:scale-95"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 sm:px-8 py-3.5 rounded-lg text-sm font-mono font-medium tracking-wide text-white bg-[#DE4444] hover:bg-[#c93636] transition-all shadow-[0_2px_26px_rgba(222,68,68,0.35)] active:scale-95"
               >
                 <Terminal className="size-4" />
                 <span>Enter Heuristiq</span>
@@ -1732,27 +1787,31 @@ const Landing = () => {
       </main>
 
       {/* ============================================================ */}
-      {/* 10. MINIMALIST FOOTER                                         */}
+      {/* 10. MINIMALIST RESPONSIVE FOOTER                              */}
       {/* ============================================================ */}
-      <footer className="w-full border-t border-white/[0.06] py-12 bg-[#06070B]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
+      <footer className="w-full border-t border-white/[0.06] py-10 sm:py-12 bg-[#06070B]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-5 sm:gap-6 text-center sm:text-left">
+          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
             <img
               src={logoHorizontal}
               alt="Heuristiq"
-              className="h-10 w-auto object-contain brightness-125 contrast-125"
+              className="h-8 sm:h-10 w-auto object-contain brightness-125 contrast-125"
             />
             <span className="font-mono text-xs text-zinc-500">
               © {new Date().getFullYear()} Heuristiq. Engineered for quiet execution.
             </span>
           </div>
 
-          <div className="flex items-center gap-6 font-mono text-xs text-zinc-500">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 font-mono text-xs text-zinc-500">
             <a href="#manifesto" className="hover:text-zinc-300 transition-colors">Manifesto</a>
             <a href="#sheets" className="hover:text-zinc-300 transition-colors">Sheets</a>
             <a href="#feedback" className="hover:text-zinc-300 transition-colors">Feedback</a>
             <a href="#launch" onClick={() => setSignInOpen(true)} className="hover:text-zinc-300 transition-colors">Sign in</a>
           </div>
+        </div>
+
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-6 mt-6 border-t border-white/[0.04] text-center text-xs text-zinc-500 font-mono">
+          Not affiliated with any platform it tracks.
         </div>
       </footer>
 
@@ -1760,49 +1819,50 @@ const Landing = () => {
       {/* 11. AUTHENTICATION MODAL & SEAMLESS ONBOARDING FLOW           */}
       {/* ============================================================ */}
       {signInOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-fade-in">
           <div
             className="fixed inset-0"
             onClick={() => setSignInOpen(false)}
           />
-          <div className="relative z-10 w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#0F131C] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.8)] font-sans">
-            <div className="flex items-center justify-between pb-4 border-b border-white/10">
+          <div className="relative z-10 w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#0F131C] p-5 sm:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.8)] font-sans max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3.5 border-b border-white/10">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-[#DE4444]/15 text-[#F87171] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-[#DE4444]/15 text-[#F87171] flex items-center justify-center shrink-0">
                   <Terminal className="size-4" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white tracking-tight">Launch Workspace</h3>
+                  <h3 className="text-sm sm:text-base font-bold text-white tracking-tight">Launch Workspace</h3>
                   <p className="text-xs text-zinc-400">Choose your preferred entry method</p>
                 </div>
               </div>
               <button
                 onClick={() => setSignInOpen(false)}
                 className="w-8 h-8 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 flex items-center justify-center transition-colors"
+                aria-label="Close"
               >
                 <X className="size-4" />
               </button>
             </div>
 
-            <div className="mt-6 space-y-4 font-mono text-xs">
+            <div className="mt-5 space-y-3.5 font-mono text-xs">
               {/* Option 1: Google OAuth */}
-              <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:border-white/15 transition-all">
-                <div className="flex items-center justify-between mb-2">
+              <div className="p-3.5 sm:p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:border-white/15 transition-all">
+                <div className="flex items-center justify-between mb-1.5">
                   <span className="font-semibold text-white">Google Cloud Account</span>
                   <span className="text-[10px] text-emerald-400 flex items-center gap-1">
                     <Check className="size-3" /> Auto Sync
                   </span>
                 </div>
-                <p className="text-zinc-400 text-[11px] mb-3 leading-relaxed">
+                <p className="text-zinc-400 text-[10px] sm:text-[11px] mb-3 leading-relaxed">
                   Seamlessly sync solved problems, bookmarks, whiteboard drawings, and notes across all your devices.
                 </p>
                 {isFirebaseConfigured ? (
                   <button
                     onClick={onGoogle}
                     disabled={googleBusy}
-                    className="w-full flex items-center justify-center gap-2.5 rounded-lg bg-[#DE4444] hover:bg-[#c93636] px-4 py-2.5 text-xs font-semibold text-white transition-all shadow-[0_0_16px_rgba(222,68,68,0.25)] disabled:opacity-50"
+                    className="w-full flex items-center justify-center gap-2.5 rounded-lg bg-white hover:bg-zinc-100 px-4 py-2.5 text-xs font-semibold text-zinc-900 transition-all shadow-sm border border-zinc-200 disabled:opacity-50 active:scale-95 cursor-pointer"
                   >
-                    <svg viewBox="0 0 18 18" className="size-4" aria-hidden="true">
+                    <svg viewBox="0 0 18 18" className="size-4 shrink-0" aria-hidden="true">
                       <path fill="#4285F4" d="M17.64 9.205c0-.638-.057-1.252-.164-1.841H9v3.482h4.844a4.14 4.14 0 0 1-1.797 2.715v2.258h2.909c1.703-1.568 2.684-3.878 2.684-6.614Z" />
                       <path fill="#34A853" d="M9 18c2.43 0 4.468-.806 5.956-2.181l-2.91-2.258c-.805.54-1.835.859-3.046.859-2.344 0-4.328-1.585-5.037-3.714H.956v2.332A9 9 0 0 0 9 18Z" />
                       <path fill="#FBBC05" d="M3.963 10.706A5.414 5.414 0 0 1 3.681 9c0-.592.102-1.168.282-1.706V4.962H.956A9 9 0 0 0 0 9c0 1.452.347 2.827.956 4.038l3.007-2.332Z" />
@@ -1811,32 +1871,32 @@ const Landing = () => {
                     <span>{googleBusy ? 'Connecting...' : 'Continue with Google'}</span>
                   </button>
                 ) : (
-                  <p className="rounded-lg border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-400">
+                  <p className="rounded-lg border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-[10px] sm:text-[11px] text-amber-400">
                     Firebase Cloud Sync not configured on this local instance.
                   </p>
                 )}
               </div>
 
               {/* Option 2: Guest Mode */}
-              <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:border-white/15 transition-all">
-                <div className="flex items-center justify-between mb-2">
+              <div className="p-3.5 sm:p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:border-white/15 transition-all">
+                <div className="flex items-center justify-between mb-1.5">
                   <span className="font-semibold text-white">Guest Session</span>
                   <span className="text-[10px] text-zinc-400">Instant Access</span>
                 </div>
-                <div className="mb-3 flex items-start gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-[10px] leading-relaxed text-amber-400">
+                <div className="mb-3 flex items-start gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 px-2.5 sm:px-3 py-2 text-[10px] leading-relaxed text-amber-400">
                   <AlertTriangle className="mt-0.5 size-3 shrink-0" />
                   <span>Saves to your browser storage (IndexedDB). Clearing cache will wipe progress.</span>
                 </div>
                 <button
                   onClick={onGuest}
-                  className="w-full rounded-lg border border-white/15 bg-white/[0.04] hover:bg-white/[0.08] px-4 py-2.5 text-xs font-semibold text-zinc-200 transition-colors"
+                  className="w-full rounded-lg border border-white/15 bg-white/[0.04] hover:bg-white/[0.08] px-4 py-2.5 text-xs font-semibold text-zinc-200 transition-colors active:scale-95"
                 >
                   Continue as Guest
                 </button>
               </div>
 
               {/* Option 3: Email & Password */}
-              <div className="pt-2 text-center">
+              <div className="pt-1.5 text-center">
                 <button
                   onClick={() => {
                     setSignInOpen(false);
@@ -1855,7 +1915,7 @@ const Landing = () => {
       {/* Email/Password Modal */}
       {authCardOpen && (
         <div
-          className="fixed inset-0 z-[130] flex items-center justify-center overflow-y-auto bg-black/80 p-4 backdrop-blur-md"
+          className="fixed inset-0 z-[130] flex items-center justify-center overflow-y-auto bg-black/80 p-3 sm:p-4 backdrop-blur-md"
           onClick={() => setAuthCardOpen(false)}
         >
           <div onClick={(e) => e.stopPropagation()}>

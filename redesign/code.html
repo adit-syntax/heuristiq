@@ -1,0 +1,1489 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Heuristiq — The Quiet Workspace for Technical Interview Preparation</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'surface-base': '#08090D',
+            'surface-dark': '#0B0D12',
+            'surface': '#111319',
+            'surface-card': '#0E1117',
+            'surface-card-hover': '#141822',
+            'surface-elevated': '#171D2A',
+            'surface-container': '#181A22',
+            'border-subtle': 'rgba(255, 255, 255, 0.06)',
+            'border-light': 'rgba(255, 255, 255, 0.1)',
+            'border-active': 'rgba(222, 68, 68, 0.35)',
+            'accent-crimson': '#DE4444',
+            'accent-coral': '#F87171',
+            'accent-glow': 'rgba(222, 68, 68, 0.1)',
+            'zinc-text-muted': '#64748B',
+            'zinc-text-secondary': '#94A3B8',
+            'terminal-green': '#10B981',
+            'terminal-amber': '#F59E0B'
+          },
+          fontFamily: {
+            'sans': ['Plus Jakarta Sans', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            'mono': ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    @layer base {
+      html, body {
+        background-color: #08090D;
+        color: #F8FAFC;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        overflow-x: hidden;
+        letter-spacing: -0.015em;
+      }
+      ::selection {
+        background: #DE4444;
+        color: #FFFFFF;
+      }
+      ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #08090D;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #1B1F2A;
+        border-radius: 9999px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #DE4444;
+      }
+    }
+    .grid-pattern {
+      background-size: 48px 48px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    }
+
+    /* Calibrated Smooth Video Window Animation */
+    @keyframes slideWindowClean {
+      0%, 20% { transform: translateX(0px); }
+      33%, 53% { transform: translateX(38px); }
+      66%, 86% { transform: translateX(76px); }
+      100% { transform: translateX(114px); }
+    }
+    .animate-sliding-window {
+      animation: slideWindowClean 8s cubic-bezier(0.25, 1, 0.5, 1) infinite alternate;
+    }
+
+    @keyframes subtlePulse {
+      0%, 100% { opacity: 0.9; }
+      50% { opacity: 0.4; }
+    }
+    .animate-subtle-pulse {
+      animation: subtlePulse 2.8s ease-in-out infinite;
+    }
+
+    @keyframes cursorBlink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+    .animate-cursor-blink {
+      animation: cursorBlink 1.1s infinite;
+    }
+
+    @keyframes videoScrubSoft {
+      0% { width: 34%; }
+      50% { width: 62%; }
+      100% { width: 88%; }
+    }
+    .animate-video-scrub {
+      animation: videoScrubSoft 18s ease-in-out infinite alternate;
+    }
+
+    /* Tutor Floating & Breathing Animation */
+    @keyframes tutorFloatBreath {
+      0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
+      35% { transform: translateY(-4px) rotate(1.2deg) scale(1.015); }
+      70% { transform: translateY(2px) rotate(-1deg) scale(0.995); }
+    }
+    .animate-tutor-float {
+      animation: tutorFloatBreath 5.5s ease-in-out infinite;
+    }
+
+    /* Equalizer wave bars */
+    @keyframes waveBar1 { 0%, 100% { height: 4px; } 50% { height: 14px; } }
+    @keyframes waveBar2 { 0%, 100% { height: 12px; } 50% { height: 5px; } }
+    @keyframes waveBar3 { 0%, 100% { height: 7px; } 50% { height: 16px; } }
+    @keyframes waveBar4 { 0%, 100% { height: 15px; } 50% { height: 6px; } }
+    .anim-bar-1 { animation: waveBar1 0.75s ease-in-out infinite; }
+    .anim-bar-2 { animation: waveBar2 0.65s ease-in-out infinite 0.15s; }
+    .anim-bar-3 { animation: waveBar3 0.85s ease-in-out infinite 0.3s; }
+    .anim-bar-4 { animation: waveBar4 0.6s ease-in-out infinite 0.2s; }
+
+    /* Task Item Entry / Removal transitions */
+    .task-item-enter {
+      animation: taskSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes taskSlideIn {
+      from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .task-item-exit {
+      animation: taskSlideOut 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes taskSlideOut {
+      from { opacity: 1; transform: translateX(0); max-height: 40px; }
+      to { opacity: 0; transform: translateX(20px); max-height: 0px; margin: 0; padding: 0; }
+    }
+
+    /* Subtle question row active highlight shimmer */
+    .active-row-indicator {
+      box-shadow: 0 0 16px -2px rgba(222, 68, 68, 0.25);
+    }
+</style>
+</head>
+<body class="bg-surface-base text-zinc-100 antialiased selection:bg-accent-crimson selection:text-white">
+<!-- TOP APP BAR / MINIMAL NAVIGATION -->
+<header class="fixed top-0 left-0 right-0 w-full z-50 bg-[#08090D]/85 backdrop-blur-xl border-b border-border-subtle">
+<div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+<div class="flex items-center gap-10">
+<a class="flex items-center gap-3 group" href="#">
+<img alt="Heuristiq" class="w-auto object-contain brightness-125 filter contrast-125" src="https://lh3.googleusercontent.com/aida/AEtjO1UL-gNaBi0OPzdhXiHAXk8drYDGKTBFZmdOq3VTnj77WqSfqHpFo0jHJM7aTr4xEOTw50eA6-PxGAyJiM9-B0xwjTs35a2PM9bQEnGdOALhJ2jiQ70YDUe8nHamznpvgqia3FUZSJf9iAALFjcT-N4YTOnnjh-_WXv5pNpzGqKi7Pmkb632yMOZ1xXrDswx9r9LHf35p6J5_nKn8oBOg5FOlvP3VaoS-YIt4GlvEToOicxrbg40B1U79YY" style="height: 44px;">
+<span class="font-mono text-[11px] tracking-widest text-zinc-500 font-medium uppercase hidden sm:inline-block border-l border-white/10 pl-3">Workspace</span>
+</a>
+<nav class="hidden md:flex items-center gap-8 text-xs font-mono tracking-wider uppercase text-zinc-400"><a class="hover:text-white transition-colors duration-200" href="#sheets">Sheets</a><a class="hover:text-white transition-colors duration-200" href="#roadmap">Roadmap</a><a class="hover:text-white transition-colors duration-200" href="#architecture">Architecture</a><a class="hover:text-white transition-colors duration-200" href="#workflow">Workspace</a><a class="hover:text-white transition-colors duration-200" href="#feedback">Feedback</a></nav>
+</div>
+<div class="flex items-center gap-5">
+<a class="hidden sm:inline-flex items-center gap-2 text-xs font-mono text-zinc-400 hover:text-white transition-colors" href="#preview">
+<span class="">Explore Engine</span>
+<span class="text-zinc-600">/</span>
+</a>
+<a class="inline-flex items-center gap-2 px-4 py-2 rounded-md text-xs font-mono font-medium tracking-wide text-white bg-accent-crimson hover:bg-[#c93636] transition-all shadow-[0_0_18px_rgba(222,68,68,0.3)]" href="#launch">
+<span class="">Launch Workspace</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</header>
+<!-- MAIN HERO CONTAINER -->
+<main class="relative pt-32 sm:pt-40">
+<!-- Quiet Subtle Backdrop Glow -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-[760px] h-[400px] bg-gradient-to-b from-accent-crimson/[0.08] via-transparent to-transparent blur-[130px] pointer-events-none -z-10"></div>
+<div class="absolute top-44 left-1/2 -translate-x-1/2 w-full h-[550px] grid-pattern -z-20 opacity-60"></div>
+<section class="max-w-5xl mx-auto px-6 text-center flex flex-col items-center">
+<!-- Minimalist Tag Badge -->
+<div class="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/[0.025] border border-white/[0.08] mb-8 backdrop-blur-md">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-crimson"></span>
+<span class="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-300 font-medium">ELEVATE INSIGHT</span>
+</div>
+<!-- Hero Headline -->
+<h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-[-0.035em] text-white leading-[1.08] max-w-4xl">Your favorite sheet, contest and note. <span class="text-accent-coral">One quiet workspace.</span></h1>
+<!-- Editorial Subtitle -->
+<p class="mt-6 text-base sm:text-xl text-zinc-400 max-w-2xl font-light leading-relaxed">The question lists you already prep from, the contests you already compete in — tracked, annotated and paced in one place.</p>
+<!-- Minimal Dual CTAs -->
+<div class="mt-10 flex flex-wrap items-center justify-center gap-4">
+<a class="inline-flex items-center gap-2.5 px-7 py-3 rounded-lg text-sm font-mono font-medium tracking-wide text-white bg-accent-crimson hover:bg-[#c93636] transition-all shadow-[0_2px_22px_rgba(222,68,68,0.35)]" href="#launch">
+<span class="">Get Started</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+<a class="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-mono text-zinc-300 hover:text-white bg-white/[0.02] hover:bg-white/[0.05] border border-white/10 transition-all" href="#preview">
+<span class="">See how it works</span>
+<span class="text-zinc-500">→</span>
+</a>
+</div>
+<!-- Live Sheets Banner Pills (Interactive with Active Indicator) -->
+<div class="mt-10 flex flex-wrap items-center justify-center gap-2 max-w-3xl" id="sheets">
+<button class="hero-pill inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-white/[0.02] border border-white/[0.07] text-xs font-mono text-zinc-300 hover:border-accent-crimson/50 transition-all cursor-pointer" id="pill-track-0" onclick="selectSection(0)"><span class="text-zinc-300" id="pill-label-0">Top DSA Sheet</span><span class="text-zinc-500 text-[11px]">456</span></button>
+<button class="hero-pill inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-white/[0.02] border border-white/[0.07] text-xs font-mono text-zinc-300 hover:border-accent-crimson/50 transition-all cursor-pointer" id="pill-track-1" onclick="selectSection(1)"><span id="pill-label-1" class="text-zinc-300">NeetCode 150</span><span class="text-zinc-500 text-[11px]">150</span></button>
+<button class="hero-pill inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-accent-crimson/10 border border-accent-crimson/50 text-xs font-mono text-white transition-all cursor-pointer shadow-[0_0_12px_rgba(222,68,68,0.2)]" id="pill-track-2" onclick="selectSection(2)"><span id="pill-label-2" class="text-accent-coral font-medium">290+ Company Banks</span><span class="text-[10px] px-1 rounded bg-accent-crimson/15 text-accent-coral">Google</span></button>
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-white/[0.02] border border-white/[0.07] text-xs font-mono text-zinc-300"><span class="text-zinc-300">Blind 75</span><span class="text-zinc-500 text-[11px]">75</span></div>
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-white/[0.02] border border-white/[0.07] text-xs font-mono text-zinc-300"><span class="text-accent-coral font-medium">System Design</span><span class="text-[10px] px-1 rounded bg-accent-crimson/15 text-accent-coral">Roadmap</span></div>
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-white/[0.02] border border-white/[0.07] text-xs font-mono text-zinc-300"><span class="text-zinc-300">Core CS Fundamentals</span></div>
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-white/[0.02] border border-white/[0.07] text-xs font-mono text-zinc-300"><span class="text-zinc-300">CP Ladder</span><span class="text-zinc-500 text-[11px]">1600+</span></div>
+</div>
+<!-- CLEAN HERO WORKSPACE FRAME (Decluttered, generous spacing, airy obsidian feel) -->
+<div class="w-full mt-14 rounded-xl border border-white/[0.08] bg-[#0A0C11] shadow-2xl overflow-hidden text-left relative" id="preview">
+<!-- Minimal Chrome Bar -->
+<div class="h-10 px-4 bg-[#08090D] border-b border-white/[0.05] flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-white/[0.14] inline-block"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-white/[0.08] inline-block"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-white/[0.08] inline-block"></span>
+<span class="ml-3 font-mono text-[11px] text-zinc-500 tracking-wider">heuristiq.app / <span class="text-zinc-400 transition-colors duration-300" id="path-active-section">company-banks / google-graphs</span></span>
+</div>
+<div class="flex items-center gap-4 font-mono text-[11px] text-zinc-500">
+<span class="hidden sm:inline-flex items-center gap-1.5 text-zinc-400"><span class="w-1.5 h-1.5 rounded-full bg-terminal-green animate-pulse"></span>
+@aditsyntax</span>
+<span class="inline-flex items-center gap-1 text-zinc-400">
+<span class="material-symbols-outlined text-[13px] text-terminal-green">cloud_done</span>
+IndexedDB
+</span>
+</div>
+</div>
+<!-- Editor Shell Interior -->
+<div class="grid grid-cols-12 min-h-[460px] relative bg-[#090B10]">
+<!-- Left Slim Navigation (Quiet, uncrowded) -->
+<div class="hidden md:flex md:col-span-3 border-r border-white/[0.05] p-5 flex-col justify-between bg-[#07080D]/80">
+<div class="space-y-5">
+<div class="flex items-center justify-between font-mono text-[10px] text-zinc-500 uppercase tracking-widest">
+<span class="">Curated Track</span>
+<span class="text-[9px] px-1.5 py-0.5 rounded bg-white/[0.03] text-zinc-400 border border-white/5" id="auto-cycle-indicator">Auto-sync</span>
+</div>
+<div class="space-y-1.5 font-mono text-xs">
+<div class="flex items-center justify-between px-3 py-2 rounded text-zinc-400 hover:text-zinc-200 transition-colors duration-200 cursor-pointer" id="nav-track-0" onclick="selectSection(0)"><span class="">Top DSA Sheet</span><span class="text-[10px] text-zinc-500">84 / 456</span></div>
+<div class="flex items-center justify-between px-3 py-2 rounded text-zinc-400 hover:text-zinc-200 transition-colors duration-200 cursor-pointer" id="nav-track-1" onclick="selectSection(1)">
+<span class="">NeetCode 150</span>
+<span class="text-[10px] text-zinc-600">150</span>
+</div>
+<div class="flex items-center justify-between px-3 py-2 rounded bg-white/[0.04] text-white border-l-2 border-accent-crimson transition-all duration-200 cursor-pointer" id="nav-track-2" onclick="selectSection(2)">
+<span class="">290+ Company Banks</span>
+<span class="text-[9px] px-1.5 py-0.5 rounded bg-accent-crimson/15 text-accent-coral">Google</span>
+</div>
+<div class="flex items-center justify-between px-3 py-2 rounded text-zinc-400 hover:text-zinc-200 transition-colors duration-200 cursor-pointer" onclick="selectSection(0)">
+<span class="">CP-31 Ladder</span>
+<span class="text-[10px] text-zinc-600">1600+</span>
+</div>
+</div>
+<div class="pt-5 border-t border-white/[0.05]">
+<div class="font-mono text-[10px] text-zinc-500 uppercase tracking-widest mb-2.5">Pace Target</div>
+<div class="p-3 rounded-lg bg-white/[0.015] border border-white/[0.04]">
+<div class="flex items-baseline justify-between text-xs">
+<span class="text-zinc-400">Daily goal</span>
+<span class="font-mono text-zinc-200 font-medium">4 problems</span>
+</div>
+<div class="w-full bg-white/[0.05] h-1 rounded-full mt-2.5 overflow-hidden">
+<div class="bg-accent-crimson h-full rounded-full transition-all duration-700" id="pace-bar" style="width: 75%;"></div>
+</div>
+</div>
+</div>
+<!-- ANIMATION 2: Dynamic Tasks to Be Done Widget -->
+<div class="pt-5 border-t border-white/[0.05]">
+<div class="rounded-xl bg-[#090A0F] border border-accent-crimson/25 p-3.5 font-mono text-xs shadow-xl relative overflow-hidden" id="tasks-card">
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded bg-accent-crimson/15 text-accent-coral flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px]">checklist</span>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="font-bold text-[11px] tracking-wider uppercase text-zinc-200">Tasks To Be Done</span>
+<span class="px-1.5 py-0.2 rounded-full bg-accent-crimson/25 text-accent-coral text-[9px] font-medium">Today</span>
+</div>
+<div class="text-[10px] text-zinc-500 mt-0.5 transition-all duration-300" id="tasks-counter-label">2 of 6 completed</div>
+</div>
+</div>
+<div class="flex items-center gap-1 text-zinc-500">
+<button class="w-5 h-5 rounded bg-white/[0.03] hover:text-white flex items-center justify-center" title="Collapse"><span class="material-symbols-outlined text-[13px]">expand_less</span></button>
+<button class="w-5 h-5 rounded bg-white/[0.03] hover:text-white flex items-center justify-center" title="Expand"><span class="material-symbols-outlined text-[13px]">expand_more</span></button>
+<button class="w-5 h-5 rounded bg-white/[0.03] text-accent-coral flex items-center justify-center" title="Activity"><span class="material-symbols-outlined text-[13px] animate-pulse">ads_click</span></button>
+</div>
+</div>
+<!-- Input Field with Live Simulated Typing Animation -->
+<div class="flex items-center gap-1.5 mb-2.5">
+<div class="relative flex-1">
+<input class="w-full bg-[#121318] border border-accent-crimson/60 focus:border-accent-crimson rounded-lg px-3 py-1.5 text-zinc-200 text-[11px] placeholder-zinc-500 focus:outline-none transition-colors" id="task-input-sim" placeholder="Add task for today..." readonly="" type="text">
+<span class="absolute right-2 top-2 w-1 h-3 bg-accent-crimson/70 animate-cursor-blink" id="task-input-cursor"></span>
+</div>
+<button class="w-7 h-7 rounded-lg bg-accent-crimson/25 hover:bg-accent-crimson/40 text-accent-coral flex items-center justify-center transition-transform active:scale-95" id="btn-add-task" title="Add task">
+<span class="material-symbols-outlined text-[15px]">add</span>
+</button>
+</div>
+<!-- Task Item List Container with Automated Checking, Scrolling, and Deleting -->
+<div class="space-y-1.5 max-h-[160px] overflow-y-auto pr-0.5 transition-all duration-300" id="task-list-container"><div class="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-[#121318] border border-white/[0.04] text-zinc-300 hover:border-white/10 transition-all duration-200 group task-item-enter" id="task-row-t_1788743620484">
+        <div class="flex items-center gap-2.5 min-w-0 pr-2">
+          <span class="w-4 h-4 rounded border border-white/20 hover:border-accent-crimson cursor-pointer inline-flex items-center justify-center transition-colors">
+            
+          </span>
+          <span class="text-[11px] truncate text-zinc-300 font-medium">Analyze topological cycle</span>
+        </div>
+        <button class="text-zinc-600 hover:text-zinc-400 opacity-60 group-hover:opacity-100 transition-opacity flex-shrink-0">
+          <span class="material-symbols-outlined text-[14px]">delete</span>
+        </button>
+      </div><div class="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-[#121318] border border-white/[0.04] text-zinc-300 hover:border-white/10 transition-all duration-200 group bg-[#121318]/60" id="task-row-t_1788743424487">
+        <div class="flex items-center gap-2.5 min-w-0 pr-2">
+          <span class="w-4 h-4 rounded border bg-terminal-green/20 border-terminal-green text-terminal-green flex items-center justify-center cursor-pointer inline-flex items-center justify-center transition-colors">
+            <span class="material-symbols-outlined text-[12px]">check</span>
+          </span>
+          <span class="text-[11px] truncate line-through text-zinc-500">Analyze topological cycle</span>
+        </div>
+        <button class="text-zinc-600 hover:text-zinc-400 opacity-60 group-hover:opacity-100 transition-opacity flex-shrink-0">
+          <span class="material-symbols-outlined text-[14px]">delete</span>
+        </button>
+      </div><div class="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-[#121318] border border-white/[0.04] text-zinc-300 hover:border-white/10 transition-all duration-200 group " id="task-row-t1">
+        <div class="flex items-center gap-2.5 min-w-0 pr-2">
+          <span class="w-4 h-4 rounded border border-white/20 hover:border-accent-crimson cursor-pointer inline-flex items-center justify-center transition-colors">
+            
+          </span>
+          <span class="text-[11px] truncate text-zinc-300 font-medium">Master DSU rank &amp; path compression</span>
+        </div>
+        <button class="text-zinc-600 hover:text-zinc-400 opacity-60 group-hover:opacity-100 transition-opacity flex-shrink-0">
+          <span class="material-symbols-outlined text-[14px]">delete</span>
+        </button>
+      </div><div class="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-[#121318] border border-white/[0.04] text-zinc-300 hover:border-white/10 transition-all duration-200 group bg-[#121318]/60" id="task-row-t2">
+        <div class="flex items-center gap-2.5 min-w-0 pr-2">
+          <span class="w-4 h-4 rounded border bg-terminal-green/20 border-terminal-green text-terminal-green flex items-center justify-center cursor-pointer inline-flex items-center justify-center transition-colors">
+            <span class="material-symbols-outlined text-[12px]">check</span>
+          </span>
+          <span class="text-[11px] truncate line-through text-zinc-500">Dry-run Kahn algorithm cycle in DAG</span>
+        </div>
+        <button class="text-zinc-600 hover:text-zinc-400 opacity-60 group-hover:opacity-100 transition-opacity flex-shrink-0">
+          <span class="material-symbols-outlined text-[14px]">delete</span>
+        </button>
+      </div><div class="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-[#121318] border border-white/[0.04] text-zinc-300 hover:border-white/10 transition-all duration-200 group " id="task-row-t3">
+        <div class="flex items-center gap-2.5 min-w-0 pr-2">
+          <span class="w-4 h-4 rounded border border-white/20 hover:border-accent-crimson cursor-pointer inline-flex items-center justify-center transition-colors">
+            
+          </span>
+          <span class="text-[11px] truncate text-zinc-300 font-medium">Solve 2 BFS queue problems</span>
+        </div>
+        <button class="text-zinc-600 hover:text-zinc-400 opacity-60 group-hover:opacity-100 transition-opacity flex-shrink-0">
+          <span class="material-symbols-outlined text-[14px]">delete</span>
+        </button>
+      </div><div class="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-[#121318] border border-white/[0.04] text-zinc-300 hover:border-white/10 transition-all duration-200 group " id="task-row-t4">
+        <div class="flex items-center gap-2.5 min-w-0 pr-2">
+          <span class="w-4 h-4 rounded border border-white/20 hover:border-accent-crimson cursor-pointer inline-flex items-center justify-center transition-colors">
+            
+          </span>
+          <span class="text-[11px] truncate text-zinc-300 font-medium">Review monotonic sliding window invariant</span>
+        </div>
+        <button class="text-zinc-600 hover:text-zinc-400 opacity-60 group-hover:opacity-100 transition-opacity flex-shrink-0">
+          <span class="material-symbols-outlined text-[14px]">delete</span>
+        </button>
+      </div></div>
+</div>
+</div>
+</div>
+<div class="font-mono text-[11px] text-zinc-500 flex items-center justify-between pt-3 border-t border-white/[0.05]">
+<span class="">Judge0 Sandbox</span>
+<span class="text-terminal-green text-[10px] flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-terminal-green animate-pulse"></span>Online</span>
+</div>
+</div>
+<!-- Main Canvas with Decluttered Rows & Code View -->
+<div class="col-span-12 md:col-span-9 p-6 sm:p-7 relative flex flex-col justify-between"><div>
+<div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/[0.05]">
+<div id="section-meta-container">
+<div class="flex items-center gap-2.5">
+<h3 class="text-sm font-mono uppercase tracking-wider text-zinc-200 transition-colors duration-300" id="section-title">Graph Traversals &amp; Topological Ordering</h3>
+<span class="px-2 py-0.5 rounded bg-white/[0.03] border border-white/[0.06] text-accent-coral text-[10px] font-mono transition-all duration-300" id="section-company">Google</span>
+</div>
+<p class="text-xs text-zinc-500 mt-1 font-mono transition-colors duration-300" id="section-focus">Focus: Kahn Algorithm, Cycle Detection &amp; Disjoint Set Union</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1 font-mono text-xs">
+<button class="w-7 h-7 rounded flex items-center justify-center bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.08] text-zinc-400 hover:text-white transition-colors" id="btn-prev-q" onclick="navigateQuestion(-1)" title="Previous Question [K]">
+<span class="material-symbols-outlined text-[15px]">chevron_left</span>
+</button>
+<button class="w-7 h-7 rounded flex items-center justify-center bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.08] text-zinc-400 hover:text-white transition-colors" id="btn-next-q" onclick="navigateQuestion(1)" title="Next Question [J]">
+<span class="material-symbols-outlined text-[15px]">chevron_right</span>
+</button>
+<span class="text-[10px] text-zinc-500 font-mono hidden md:inline ml-1">[J/K]</span>
+</div>
+<span class="font-mono text-xs px-2.5 py-1 rounded bg-white/[0.03] border border-white/[0.06] text-zinc-400 flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-terminal-green animate-pulse"></span>
+C++ 20
+</span>
+</div>
+</div>
+<!-- ANIMATION 1: Interactive Question Rows Container -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-4 mt-4">
+<!-- Problem List Rows -->
+<div class="space-y-2 font-mono text-xs col-span-12" id="problem-rows-container">
+<div class="flex items-center justify-between px-3.5 py-2.5 rounded-md bg-white/[0.015] border border-white/[0.04] text-zinc-400 hover:bg-white/[0.03] hover:border-white/[0.08] transition-all duration-300 cursor-pointer group" id="q-row-0" onclick="setQuestionIndex(0)">
+<div class="flex items-center gap-3">
+<span class="text-terminal-green material-symbols-outlined text-[15px]" id="q-icon-0">check_circle</span>
+<span class="text-zinc-300 font-medium group-hover:text-white transition-colors" id="q-title-0">207. Course Schedule</span>
+</div>
+<div class="flex items-center gap-4 text-zinc-500 text-[11px]">
+<span class="text-terminal-amber" id="q-diff-0">Medium</span>
+<span class="hidden sm:inline" id="q-tag-0">Kahn / BFS</span>
+<span class="text-zinc-400 text-[11px]" id="q-status-0">Solved</span>
+</div>
+</div>
+<div class="flex items-center justify-between px-3.5 py-2.5 rounded-md bg-white/[0.04] border border-accent-crimson/60 text-white transition-all duration-300 cursor-pointer relative group active-row-indicator" id="q-row-1" onclick="setQuestionIndex(1)">
+<div class="flex items-center gap-3">
+<span class="text-accent-crimson material-symbols-outlined text-[15px]" id="q-icon-1">radio_button_unchecked</span>
+<span class="font-medium text-white" id="q-title-1">684. Redundant Connection</span>
+</div>
+<div class="flex items-center gap-4 text-zinc-400 text-[11px]">
+<span class="text-terminal-amber" id="q-diff-1">Medium</span>
+<span class="hidden sm:inline" id="q-tag-1">Union Find (DSU)</span>
+<span class="text-accent-coral flex items-center gap-1.5 text-[11px]" id="q-status-1"><span class="w-1.5 h-1.5 rounded-full bg-accent-crimson animate-pulse"></span>Active</span>
+</div>
+</div>
+<div class="flex items-center justify-between px-3.5 py-2.5 rounded-md bg-white/[0.015] border border-white/[0.04] text-zinc-400 hover:bg-white/[0.03] hover:border-white/[0.08] transition-all duration-300 cursor-pointer group" id="q-row-2" onclick="setQuestionIndex(2)">
+<div class="flex items-center gap-3">
+<span class="text-zinc-600 material-symbols-outlined text-[15px]" id="q-icon-2">radio_button_unchecked</span>
+<span class="group-hover:text-zinc-200 transition-colors" id="q-title-2">127. Word Ladder</span>
+</div>
+<div class="flex items-center gap-4 text-zinc-500 text-[11px]">
+<span class="text-accent-coral" id="q-diff-2">Hard</span>
+<span class="hidden sm:inline" id="q-tag-2">Bidirectional BFS</span>
+<span class="text-zinc-500 text-[11px]" id="q-status-2">Queue</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Code Runner Box -->
+<div class="mt-4 rounded-lg border border-white/[0.07] bg-[#07080C] p-4 font-mono text-xs relative overflow-hidden">
+<div class="flex items-center justify-between pb-3 mb-3 border-b border-white/[0.05] text-zinc-400 text-[11px]">
+<div class="flex items-center gap-2">
+<span class="text-zinc-300 font-medium">Judge0 Runner</span>
+<span class="text-zinc-600">/</span>
+<span class="text-zinc-400 transition-colors" id="runner-filename">dsu_redundant.cpp</span>
+</div>
+<div class="flex items-center gap-3 font-mono text-[11px]">
+<span class="text-zinc-500 transition-colors" id="runner-execution">Execution: 3ms</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-medium flex items-center gap-1.5 border text-terminal-green border-terminal-green/20" id="runner-badge"><span class="w-1.5 h-1.5 rounded-full bg-terminal-green animate-pulse"></span>Passed 39/39</span>
+</div>
+</div>
+<div class="text-zinc-400 space-y-1 text-[11px] leading-relaxed min-h-[140px] transition-all duration-300" id="code-snippet-pane" style="opacity: 1;"><div class="">vector&lt;<span class="text-accent-coral">int</span>&gt; <span class="text-white">findRedundantConnection</span>(vector&lt;vector&lt;<span class="text-accent-coral">int</span>&gt;&gt;&amp; edges) {</div>
+<div class="pl-4">vector&lt;<span class="text-accent-coral">int</span>&gt; parent(edges.size() + 1); iota(parent.begin(), parent.end(), 0);</div>
+<div class="pl-4">function&lt;<span class="text-accent-coral">int</span>(<span class="text-accent-coral">int</span>)&gt; find = [&amp;](<span class="text-accent-coral">int</span> x) {</div>
+<div class="pl-8"><span class="text-accent-coral">return</span> parent[x] == x ? x : parent[x] = find(parent[x]);</div>
+<div class="pl-4">};</div>
+<div class="pl-4"><span class="text-accent-coral">for</span> (<span class="text-accent-coral">auto</span>&amp; e : edges) {</div>
+<div class="pl-8"><span class="text-accent-coral">int</span> rootA = find(e[0]), rootB = find(e[1]);</div>
+<div class="pl-8"><span class="text-accent-coral">if</span> (rootA == rootB) <span class="text-accent-coral">return</span> e; <span class="text-zinc-500">// Found cycle edge</span></div>
+<div class="pl-8">parent[rootA] = rootB;</div>
+<div class="pl-4">}</div>
+<div class="flex items-center pl-4"><span class="text-accent-coral">return</span> {}; <span class="inline-block w-1.5 h-3.5 bg-accent-crimson ml-1.5 animate-cursor-blink"></span></div></div>
+</div>
+<!-- ANIMATION 3: Interactive Notes Preview Bar & Split Pane with Live Typing and Autosave -->
+<div class="mt-5 rounded-xl border border-white/[0.08] bg-[#090A0F] overflow-hidden shadow-2xl font-mono relative" id="notes-module">
+<div class="p-4 border-b border-white/[0.06] flex items-center justify-between bg-[#08090D]">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-accent-crimson/15 text-accent-coral flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">note_stack</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-bold text-sm text-white">Notes</span>
+<span class="text-xs text-zinc-500 font-normal" id="notes-counter-header">4 notes</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-zinc-500 text-xs flex items-center gap-1 transition-colors duration-300" id="notes-autosave-top"><span class="material-symbols-outlined text-[13px] text-zinc-400" id="notes-autosave-top-icon">cloud_done</span> <span id="notes-autosave-top-text" class="">Saved</span></span>
+<button class="px-3 py-1.5 rounded-lg text-xs font-mono font-medium text-white bg-accent-crimson hover:bg-[#c93636] transition-all flex items-center gap-1 active:scale-95" id="btn-create-note">
+<span class="material-symbols-outlined text-[14px]">add</span> New note
+</button>
+</div>
+</div>
+<!-- Notes Split Layout -->
+<div class="grid grid-cols-12 min-h-[260px]">
+<!-- Left Notes Sidebar List -->
+<div class="col-span-12 md:col-span-5 border-r border-white/[0.05] p-3 space-y-2 bg-[#08090D]/50">
+<div class="flex items-center gap-2">
+<div class="relative flex-1">
+<input class="w-full bg-[#121318] border border-white/10 rounded-md px-3 py-1.5 text-zinc-200 text-[11px] placeholder-zinc-500 focus:outline-none" placeholder="Search notes..." type="text">
+</div>
+<button class="px-2.5 py-1.5 rounded bg-accent-crimson/15 border border-accent-crimson/40 text-accent-coral text-[10px] font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">edit_note</span> Done
+</button>
+</div>
+<div class="flex items-center justify-between text-[10px] text-zinc-500 px-1 pt-1">
+<label class="flex items-center gap-1.5 cursor-pointer">
+<input class="rounded bg-[#121318] border-white/20 text-accent-crimson w-3 h-3" type="checkbox">
+<span class="" id="select-all-notes-label">Select all (4)</span>
+</label>
+<button class="text-zinc-500 hover:text-accent-coral flex items-center gap-1" id="btn-delete-active-note">
+<span class="material-symbols-outlined text-[12px]">delete</span> Delete
+</button>
+</div>
+<!-- Note items list -->
+<div class="space-y-1.5 pt-1 text-[11px] max-h-[195px] overflow-y-auto" id="notes-list-items">
+<div class="p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04] text-zinc-400 hover:bg-white/[0.04] cursor-pointer flex flex-col gap-0.5 transition-colors" id="note-card-0">
+<span class="text-zinc-300 font-medium">Untitled note</span>
+<span class="text-[10px] text-zinc-600">Empty note</span>
+</div>
+<div class="p-2.5 rounded-lg bg-accent-crimson/10 border border-accent-crimson/40 text-white cursor-pointer flex flex-col gap-1 transition-all" id="note-card-1">
+<div class="flex items-center justify-between">
+<span class="text-white font-medium" id="note-title-active">day 4 notes: graph cycles</span>
+<span class="text-[9px] px-1.5 py-0.2 rounded bg-accent-crimson/20 text-accent-coral" id="note-tag-active">google-graphs</span>
+</div>
+<span class="text-[10px] text-zinc-400 truncate" id="note-snippet-active">Topological sort via Kahn algorithm:</span>
+</div>
+<div class="p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04] text-zinc-400 hover:bg-white/[0.04] cursor-pointer flex flex-col gap-0.5 transition-colors" id="note-card-2">
+<span class="text-zinc-300 font-medium">day 3 notes</span>
+<span class="text-[10px] text-zinc-600">Empty note</span>
+</div>
+<div class="p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04] text-zinc-400 hover:bg-white/[0.04] cursor-pointer flex flex-col gap-1 transition-colors" id="note-card-3">
+<div class="flex items-center justify-between">
+<span class="text-zinc-300 font-medium">day 2 notes</span>
+<span class="text-[9px] px-1.5 py-0.2 rounded bg-white/[0.05] text-zinc-400">array, string</span>
+</div>
+<span class="text-[10px] text-zinc-600">Empty note</span>
+</div>
+</div>
+</div>
+<!-- Right Note Content / Markdown Viewer matching Heuristiq screenshot -->
+<div class="col-span-12 md:col-span-7 p-4 bg-[#090B10] flex flex-col justify-between relative">
+<div>
+<div class="flex items-center justify-between pb-3 border-b border-white/[0.05]">
+<div>
+<h4 class="text-sm font-bold text-zinc-200 transition-colors" id="note-viewer-heading">day 4 notes: graph cycles</h4>
+<div class="flex items-center gap-2 mt-1 text-[10px] text-zinc-500">
+<span class="">Document</span>
+<span class="text-zinc-700">•</span>
+<span class="px-1.5 py-0.2 rounded bg-accent-crimson/15 text-accent-coral" id="note-viewer-badge">google-graphs</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-zinc-400">
+<span class="text-[10px] px-2 py-0.5 rounded bg-white/[0.04] text-zinc-300">Write</span>
+<span class="text-[10px] px-2 py-0.5 rounded text-zinc-500 hover:text-zinc-300 cursor-pointer">Preview</span>
+</div>
+</div>
+<!-- Format Bar -->
+<div class="flex items-center gap-1.5 py-2 border-b border-white/[0.04] text-zinc-400 text-xs overflow-x-auto">
+<button class="p-1 hover:text-white rounded hover:bg-white/5 font-bold">B</button>
+<button class="p-1 hover:text-white rounded hover:bg-white/5 italic">I</button>
+<button class="p-1 hover:text-white rounded hover:bg-white/5"><span class="material-symbols-outlined text-[13px]">code</span></button>
+<span class="text-zinc-700">|</span>
+<span class="text-[10px] text-zinc-500">H1</span>
+<span class="text-[10px] text-zinc-500">H2</span>
+<span class="text-zinc-700">|</span>
+<button class="p-1 hover:text-white rounded hover:bg-white/5"><span class="material-symbols-outlined text-[13px]">format_list_bulleted</span></button>
+<button class="p-1 hover:text-white rounded hover:bg-white/5"><span class="material-symbols-outlined text-[13px]">format_quote</span></button>
+</div>
+<!-- Simulated Live Real-time Typing Editor Content -->
+<div class="pt-3 text-[11px] text-zinc-300 leading-relaxed font-mono space-y-2" id="note-live-editor">
+<div class="text-zinc-200" id="note-typing-line1">Topological sort via Kahn algorithm:</div>
+<div class="text-zinc-500" id="note-typing-line2">// Cycle exists if processed vertices count &lt; total vertices in DAG</div>
+<div class="p-2 rounded bg-white/[0.02] border border-white/[0.04] text-accent-coral relative" id="note-typing-codebox">
+<span id="note-typing-code-text" class="">vector&lt;int&gt; indeg(n, 0);<br>for(auto&amp; p : prereq) indeg[p[0]]++;<br>// Push 0 in-degree nodes to queue...</span>
+<span class="inline-block w-1.5 h-3.5 bg-accent-crimson ml-1 align-middle animate-cursor-blink" id="editor-cursor"></span>
+</div>
+</div>
+</div>
+<div class="pt-3 border-t border-white/[0.05] flex items-center justify-between text-[10px] text-zinc-500">
+<span id="notes-stats-counter" class="">36 words • 218 characters</span>
+<span class="flex items-center gap-1 text-terminal-green transition-all" id="notes-autosave-footer"><span class="material-symbols-outlined text-[12px]" id="notes-footer-icon">check_circle</span> <span id="notes-footer-text" class="">Autosaved</span></span>
+</div>
+<!-- Floating Undo Notification (Matching Heuristiq screenshot toast) -->
+<div class="absolute bottom-4 right-4 bg-[#141822] border border-white/10 rounded-lg px-3 py-2 text-xs font-mono shadow-2xl flex items-center gap-3 transition-all duration-300 transform z-20 opacity-0 pointer-events-none translate-y-2" id="note-undo-toast">
+<span class="text-zinc-300 text-[11px]">Deleted 1 note</span>
+<button class="text-accent-coral hover:text-white font-medium text-[11px] uppercase tracking-wider underline">Undo</button>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</section>
+<!-- MANIFESTO & PHILOSOPHY STATEMENT -->
+<section class="py-24 sm:py-32 border-t border-border-subtle mt-24" id="manifesto">
+<div class="max-w-4xl mx-auto px-6"><div class="font-mono text-xs text-accent-crimson tracking-[0.2em] uppercase mb-6 font-semibold">00 / Manifesto</div><blockquote class="text-2xl sm:text-4xl md:text-5xl font-light text-zinc-100 tracking-[-0.025em] leading-[1.25]">Beyond algorithms. Beyond messy tabs. <span class="text-zinc-500">Heuristiq is evolving into the complete quiet workspace for data structures, scalable system design, core computer science, and real-world engineering intuition.</span></blockquote><p class="mt-8 text-base sm:text-lg text-zinc-400 font-light leading-relaxed max-w-2xl">We stripped away distracting badges, XP counters, and cluttered feeds. From fundamental tree traversals to distributed message queues, database internals, and concurrency patterns, everything is designed to prepare you for high-impact technical rounds without cognitive fatigue.</p></div>
+</section>
+<!-- CORE ARCHITECTURE / 6 REFINED PILLARS -->
+<section class="py-24 border-t border-border-subtle bg-surface-dark/30" id="architecture">
+<div class="max-w-6xl mx-auto px-6">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4">
+<div>
+<div class="font-mono text-xs text-zinc-400 tracking-[0.2em] uppercase mb-3">Engine Architecture</div>
+<h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white">Quiet by architecture.</h2>
+</div>
+<p class="text-sm font-mono text-zinc-500">ENGINEERED FOR DEEP COGNITIVE WORK</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6"><div class="p-8 rounded-xl bg-surface-card border border-white/[0.06] hover:border-white/15 transition-all duration-300"><div class="font-mono text-xs text-accent-crimson tracking-wider uppercase mb-4">01 / Practice</div><h3 class="text-lg font-semibold text-white tracking-tight">Curated Problem Sheets.</h3><p class="mt-3 text-sm text-zinc-400 leading-relaxed font-light">Work through handpicked problem sets covering Blind 75, NeetCode, Core SDE tracks, and CP ladders with clear progress tracking.</p><div class="mt-6 pt-4 border-t border-white/[0.05] flex flex-wrap items-center gap-2 font-mono text-[11px] text-zinc-400"><span class="px-2 py-0.5 rounded bg-white/[0.03] border border-white/5">Blind 75</span><span class="px-2 py-0.5 rounded bg-white/[0.03] border border-white/5">NeetCode 150</span><span class="px-2 py-0.5 rounded bg-white/[0.03] border border-white/5">Top Sheets</span></div></div><div class="p-8 rounded-xl bg-surface-card border border-white/[0.06] hover:border-white/15 transition-all duration-300"><div class="font-mono text-xs text-accent-crimson tracking-wider uppercase mb-4">02 / Real Interviews</div><h3 class="text-lg font-semibold text-white tracking-tight">290+ Company Question Banks.</h3><p class="mt-3 text-sm text-zinc-400 leading-relaxed font-light">Filter top asked questions asked recently by Google, Amazon, Meta, Uber, Bloomberg, and Goldman Sachs.</p><div class="mt-6 pt-4 border-t border-white/[0.05] flex items-center gap-2 font-mono text-[11px] text-zinc-400"><span class="text-accent-coral font-medium">Google</span><span class="text-zinc-600">/</span><span class="">Meta</span><span class="text-zinc-600">/</span><span class="">Amazon</span><span class="text-zinc-600">/</span><span class="">Uber</span></div></div><div class="p-8 rounded-xl bg-surface-card border border-white/[0.06] hover:border-white/15 transition-all duration-300"><div class="font-mono text-xs text-accent-crimson tracking-wider uppercase mb-4">03 / Fast Execution</div><h3 class="text-lg font-semibold text-white tracking-tight">Built-in Code Runner.</h3><p class="mt-3 text-sm text-zinc-400 leading-relaxed font-light">Compile C++, Python, Java, and TypeScript instantly against your custom test cases right on the same screen.</p><div class="mt-6 pt-4 border-t border-white/[0.05] flex items-center gap-3 font-mono text-[11px] text-zinc-500"><span class="w-1.5 h-1.5 rounded-full bg-terminal-green"></span><span class="">Custom Tests</span><span class="w-1.5 h-1.5 rounded-full bg-terminal-green"></span><span class="">Instant Run</span></div></div><div class="p-8 rounded-xl bg-surface-card border border-white/[0.06] hover:border-white/15 transition-all duration-300"><div class="font-mono text-xs text-accent-crimson tracking-wider uppercase mb-4">04 / Visual Learning</div><h3 class="text-lg font-semibold text-white tracking-tight">Interactive Algorithm Steps.</h3><p class="mt-3 text-sm text-zinc-400 leading-relaxed font-light">Step through BFS, Dijkstra, tree traversals, and recursion visually to understand how logic flows before coding.</p><div class="mt-6 pt-4 border-t border-white/[0.05] flex items-center gap-3 font-mono text-[11px] text-zinc-500"><span class="w-1.5 h-1.5 rounded-full bg-zinc-400"></span><span class="">Step-by-Step</span><span class="w-1.5 h-1.5 rounded-full bg-zinc-400"></span><span class="">Visual States</span></div></div><div class="p-8 rounded-xl bg-surface-card border border-white/[0.06] hover:border-white/15 transition-all duration-300"><div class="font-mono text-xs text-accent-crimson tracking-wider uppercase mb-4">05 / Calendar</div><h3 class="text-lg font-semibold text-white tracking-tight">Live Contest Calendar.</h3><p class="mt-3 text-sm text-zinc-400 leading-relaxed font-light">Never miss an upcoming contest from LeetCode, Codeforces, or AtCoder, automatically converted to your local time.</p><div class="mt-6 pt-4 border-t border-white/[0.05] flex items-center gap-2 font-mono text-[11px] text-zinc-400"><span class="">LeetCode</span><span class="text-zinc-600">●</span><span class="">Codeforces</span><span class="text-zinc-600">●</span><span class="">AtCoder</span></div></div><div class="p-8 rounded-xl bg-surface-card border border-white/[0.06] hover:border-white/15 transition-all duration-300"><div class="font-mono text-xs text-accent-crimson tracking-wider uppercase mb-4">06 / Sync</div><h3 class="text-lg font-semibold text-white tracking-tight">1-Click Profile Sync.</h3><p class="mt-3 text-sm text-zinc-400 leading-relaxed font-light">Your notes and code stay saved on your device offline. Simply link your public username to sync solved problems.</p><div class="mt-6 pt-4 border-t border-white/[0.05] flex items-center gap-3 font-mono text-[11px] text-zinc-500"><span class="w-1.5 h-1.5 rounded-full bg-terminal-green"></span><span class="">Offline First</span><span class="w-1.5 h-1.5 rounded-full bg-terminal-green"></span><span class="">Zero Passwords</span></div></div></div>
+</div>
+</section>
+<!-- CLEAN WORKSPACE SHOWCASE (ANIMATION 4: Floating Teacher / Tutor with Audio Equalizer & Dynamic Synced Subtitles) -->
+<section class="py-24 border-t border-border-subtle" id="workflow">
+<div class="max-w-6xl mx-auto px-6">
+<div class="max-w-3xl mb-16">
+<div class="font-mono text-xs text-zinc-400 tracking-[0.2em] uppercase mb-3">Designed for Focus</div>
+<h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+          Floating tools. Zero window shuffling.
+        </h2>
+<p class="mt-3 text-zinc-400 font-light text-base sm:text-lg">
+          Keep lectures, intuition notes, and whiteboard scratchpads floating in picture-in-picture right beside your code.
+        </p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+<!-- Feature 1: Draggable Whiteboard & Scratchpad -->
+<div class="p-8 rounded-xl bg-surface-card border border-white/[0.06] flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="font-mono text-xs text-zinc-400 tracking-wider uppercase">Infinite Canvas</span>
+<span class="w-2 h-2 rounded-full bg-accent-crimson"></span>
+</div>
+<h3 class="text-xl font-bold text-white">Draggable Whiteboard &amp; Scratchpad.</h3>
+<p class="mt-3 text-sm text-zinc-400 font-light leading-relaxed">
+              Sketch pointer movements, tree rotations, or monotonic queue states on an infinite canvas with markdown intuition notes autosaved directly to local storage.
+            </p>
+</div>
+<div class="mt-8 p-4 rounded-lg bg-[#07090E] border border-white/[0.05] font-mono text-xs">
+<div class="flex items-center justify-between text-zinc-500 pb-2 border-b border-white/[0.05] mb-3">
+<span class="flex items-center gap-1.5 text-zinc-300">
+<span class="material-symbols-outlined text-[14px] text-accent-coral">draw</span>
+scratchpad.canvas
+</span>
+<span class="text-zinc-600 text-[10px]">Autosaved to IndexedDB</span>
+</div>
+<div class="text-zinc-400 space-y-2 text-[11px]">
+<div class="text-zinc-300"># Monotonic Queue Sliding Window Property</div>
+<div class="text-zinc-500">// Elements stored in strictly descending order</div>
+<div class="p-2.5 rounded bg-white/[0.02] border border-white/[0.04] text-zinc-300 font-mono text-[11px] leading-relaxed">
+<div class="">[1, 3, -1, -3, 5, 3, 6, 7] &nbsp;k = 3</div>
+<div class="text-accent-coral mt-1">Deque indices: &lt;1 (3), 2 (-1)&gt; → Current Window Max: 3</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Feature 2: Lecture Companion Mode with Integrated Teacher Avatar & Live Speaking Animation -->
+<div class="p-8 rounded-xl bg-surface-card border border-white/[0.06] hover:border-white/15 transition-all duration-300 flex flex-col justify-between group">
+<div><div class="flex items-center justify-between mb-4"><span class="font-mono text-xs text-zinc-400 tracking-wider uppercase">Picture-in-Picture Tutor</span><div class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-terminal-green animate-pulse"></span><span class="font-mono text-[10px] text-zinc-400">Stream Live</span></div></div><h3 class="text-xl font-bold text-white">Curated video explanations right beside your code.</h3><p class="mt-3 text-sm text-zinc-400 font-light leading-relaxed">Watch top tutor problem breakdowns without switching tabs. The draggable mini-player floats right next to your editor with synced code walkthroughs.</p></div>
+<!-- REFINED, CLEAN PICTURE-IN-PICTURE STREAM PANE -->
+<div class="mt-8 rounded-lg bg-[#06080C] border border-white/[0.07] font-mono text-xs overflow-hidden shadow-2xl relative">
+<!-- Stream Header Bar -->
+<div class="flex items-center justify-between px-3.5 py-2.5 bg-[#090B10] border-b border-white/[0.05] text-zinc-400 text-[11px]">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-crimson animate-ping"></span>
+<span class="text-zinc-200 font-medium">lecture-stream.pip</span>
+<span class="text-zinc-600">/</span>
+<span class="text-zinc-400">Sliding Window Maximum (LC 239)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-1.5 py-0.5 rounded bg-white/[0.03] text-zinc-400 border border-white/[0.06] text-[9px] uppercase tracking-wider">1080p</span>
+<span class="text-terminal-green text-[10px] flex items-center gap-1">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-terminal-green animate-pulse"></span>
+Synced
+</span>
+</div>
+</div>
+<!-- Visualizer Canvas with Teacher Avatar Overlay & Audio Speech Wave -->
+<div class="p-4 bg-[#080A10] relative min-h-[220px] flex flex-col justify-between">
+<!-- Code Explanation Walkthrough Line -->
+<div class="text-[11px] font-mono leading-relaxed select-none text-zinc-400/90 mb-3">
+<div class=""><span class="text-accent-coral">while</span> (!dq.empty() &amp;&amp; nums[dq.back()] &lt; nums[i])</div>
+<div class="pl-4 text-zinc-300 flex items-center gap-2 mt-0.5">
+<span class="">dq.pop_back(); <span class="text-zinc-500">// Prune smaller candidates</span></span>
+</div>
+<div class="text-zinc-400 mt-0.5">dq.push_back(i);</div>
+</div>
+<!-- Decluttered Sliding Window Array Visualizer -->
+<div class="p-3 rounded-lg bg-[#05060A] border border-white/[0.05] pr-32 relative">
+<div class="flex items-center justify-between text-[10px] text-zinc-400 mb-2">
+<div class="flex items-center gap-2">
+<span class="text-accent-crimson font-medium">WINDOW [L, R]</span>
+<span class="text-zinc-500 font-mono">k = 3</span>
+</div>
+<span class="text-terminal-green font-mono">Max = 3</span>
+</div>
+<!-- Visual Array Cells with Calm Highlight Frame -->
+<div class="relative py-1">
+<div class="absolute top-0 bottom-0 w-[68px] border border-accent-crimson/70 bg-accent-crimson/10 rounded pointer-events-none animate-sliding-window"></div>
+<div class="grid grid-cols-6 gap-1.5 text-center text-xs font-mono">
+<div class="py-1 rounded bg-white/[0.02] text-zinc-300 border border-white/[0.03]">1</div>
+<div class="py-1 rounded bg-white/[0.02] text-zinc-200 border border-white/[0.03]">3</div>
+<div class="py-1 rounded bg-white/[0.02] text-zinc-400 border border-white/[0.03]">-1</div>
+<div class="py-1 rounded bg-white/[0.02] text-zinc-400 border border-white/[0.03]">-3</div>
+<div class="py-1 rounded bg-white/[0.02] text-zinc-300 border border-white/[0.03]">5</div>
+<div class="py-1 rounded bg-white/[0.02] text-zinc-300 border border-white/[0.03]">3</div>
+</div>
+</div>
+</div>
+<!-- Synced Closed Captions / Subtitle Bar with dynamic live transcription -->
+<div class="mt-2 pr-32">
+<div class="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-black/60 border border-white/10 backdrop-blur-md text-[10px] text-zinc-300 max-w-full">
+<span class="text-accent-coral font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-accent-crimson"></span>CC:</span>
+<span class="font-mono truncate" id="tutor-subtitles" style="opacity: 1;">"Notice how the union-find structure handles edge cycles here in O(α(N))..."</span>
+</div>
+</div>
+<!-- ANIMATION 4: INSTRUCTOR CIRCULAR CAMERA FEED OVERLAY WITH 3D AVATAR, NATURAL BREATHING, AUDIO EQUALIZER & LIVE GLOW -->
+<div class="absolute right-3.5 bottom-3.5 flex flex-col items-center">
+<div class="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full p-0.5 bg-gradient-to-tr from-accent-crimson/80 via-accent-coral/40 to-transparent shadow-[0_0_24px_rgba(222,68,68,0.28)] animate-tutor-float">
+<img alt="Tutor Live Feed" class="w-full h-full object-cover rounded-full filter brightness-105 contrast-105" src="https://lh3.googleusercontent.com/aida/AEtjO1VHNBCzDf3OQSFANOApHdju-G9WmyKyIpSW7BuNaZulJT62AbG1hHm-5MWR5wPhhp25AFtzhGyPDPQwgkBrBkrWVs2u56XItRKotpM9KXnWVTs-yHc7xSNDC6xAAo8f1Jx6fIGcbuV45R8AUo_ghHzpy59m4eICC108PRlDbH6M25cIYeSZjLG2ZSdwbpcOdh2HJ1FWkV2olFEi47NbVv_czlaDuFuwC2pIhrZCtXkbUSFvSBo9Rs0-gVsj">
+<!-- Speaking Audio Equalizer Bar Overlay on Top of Avatar -->
+<div class="absolute top-1 right-1 px-1.5 py-1 rounded-full bg-black/80 backdrop-blur-sm border border-white/10 flex items-end gap-[2px] h-5" title="Speaking">
+<span class="w-[2px] bg-accent-coral rounded-full anim-bar-1 inline-block"></span>
+<span class="w-[2px] bg-accent-coral rounded-full anim-bar-2 inline-block"></span>
+<span class="w-[2px] bg-terminal-green rounded-full anim-bar-3 inline-block"></span>
+<span class="w-[2px] bg-accent-coral rounded-full anim-bar-4 inline-block"></span>
+</div>
+<!-- Active status indicator dot -->
+<span class="absolute bottom-1 right-1 w-3.5 h-3.5 rounded-full bg-[#08090D] flex items-center justify-center">
+<span class="w-2 h-2 rounded-full bg-terminal-green animate-ping absolute"></span>
+<span class="w-2 h-2 rounded-full bg-terminal-green relative"></span>
+</span>
+</div>
+<!-- Live Tutor Badge -->
+<span class="mt-1 px-2.5 py-0.5 rounded-full bg-black/80 backdrop-blur-md text-[9px] font-mono text-zinc-300 border border-white/10 flex items-center gap-1.5 shadow-md">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-crimson animate-pulse"></span>
+<span class="">Tutor • Speaking</span>
+</span>
+</div>
+</div>
+<!-- Clean Video Scrubber & Minimal Controls -->
+<div class="px-3.5 py-2.5 bg-[#07080D] border-t border-white/[0.05]">
+<div class="w-full bg-white/[0.06] h-1 rounded-full overflow-hidden relative">
+<div class="bg-accent-crimson h-full rounded-full animate-video-scrub"></div>
+</div>
+<div class="flex items-center justify-between text-[10px] text-zinc-400 mt-2 font-mono">
+<div class="flex items-center gap-2">
+<button class="text-zinc-200 hover:text-white flex items-center">
+<span class="material-symbols-outlined text-[15px]">pause</span>
+</button>
+<span class="">14:20 / 22:45</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="px-1.5 py-0.2 rounded bg-white/[0.03] text-zinc-300 text-[9px]">1.25x</span>
+<button class="text-zinc-400 hover:text-white transition-colors" title="Picture in Picture">
+<span class="material-symbols-outlined text-[13px]">picture_in_picture_alt</span>
+</button>
+<button class="text-zinc-400 hover:text-white transition-colors" title="Fullscreen">
+<span class="material-symbols-outlined text-[13px]">fullscreen</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ROADMAP & FEEDBACK DIRECT MODULE -->
+<section class="py-24 border-t border-border-subtle bg-[#07080C] relative" id="roadmap"><div class="max-w-6xl mx-auto px-6"><div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4"><div><div class="font-mono text-xs text-accent-crimson tracking-[0.2em] uppercase mb-3">Engineering Scope &amp; Roadmaps</div><h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white">Built for the full software engineering journey.</h2></div><p class="text-sm font-mono text-zinc-500">FROM FIRST PRINCIPLES TO DISTRIBUTED ARCHITECTURE</p></div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"><div class="p-6 rounded-xl bg-surface-card border border-white/[0.06] hover:border-white/15 transition-all duration-300 flex flex-col justify-between"><div class="space-y-3"><div class="flex items-center justify-between"><span class="font-mono text-[11px] text-accent-crimson uppercase tracking-wider font-semibold">Track 01</span><span class="px-2 py-0.5 rounded text-[10px] font-mono bg-terminal-green/10 text-terminal-green border border-terminal-green/20">Active Now</span></div><h3 class="text-base font-semibold text-white tracking-tight">DSA &amp; Problem Solving</h3><p class="text-xs text-zinc-400 leading-relaxed font-light">Curated sheets, 290+ company banks, instant sandboxed code runner, and visual algorithm walkthroughs.</p></div><div class="mt-6 pt-4 border-t border-white/[0.05] font-mono text-[11px] text-zinc-400 flex flex-wrap gap-1.5"><span class="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">Blind 75</span><span class="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">NeetCode</span><span class="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">Company Tags</span></div></div><div class="p-6 rounded-xl bg-surface-card border border-white/[0.06] hover:border-white/15 transition-all duration-300 flex flex-col justify-between"><div class="space-y-3"><div class="flex items-center justify-between"><span class="font-mono text-[11px] text-accent-coral uppercase tracking-wider font-semibold">Track 02</span><span class="px-2 py-0.5 rounded text-[10px] font-mono bg-accent-crimson/10 text-accent-coral border border-accent-crimson/25">In Preview</span></div><h3 class="text-base font-semibold text-white tracking-tight">System Design (HLD &amp; LLD)</h3><p class="text-xs text-zinc-400 leading-relaxed font-light">Design YouTube, TinyURL, Uber backend, and rate limiters with interactive architecture diagrams and trade-off checklists.</p></div><div class="mt-6 pt-4 border-t border-white/[0.05] font-mono text-[11px] text-zinc-400 flex flex-wrap gap-1.5"><span class="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">Scalability</span><span class="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">Caching</span><span class="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">Schema Design</span></div></div><div class="p-6 rounded-xl bg-surface-card border border-white/[0.06] hover:border-white/15 transition-all duration-300 flex flex-col justify-between"><div class="space-y-3"><div class="flex items-center justify-between"><span class="font-mono text-[11px] text-zinc-400 uppercase tracking-wider font-semibold">Track 03</span><span class="px-2 py-0.5 rounded text-[10px] font-mono bg-white/[0.04] text-zinc-400 border border-white/10">Upcoming</span></div><h3 class="text-base font-semibold text-white tracking-tight">Core CS Fundamentals</h3><p class="text-xs text-zinc-400 leading-relaxed font-light">Operating systems, database internals, computer networks, and concurrency patterns made intuitive and testable.</p></div><div class="mt-6 pt-4 border-t border-white/[0.05] font-mono text-[11px] text-zinc-400 flex flex-wrap gap-1.5"><span class="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">OS &amp; Threads</span><span class="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">DBMS Indexing</span><span class="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">TCP/IP</span></div></div><div class="p-6 rounded-xl bg-surface-card border border-white/[0.06] hover:border-white/15 transition-all duration-300 flex flex-col justify-between"><div class="space-y-3"><div class="flex items-center justify-between"><span class="font-mono text-[11px] text-zinc-400 uppercase tracking-wider font-semibold">Track 04</span><span class="px-2 py-0.5 rounded text-[10px] font-mono bg-white/[0.04] text-zinc-400 border border-white/10">Upcoming</span></div><h3 class="text-base font-semibold text-white tracking-tight">Full-Stack Case Studies</h3><p class="text-xs text-zinc-400 leading-relaxed font-light">Real-world production engineering breakdowns, API design principles, and end-to-end architecture walkthroughs.</p></div><div class="mt-6 pt-4 border-t border-white/[0.05] font-mono text-[11px] text-zinc-400 flex flex-wrap gap-1.5"><span class="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">REST &amp; gRPC</span><span class="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">Microservices</span><span class="px-2 py-0.5 rounded bg-white/[0.02] border border-white/5">DevOps</span></div></div></div></div></section><section class="py-24 border-t border-border-subtle bg-surface-dark/40 relative" id="feedback">
+<div class="max-w-3xl mx-auto px-6">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-9 h-9 rounded-lg bg-accent-crimson/10 border border-accent-crimson/25 flex items-center justify-center text-accent-coral">
+<span class="material-symbols-outlined text-[20px]">chat</span>
+</div>
+<div>
+<h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">Feedback &amp; Suggestions</h2>
+<p class="text-xs font-mono text-zinc-400 mt-0.5">Bugs, ideas, missing sheets — direct to engineering.</p>
+</div>
+</div>
+<!-- Feedback Form Card -->
+<div class="mt-8 p-6 sm:p-8 rounded-xl bg-surface-card border border-white/[0.06] shadow-2xl">
+<form class="space-y-5 font-mono text-xs" onsubmit="event.preventDefault();">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div>
+<label class="block text-zinc-400 uppercase text-[10px] tracking-wider mb-2">Your name</label>
+<input class="w-full bg-[#07080C] border border-white/10 rounded-lg px-3.5 py-2.5 text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-accent-crimson text-xs transition-colors" placeholder="Alex Chen" type="text">
+</div>
+<div>
+<label class="block text-zinc-400 uppercase text-[10px] tracking-wider mb-2">Your email</label>
+<input class="w-full bg-[#07080C] border border-white/10 rounded-lg px-3.5 py-2.5 text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-accent-crimson text-xs transition-colors" placeholder="alex.chen@example.com" type="email">
+</div>
+</div>
+<div>
+<label class="block text-zinc-400 uppercase text-[10px] tracking-wider mb-2">Title</label>
+<input class="w-full bg-[#07080C] border border-white/10 rounded-lg px-3.5 py-2.5 text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-accent-crimson text-xs transition-colors" placeholder="Short summary — e.g. Add Striver 79 Sheet or CSES Tree Algorithms" type="text">
+</div>
+<div>
+<label class="block text-zinc-400 uppercase text-[10px] tracking-wider mb-2">Description</label>
+<textarea class="w-full bg-[#07080C] border border-white/10 rounded-lg px-3.5 py-2.5 text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-accent-crimson text-xs transition-colors leading-relaxed" placeholder="What happened, what you expected, or what you'd love to see..." rows="4"></textarea>
+</div>
+<div class="flex items-center justify-between pt-2">
+<button class="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg text-xs font-mono font-medium tracking-wide text-white bg-accent-crimson hover:bg-[#c93636] transition-all shadow-[0_0_18px_rgba(222,68,68,0.3)]" type="submit">
+<span class="material-symbols-outlined text-[15px]">send</span>
+<span class="">Send feedback</span>
+</button>
+<span class="text-[10px] text-zinc-500 font-mono">Response time ~ 24h</span>
+</div>
+</form>
+</div>
+<!-- Transparency Note -->
+<div class="mt-6 p-4 rounded-xl bg-[#07080C] border border-white/[0.04] text-[11px] font-mono text-zinc-500 space-y-1.5">
+<div class="text-zinc-300 font-medium text-xs mb-1">How your data is handled:</div>
+<div class="flex items-start gap-2">
+<span class="text-zinc-600">●</span>
+<span class="">Everything in Heuristiq is saved to your device first (works offline), then synced when signed in.</span>
+</div>
+<div class="flex items-start gap-2">
+<span class="text-zinc-600">●</span>
+<span class="">Code runs on sandboxed Wandbox/Judge0 servers; transmitted only upon trigger.</span>
+</div>
+<div class="flex items-start gap-2">
+<span class="text-zinc-600">●</span>
+<span class="">Zero third-party trackers, zero advertising cookies.</span>
+</div>
+</div>
+</div>
+</section>
+<!-- UNDERSTATED BOTTOM CTA -->
+<section class="py-28 border-t border-border-subtle relative overflow-hidden" id="launch">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[280px] bg-accent-crimson/[0.08] blur-[130px] pointer-events-none"></div>
+<div class="max-w-3xl mx-auto px-6 text-center relative z-10"><span class="font-mono text-xs text-accent-crimson uppercase tracking-[0.2em] font-semibold">Ready to begin</span><h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-[-0.03em] mt-3">Ready to master software engineering?<br>Open your workspace in one click.</h2><p class="mt-4 text-zinc-400 text-sm sm:text-base font-light max-w-md mx-auto">Experience interview preparation without the noise. Start solving directly in your browser with zero setup required.</p><div class="mt-9 flex items-center justify-center gap-4"><a class="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-lg text-sm font-mono font-medium tracking-wide text-white bg-accent-crimson hover:bg-[#c93636] transition-all shadow-[0_2px_26px_rgba(222,68,68,0.35)]" href="#"><span class="material-symbols-outlined text-[16px]">terminal</span><span class="">Enter Heuristiq</span><span class="material-symbols-outlined text-[16px]">arrow_forward</span></a></div></div>
+</section>
+</main>
+<!-- MINIMALIST FOOTER -->
+<footer class="w-full border-t border-border-subtle py-12 bg-[#06070B]">
+<div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+<div class="flex items-center gap-4">
+<img alt="Heuristiq" class="w-auto object-contain brightness-125 filter contrast-125" src="https://lh3.googleusercontent.com/aida/AEtjO1UL-gNaBi0OPzdhXiHAXk8drYDGKTBFZmdOq3VTnj77WqSfqHpFo0jHJM7aTr4xEOTw50eA6-PxGAyJiM9-B0xwjTs35a2PM9bQEnGdOALhJ2jiQ70YDUe8nHamznpvgqia3FUZSJf9iAALFjcT-N4YTOnnjh-_WXv5pNpzGqKi7Pmkb632yMOZ1xXrDswx9r9LHf35p6J5_nKn8oBOg5FOlvP3VaoS-YIt4GlvEToOicxrbg40B1U79YY" style="height: 40px;">
+<span class="font-mono text-xs text-zinc-500">© 2026 Heuristiq. Engineered for quiet execution.</span>
+</div>
+<div class="flex items-center gap-6 font-mono text-xs text-zinc-500">
+<a class="hover:text-zinc-300 transition-colors" href="#manifesto">Manifesto</a>
+<a class="hover:text-zinc-300 transition-colors" href="#sheets">Sheets</a>
+<a class="hover:text-zinc-300 transition-colors" href="#feedback">Feedback</a>
+<a class="hover:text-zinc-300 transition-colors" href="#">Privacy</a>
+<a class="hover:text-zinc-300 transition-colors" href="#">Terms</a>
+</div>
+</div>
+</footer>
+<!-- COMPLETE RICH INTERACTIVE SCRIPTS (ANIMATIONS 1, 2, 3, & 4) -->
+<script>
+  // ==========================================
+  // ANIMATION 1: Problem Sheets & Question Cycling
+  // ==========================================
+  const workspaceSections = [
+    {
+      trackIndex: 0,
+      path: 'striver-sde-core / dynamic-prog',
+      title: 'Dynamic Programming & Sequences',
+      company: 'Bloomberg',
+      focus: 'Focus: Longest Increasing Subsequence & Binary Search Optimization',
+      questions: [
+        {
+          id: '300. Longest Increasing Subsequence',
+          diff: 'Medium',
+          diffColor: 'text-terminal-amber',
+          tag: 'O(N log N)',
+          status: 'Solved',
+          icon: 'check_circle',
+          filename: 'solution_lis.cpp',
+          execTime: 'Execution: 4ms',
+          badge: 'Passed 32/32',
+          badgeColor: 'text-terminal-green border-terminal-green/20',
+          code: `<div><span class="text-accent-coral">int</span> <span class="text-white">lengthOfLIS</span>(vector&lt;<span class="text-accent-coral">int</span>&gt;&amp; nums) {</div>
+<div class="pl-4">vector&lt;<span class="text-accent-coral">int</span>&gt; tails;</div>
+<div class="pl-4"><span class="text-zinc-500">// Binary search insertion points in monotonic tail array</span></div>
+<div class="pl-4"><span class="text-accent-coral">for</span> (<span class="text-accent-coral">int</span> x : nums) {</div>
+<div class="pl-8"><span class="text-accent-coral">auto</span> it = lower_bound(tails.begin(), tails.end(), x);</div>
+<div class="pl-8"><span class="text-accent-coral">if</span> (it == tails.end()) tails.push_back(x);</div>
+<div class="pl-8"><span class="text-accent-coral">else</span> *it = x;</div>
+<div class="pl-4">}</div>
+<div class="pl-4"><span class="text-accent-coral">return</span> tails.size();</div>
+<div class="flex items-center pl-4">} <span class="inline-block w-1.5 h-3.5 bg-accent-crimson ml-1.5 animate-cursor-blink"></span></div>`
+        },
+        {
+          id: '354. Russian Doll Envelopes',
+          diff: 'Hard',
+          diffColor: 'text-accent-coral',
+          tag: 'Sorting + LIS',
+          status: 'Active',
+          icon: 'radio_button_unchecked',
+          filename: 'solution_envelopes.cpp',
+          execTime: 'Execution: 4ms',
+          badge: 'Passed 32/32',
+          badgeColor: 'text-terminal-green border-terminal-green/20',
+          code: `<div><span class="text-accent-coral">int</span> <span class="text-white">maxEnvelopes</span>(vector&lt;vector&lt;<span class="text-accent-coral">int</span>&gt;&gt;&amp; env) {</div>
+<div class="pl-4"><span class="text-zinc-500">// Sort by width asc, then height desc for monotonic reduction</span></div>
+<div class="pl-4">sort(env.begin(), env.end(), [](<span class="text-accent-coral">const auto</span>&amp; a, <span class="text-accent-coral">const auto</span>&amp; b) {</div>
+<div class="pl-8"><span class="text-accent-coral">return</span> a[0] == b[0] ? a[1] &gt; b[1] : a[0] &lt; b[0];</div>
+<div class="pl-4">});</div>
+<div class="pl-4">vector&lt;<span class="text-accent-coral">int</span>&gt; tails;</div>
+<div class="pl-4"><span class="text-accent-coral">for</span> (<span class="text-accent-coral">auto</span>&amp; e : env) {</div>
+<div class="pl-8"><span class="text-accent-coral">auto</span> it = lower_bound(tails.begin(), tails.end(), e[1]);</div>
+<div class="pl-8"><span class="text-accent-coral">if</span> (it == tails.end()) tails.push_back(e[1]); <span class="text-accent-coral">else</span> *it = e[1];</div>
+<div class="pl-4">}</div>
+<div class="flex items-center pl-4"><span class="text-accent-coral">return</span> tails.size(); <span class="inline-block w-1.5 h-3.5 bg-accent-crimson ml-1.5 animate-cursor-blink"></span></div>`
+        },
+        {
+          id: '673. Number of Longest Increasing Subsequences',
+          diff: 'Medium',
+          diffColor: 'text-terminal-amber',
+          tag: 'DP Count',
+          status: 'Queue',
+          icon: 'radio_button_unchecked',
+          filename: 'count_lis.cpp',
+          execTime: 'Execution: 9ms',
+          badge: 'Passed 44/44',
+          badgeColor: 'text-terminal-green border-terminal-green/20',
+          code: `<div><span class="text-accent-coral">int</span> <span class="text-white">findNumberOfLIS</span>(vector&lt;<span class="text-accent-coral">int</span>&gt;&amp; nums) {</div>
+<div class="pl-4">vector&lt;<span class="text-accent-coral">int</span>&gt; len(nums.size(), 1), count(nums.size(), 1);</div>
+<div class="pl-4"><span class="text-zinc-500">// Track length and frequency of optimal sub-sequences</span></div>
+<div class="pl-4"><span class="text-accent-coral">for</span> (<span class="text-accent-coral">int</span> i = 0; i &lt; nums.size(); ++i) {</div>
+<div class="pl-8"><span class="text-accent-coral">for</span> (<span class="text-accent-coral">int</span> j = 0; j &lt; i; ++j) {</div>
+<div class="pl-12"><span class="text-accent-coral">if</span> (nums[j] &lt; nums[i]) {</div>
+<div class="pl-16"><span class="text-accent-coral">if</span> (len[j] + 1 &gt; len[i]) { len[i] = len[j] + 1; count[i] = count[j]; }</div>
+<div class="pl-16"><span class="text-accent-coral">else if</span> (len[j] + 1 == len[i]) count[i] += count[j];</div>
+<div class="pl-12">}</div>
+<div class="pl-8">}</div>
+<div class="pl-4">}</div>
+<div class="flex items-center pl-4"><span class="text-accent-coral">return</span> accumulate(count.begin(), count.end(), 0); <span class="inline-block w-1.5 h-3.5 bg-accent-crimson ml-1.5 animate-cursor-blink"></span></div>`
+        }
+      ]
+    },
+    {
+      trackIndex: 1,
+      path: 'neetcode-150 / sliding-window',
+      title: 'Monotonic Queues & Sliding Window',
+      company: 'Amazon',
+      focus: 'Focus: Deque Invariance & Extreme Subarray Queries',
+      questions: [
+        {
+          id: '239. Sliding Window Maximum',
+          diff: 'Hard',
+          diffColor: 'text-accent-coral',
+          tag: 'Monotonic Deque',
+          status: 'Active',
+          icon: 'radio_button_unchecked',
+          filename: 'sliding_max.cpp',
+          execTime: 'Execution: 12ms',
+          badge: 'Passed 48/48',
+          badgeColor: 'text-terminal-green border-terminal-green/20',
+          code: `<div>vector&lt;<span class="text-accent-coral">int</span>&gt; <span class="text-white">maxSlidingWindow</span>(vector&lt;<span class="text-accent-coral">int</span>&gt;&amp; nums, <span class="text-accent-coral">int</span> k) {</div>
+<div class="pl-4">deque&lt;<span class="text-accent-coral">int</span>&gt; dq; vector&lt;<span class="text-accent-coral">int</span>&gt; res;</div>
+<div class="pl-4"><span class="text-zinc-500">// Maintain descending elements in current window scope</span></div>
+<div class="pl-4"><span class="text-accent-coral">for</span> (<span class="text-accent-coral">int</span> i = 0; i &lt; nums.size(); ++i) {</div>
+<div class="pl-8"><span class="text-accent-coral">if</span> (!dq.empty() &amp;&amp; dq.front() &lt;= i - k) dq.pop_front();</div>
+<div class="pl-8"><span class="text-accent-coral">while</span> (!dq.empty() &amp;&amp; nums[dq.back()] &lt; nums[i]) dq.pop_back();</div>
+<div class="pl-8">dq.push_back(i);</div>
+<div class="pl-8"><span class="text-accent-coral">if</span> (i &gt;= k - 1) res.push_back(nums[dq.front()]);</div>
+<div class="pl-4">}</div>
+<div class="flex items-center pl-4"><span class="text-accent-coral">return</span> res; <span class="inline-block w-1.5 h-3.5 bg-accent-crimson ml-1.5 animate-cursor-blink"></span></div>`
+        },
+        {
+          id: '76. Minimum Window Substring',
+          diff: 'Hard',
+          diffColor: 'text-accent-coral',
+          tag: 'Two Pointers',
+          status: 'Solved',
+          icon: 'check_circle',
+          filename: 'min_window.cpp',
+          execTime: 'Execution: 6ms',
+          badge: 'Passed 268/268',
+          badgeColor: 'text-terminal-green border-terminal-green/20',
+          code: `<div>string <span class="text-white">minWindow</span>(string s, string t) {</div>
+<div class="pl-4">vector&lt;<span class="text-accent-coral">int</span>&gt; map(128, 0); <span class="text-accent-coral">for</span> (<span class="text-accent-coral">char</span> c : t) map[c]++;</div>
+<div class="pl-4"><span class="text-zinc-500">// Sliding right pointer expands, left contracts when valid</span></div>
+<div class="pl-4"><span class="text-accent-coral">int</span> start = 0, minLen = INT_MAX, count = t.size(), l = 0;</div>
+<div class="pl-4"><span class="text-accent-coral">for</span> (<span class="text-accent-coral">int</span> r = 0; r &lt; s.size(); ++r) {</div>
+<div class="pl-8"><span class="text-accent-coral">if</span> (map[s[r]]-- &gt; 0) count--;</div>
+<div class="pl-8"><span class="text-accent-coral">while</span> (count == 0) {</div>
+<div class="pl-12"><span class="text-accent-coral">if</span> (r - l + 1 &lt; minLen) { minLen = r - l + 1; start = l; }</div>
+<div class="pl-12"><span class="text-accent-coral">if</span> (++map[s[l++]] &gt; 0) count++;</div>
+<div class="pl-8">}</div>
+<div class="pl-4">}</div>
+<div class="flex items-center pl-4"><span class="text-accent-coral">return</span> minLen == INT_MAX ? "" : s.substr(start, minLen); <span class="inline-block w-1.5 h-3.5 bg-accent-crimson ml-1.5 animate-cursor-blink"></span></div>`
+        },
+        {
+          id: '424. Longest Repeating Replacement',
+          diff: 'Medium',
+          diffColor: 'text-terminal-amber',
+          tag: 'Frequency Map',
+          status: 'Queue',
+          icon: 'radio_button_unchecked',
+          filename: 'char_replace.cpp',
+          execTime: 'Execution: 5ms',
+          badge: 'Passed 39/39',
+          badgeColor: 'text-terminal-green border-terminal-green/20',
+          code: `<div><span class="text-accent-coral">int</span> <span class="text-white">characterReplacement</span>(string s, <span class="text-accent-coral">int</span> k) {</div>
+<div class="pl-4">vector&lt;<span class="text-accent-coral">int</span>&gt; freq(26, 0); <span class="text-accent-coral">int</span> maxFreq = 0, l = 0, maxLen = 0;</div>
+<div class="pl-4"><span class="text-accent-coral">for</span> (<span class="text-accent-coral">int</span> r = 0; r &lt; s.size(); ++r) {</div>
+<div class="pl-8">maxFreq = max(maxFreq, ++freq[s[r] - 'A']);</div>
+<div class="pl-8"><span class="text-zinc-500">// Window length minus most frequent char exceeds budget k</span></div>
+<div class="pl-8"><span class="text-accent-coral">if</span> ((r - l + 1) - maxFreq &gt; k) freq[s[l++] - 'A']--;</div>
+<div class="pl-8">maxLen = max(maxLen, r - l + 1);</div>
+<div class="pl-4">}</div>
+<div class="flex items-center pl-4"><span class="text-accent-coral">return</span> maxLen; <span class="inline-block w-1.5 h-3.5 bg-accent-crimson ml-1.5 animate-cursor-blink"></span></div>`
+        }
+      ]
+    },
+    {
+      trackIndex: 2,
+      path: 'company-banks / google-graphs',
+      title: 'Graph Traversals & Topological Ordering',
+      company: 'Google',
+      focus: 'Focus: Kahn Algorithm, Cycle Detection & Disjoint Set Union',
+      questions: [
+        {
+          id: '207. Course Schedule',
+          diff: 'Medium',
+          diffColor: 'text-terminal-amber',
+          tag: 'Kahn / BFS',
+          status: 'Solved',
+          icon: 'check_circle',
+          filename: 'kahn_dag.cpp',
+          execTime: 'Execution: 7ms',
+          badge: 'Passed 52/52',
+          badgeColor: 'text-terminal-green border-terminal-green/20',
+          code: `<div><span class="text-accent-coral">bool</span> <span class="text-white">canFinish</span>(<span class="text-accent-coral">int</span> n, vector&lt;vector&lt;<span class="text-accent-coral">int</span>&gt;&gt;&amp; prereq) {</div>
+<div class="pl-4">vector&lt;vector&lt;<span class="text-accent-coral">int</span>&gt;&gt; adj(n); vector&lt;<span class="text-accent-coral">int</span>&gt; indeg(n, 0);</div>
+<div class="pl-4"><span class="text-accent-coral">for</span> (<span class="text-accent-coral">auto</span>&amp; p : prereq) { adj[p[1]].push_back(p[0]); indeg[p[0]]++; }</div>
+<div class="pl-4">queue&lt;<span class="text-accent-coral">int</span>&gt; q; <span class="text-accent-coral">for</span> (<span class="text-accent-coral">int</span> i = 0; i &lt; n; ++i) <span class="text-accent-coral">if</span> (indeg[i] == 0) q.push(i);</div>
+<div class="pl-4"><span class="text-accent-coral">int</span> visited = 0;</div>
+<div class="pl-4"><span class="text-accent-coral">while</span> (!q.empty()) {</div>
+<div class="pl-8"><span class="text-accent-coral">int</span> u = q.front(); q.pop(); visited++;</div>
+<div class="pl-8"><span class="text-accent-coral">for</span> (<span class="text-accent-coral">int</span> v : adj[u]) <span class="text-accent-coral">if</span> (--indeg[v] == 0) q.push(v);</div>
+<div class="pl-4">}</div>
+<div class="flex items-center pl-4"><span class="text-accent-coral">return</span> visited == n; <span class="inline-block w-1.5 h-3.5 bg-accent-crimson ml-1.5 animate-cursor-blink"></span></div>`
+        },
+        {
+          id: '684. Redundant Connection',
+          diff: 'Medium',
+          diffColor: 'text-terminal-amber',
+          tag: 'Union Find (DSU)',
+          status: 'Active',
+          icon: 'radio_button_unchecked',
+          filename: 'dsu_redundant.cpp',
+          execTime: 'Execution: 3ms',
+          badge: 'Passed 39/39',
+          badgeColor: 'text-terminal-green border-terminal-green/20',
+          code: `<div>vector&lt;<span class="text-accent-coral">int</span>&gt; <span class="text-white">findRedundantConnection</span>(vector&lt;vector&lt;<span class="text-accent-coral">int</span>&gt;&gt;&amp; edges) {</div>
+<div class="pl-4">vector&lt;<span class="text-accent-coral">int</span>&gt; parent(edges.size() + 1); iota(parent.begin(), parent.end(), 0);</div>
+<div class="pl-4">function&lt;<span class="text-accent-coral">int</span>(<span class="text-accent-coral">int</span>)&gt; find = [&amp;](<span class="text-accent-coral">int</span> x) {</div>
+<div class="pl-8"><span class="text-accent-coral">return</span> parent[x] == x ? x : parent[x] = find(parent[x]);</div>
+<div class="pl-4">};</div>
+<div class="pl-4"><span class="text-accent-coral">for</span> (<span class="text-accent-coral">auto</span>&amp; e : edges) {</div>
+<div class="pl-8"><span class="text-accent-coral">int</span> rootA = find(e[0]), rootB = find(e[1]);</div>
+<div class="pl-8"><span class="text-accent-coral">if</span> (rootA == rootB) <span class="text-accent-coral">return</span> e; <span class="text-zinc-500">// Found cycle edge</span></div>
+<div class="pl-8">parent[rootA] = rootB;</div>
+<div class="pl-4">}</div>
+<div class="flex items-center pl-4"><span class="text-accent-coral">return</span> {}; <span class="inline-block w-1.5 h-3.5 bg-accent-crimson ml-1.5 animate-cursor-blink"></span></div>`
+        },
+        {
+          id: '127. Word Ladder',
+          diff: 'Hard',
+          diffColor: 'text-accent-coral',
+          tag: 'Bidirectional BFS',
+          status: 'Queue',
+          icon: 'radio_button_unchecked',
+          filename: 'word_ladder.cpp',
+          execTime: 'Execution: 18ms',
+          badge: 'Passed 50/50',
+          badgeColor: 'text-terminal-green border-terminal-green/20',
+          code: `<div><span class="text-accent-coral">int</span> <span class="text-white">ladderLength</span>(string begin, string end, vector&lt;string&gt;&amp; wordList) {</div>
+<div class="pl-4">unordered_set&lt;string&gt; dict(wordList.begin(), wordList.end());</div>
+<div class="pl-4"><span class="text-accent-coral">if</span> (!dict.count(end)) <span class="text-accent-coral">return</span> 0;</div>
+<div class="pl-4">unordered_set&lt;string&gt; head{begin}, tail{end}; <span class="text-accent-coral">int</span> dist = 2;</div>
+<div class="pl-4"><span class="text-zinc-500">// Bi-directional BFS expansion from both ends simultaneously</span></div>
+<div class="pl-4"><span class="text-accent-coral">while</span> (!head.empty() &amp;&amp; !tail.empty()) {</div>
+<div class="pl-8"><span class="text-accent-coral">if</span> (head.size() &gt; tail.size()) swap(head, tail);</div>
+<div class="pl-8">unordered_set&lt;string&gt; nxt;</div>
+<div class="pl-8"><span class="text-accent-coral">for</span> (<span class="text-accent-coral">string</span> w : head) dict.erase(w);</div>
+<div class="pl-8">dist++;</div>
+<div class="pl-4">}</div>
+<div class="flex items-center pl-4"><span class="text-accent-coral">return</span> 0; <span class="inline-block w-1.5 h-3.5 bg-accent-crimson ml-1.5 animate-cursor-blink"></span></div>`
+        }
+      ]
+    }
+  ];
+
+  let currentSectionIdx = 2;
+  let currentQuestionIdx = 1;
+  let userInteractedTimeout = null;
+
+  function renderState() {
+    const sec = workspaceSections[currentSectionIdx];
+    const q = sec.questions[currentQuestionIdx];
+
+    // Update Section Metadata
+    const titleEl = document.getElementById('section-title');
+    const compEl = document.getElementById('section-company');
+    const focusEl = document.getElementById('section-focus');
+    const pathEl = document.getElementById('path-active-section');
+    
+    if (titleEl) titleEl.innerText = sec.title;
+    if (compEl) compEl.innerText = sec.company;
+    if (focusEl) focusEl.innerText = sec.focus;
+    if (pathEl) pathEl.innerText = sec.path;
+
+    // Update Nav bar highlights
+    ['nav-track-0', 'nav-track-1', 'nav-track-2'].forEach((id, idx) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (idx === currentSectionIdx) {
+        el.className = 'flex items-center justify-between px-3 py-2 rounded bg-white/[0.04] text-white border-l-2 border-accent-crimson transition-all duration-200 cursor-pointer';
+      } else {
+        el.className = 'flex items-center justify-between px-3 py-2 rounded text-zinc-400 hover:text-zinc-200 transition-colors duration-200 cursor-pointer';
+      }
+    });
+
+    // Update Banner Pills
+    [0, 1, 2].forEach(idx => {
+      const pill = document.getElementById(`pill-track-${idx}`);
+      const label = document.getElementById(`pill-label-${idx}`);
+      if (!pill) return;
+      if (idx === currentSectionIdx) {
+        pill.className = 'hero-pill inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-accent-crimson/10 border border-accent-crimson/50 text-xs font-mono text-white transition-all cursor-pointer shadow-[0_0_12px_rgba(222,68,68,0.2)]';
+        if (label) label.className = 'text-accent-coral font-medium';
+      } else {
+        pill.className = 'hero-pill inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-white/[0.02] border border-white/[0.07] text-xs font-mono text-zinc-300 hover:border-accent-crimson/50 transition-all cursor-pointer';
+        if (label) label.className = 'text-zinc-300';
+      }
+    });
+
+    // Render Question Rows
+    sec.questions.forEach((item, idx) => {
+      const row = document.getElementById(`q-row-${idx}`);
+      const icon = document.getElementById(`q-icon-${idx}`);
+      const title = document.getElementById(`q-title-${idx}`);
+      const diff = document.getElementById(`q-diff-${idx}`);
+      const tag = document.getElementById(`q-tag-${idx}`);
+      const status = document.getElementById(`q-status-${idx}`);
+      if (!row) return;
+
+      if (title) title.innerText = item.id;
+      if (diff) {
+        diff.innerText = item.diff;
+        diff.className = item.diffColor;
+      }
+      if (tag) tag.innerText = item.tag;
+
+      if (idx === currentQuestionIdx) {
+        row.className = 'flex items-center justify-between px-3.5 py-2.5 rounded-md bg-white/[0.04] border border-accent-crimson/60 text-white transition-all duration-300 cursor-pointer relative group active-row-indicator';
+        if (icon) {
+          icon.className = 'text-accent-crimson material-symbols-outlined text-[15px]';
+          icon.innerText = 'radio_button_unchecked';
+        }
+        if (status) {
+          status.className = 'text-accent-coral flex items-center gap-1.5 text-[11px]';
+          status.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-accent-crimson animate-pulse"></span>Active';
+        }
+      } else {
+        row.className = 'flex items-center justify-between px-3.5 py-2.5 rounded-md bg-white/[0.015] border border-white/[0.04] text-zinc-400 hover:bg-white/[0.03] hover:border-white/[0.08] transition-all duration-300 cursor-pointer group';
+        if (icon) {
+          icon.className = `${item.status === 'Solved' ? 'text-terminal-green' : 'text-zinc-600'} material-symbols-outlined text-[15px]`;
+          icon.innerText = item.icon;
+        }
+        if (status) {
+          status.className = item.status === 'Solved' ? 'text-zinc-400 text-[11px]' : 'text-zinc-500 text-[11px]';
+          status.innerText = item.status;
+        }
+      }
+    });
+
+    // Smooth Code Runner Update
+    const codePane = document.getElementById('code-snippet-pane');
+    const runnerFilename = document.getElementById('runner-filename');
+    const runnerExecution = document.getElementById('runner-execution');
+    const runnerBadge = document.getElementById('runner-badge');
+
+    if (codePane) {
+      codePane.style.opacity = '0.3';
+      setTimeout(() => {
+        codePane.innerHTML = q.code;
+        if (runnerFilename) runnerFilename.innerText = q.filename;
+        if (runnerExecution) runnerExecution.innerText = q.execTime;
+        if (runnerBadge) {
+          runnerBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-terminal-green animate-pulse"></span>${q.badge}`;
+          runnerBadge.className = `px-2 py-0.5 rounded text-[10px] font-medium flex items-center gap-1.5 border ${q.badgeColor}`;
+        }
+        codePane.style.opacity = '1';
+      }, 100);
+    }
+  }
+
+  function setQuestionIndex(newIdx) {
+    currentQuestionIdx = newIdx;
+    renderState();
+  }
+
+  function navigateQuestion(delta) {
+    const sec = workspaceSections[currentSectionIdx];
+    let nextQ = currentQuestionIdx + delta;
+    if (nextQ >= sec.questions.length) {
+      currentSectionIdx = (currentSectionIdx + 1) % workspaceSections.length;
+      currentQuestionIdx = 0;
+    } else if (nextQ < 0) {
+      currentSectionIdx = (currentSectionIdx - 1 + workspaceSections.length) % workspaceSections.length;
+      currentQuestionIdx = workspaceSections[currentSectionIdx].questions.length - 1;
+    } else {
+      currentQuestionIdx = nextQ;
+    }
+    renderState();
+  }
+
+  function selectSection(idx) {
+    currentSectionIdx = idx;
+    currentQuestionIdx = 0;
+    renderState();
+  }
+
+  // Automatic gentle cycling of questions & sheets
+  let autoCycleInterval = setInterval(() => {
+    navigateQuestion(1);
+  }, 6200);
+
+  function pauseAutoCycleTemporarily() {
+    clearInterval(autoCycleInterval);
+    if (userInteractedTimeout) clearTimeout(userInteractedTimeout);
+    userInteractedTimeout = setTimeout(() => {
+      autoCycleInterval = setInterval(() => {
+        navigateQuestion(1);
+      }, 6200);
+    }, 12000);
+  }
+
+  window.addEventListener('click', pauseAutoCycleTemporarily);
+
+  window.addEventListener('keydown', (e) => {
+    if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+    if (e.key === 'j' || e.key === 'J' || e.key === 'ArrowDown') {
+      navigateQuestion(1);
+      pauseAutoCycleTemporarily();
+    } else if (e.key === 'k' || e.key === 'K' || e.key === 'ArrowUp') {
+      navigateQuestion(-1);
+      pauseAutoCycleTemporarily();
+    }
+  });
+
+
+  // ==========================================
+  // ANIMATION 2: Tasks to be done widget animation
+  // ==========================================
+  const taskState = {
+    items: [
+      { id: 't1', text: 'Master DSU rank & path compression', checked: false },
+      { id: 't2', text: 'Dry-run Kahn algorithm cycle in DAG', checked: true },
+      { id: 't3', text: 'Solve 2 BFS queue problems', checked: false },
+      { id: 't4', text: 'Review monotonic sliding window invariant', checked: false }
+    ],
+    typingWord: 'Write quick notes on Dijkstra relaxation',
+    typeIdx: 0,
+    isTyping: false
+  };
+
+  const taskListEl = document.getElementById('task-list-container');
+  const taskInputEl = document.getElementById('task-input-sim');
+  const taskCounterEl = document.getElementById('tasks-counter-label');
+
+  function renderTaskList() {
+    if (!taskListEl) return;
+    taskListEl.innerHTML = '';
+    
+    let completedCount = 0;
+    taskState.items.forEach((task, idx) => {
+      if (task.checked) completedCount++;
+
+      const itemDiv = document.createElement('div');
+      itemDiv.className = `flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-[#121318] border border-white/[0.04] text-zinc-300 hover:border-white/10 transition-all duration-200 group ${task.checked ? 'bg-[#121318]/60' : ''}`;
+      itemDiv.id = `task-row-${task.id}`;
+
+      itemDiv.innerHTML = `
+        <div class="flex items-center gap-2.5 min-w-0 pr-2">
+          <span class="w-4 h-4 rounded border ${task.checked ? 'bg-terminal-green/20 border-terminal-green text-terminal-green flex items-center justify-center' : 'border-white/20 hover:border-accent-crimson'} cursor-pointer inline-flex items-center justify-center transition-colors">
+            ${task.checked ? '<span class="material-symbols-outlined text-[12px]">check</span>' : ''}
+          </span>
+          <span class="text-[11px] truncate ${task.checked ? 'line-through text-zinc-500' : 'text-zinc-300 font-medium'}">${task.text}</span>
+        </div>
+        <button class="text-zinc-600 hover:text-zinc-400 opacity-60 group-hover:opacity-100 transition-opacity flex-shrink-0">
+          <span class="material-symbols-outlined text-[14px]">delete</span>
+        </button>
+      `;
+      taskListEl.appendChild(itemDiv);
+    });
+
+    if (taskCounterEl) {
+      taskCounterEl.innerText = `${completedCount} of ${taskState.items.length} completed`;
+    }
+  }
+
+  // Organic workflow loop for task widget
+  let taskStep = 0;
+  const taskCycleTimer = setInterval(() => {
+    taskStep = (taskStep + 1) % 6;
+
+    if (taskStep === 1) {
+      // Typing simulated task
+      let typedText = '';
+      const phrase = 'Analyze topological cycle';
+      let charI = 0;
+      const typeInterval = setInterval(() => {
+        if (charI < phrase.length) {
+          typedText += phrase[charI++];
+          if (taskInputEl) taskInputEl.value = typedText;
+        } else {
+          clearInterval(typeInterval);
+          setTimeout(() => {
+            // Add task to list with slide in animation
+            const newId = 't_' + Date.now();
+            taskState.items.unshift({ id: newId, text: phrase, checked: false });
+            if (taskInputEl) taskInputEl.value = '';
+            renderTaskList();
+            const newRow = document.getElementById(`task-row-${newId}`);
+            if (newRow) newRow.classList.add('task-item-enter');
+          }, 450);
+        }
+      }, 50);
+    } else if (taskStep === 3) {
+      // Toggle a checkbox to completed
+      const unchecked = taskState.items.find(t => !t.checked);
+      if (unchecked) {
+        unchecked.checked = true;
+        renderTaskList();
+      }
+    } else if (taskStep === 5) {
+      // Smoothly delete an old completed task
+      const doneIndex = taskState.items.findIndex(t => t.checked);
+      if (doneIndex !== -1 && taskState.items.length > 3) {
+        const itemToRemove = taskState.items[doneIndex];
+        const rowEl = document.getElementById(`task-row-${itemToRemove.id}`);
+        if (rowEl) {
+          rowEl.classList.add('task-item-exit');
+          setTimeout(() => {
+            taskState.items.splice(doneIndex, 1);
+            renderTaskList();
+          }, 320);
+        }
+      }
+    }
+  }, 4000);
+
+
+  // ==========================================
+  // ANIMATION 3: Notes module interactive typing & autosaving
+  // ==========================================
+  const noteSnippets = [
+    {
+      title: 'day 1 notes',
+      badge: 'introduction',
+      line1: 'lets start with coding................',
+      line2: '// Day 1 key takeaways: Focus on time complexities, recursion stacks, and monotonic queues.',
+      code: `const track = "Heuristiq Quiet Workspace";\nconsole.log(\`Ready for offline practice on \${track}\`);`,
+      words: '28 words • 186 characters'
+    },
+    {
+      title: 'day 4 notes: graph cycles',
+      badge: 'google-graphs',
+      line1: 'Topological sort via Kahn algorithm:',
+      line2: '// Cycle exists if processed vertices count < total vertices in DAG',
+      code: `vector<int> indeg(n, 0);\nfor(auto& p : prereq) indeg[p[0]]++;\n// Push 0 in-degree nodes to queue...`,
+      words: '36 words • 218 characters'
+    },
+    {
+      title: 'day 2 notes: sliding window',
+      badge: 'sliding-window',
+      line1: 'Monotonic deque for window maximum:',
+      line2: '// Keep elements in strictly decreasing order inside the active k-window',
+      code: `while(!dq.empty() && nums[dq.back()] < nums[i]) dq.pop_back();\ndq.push_back(i);`,
+      words: '31 words • 194 characters'
+    }
+  ];
+
+  let currentNoteIdx = 0;
+  const editorLine1 = document.getElementById('note-typing-line1');
+  const editorLine2 = document.getElementById('note-typing-line2');
+  const editorCode = document.getElementById('note-typing-code-text');
+  const noteHeading = document.getElementById('note-viewer-heading');
+  const noteBadge = document.getElementById('note-viewer-badge');
+  const noteTitleActive = document.getElementById('note-title-active');
+  const noteTagActive = document.getElementById('note-tag-active');
+  const noteSnippetActive = document.getElementById('note-snippet-active');
+  const noteAutosaveTop = document.getElementById('notes-autosave-top-text');
+  const noteAutosaveFoot = document.getElementById('notes-footer-text');
+  const noteAutosaveFootIcon = document.getElementById('notes-footer-icon');
+  const notesStatsCounter = document.getElementById('notes-stats-counter');
+  const undoToast = document.getElementById('note-undo-toast');
+  const btnCreateNote = document.getElementById('btn-create-note');
+
+  function triggerAutosavePulse() {
+    if (noteAutosaveTop && noteAutosaveFoot) {
+      noteAutosaveTop.innerText = 'Saving...';
+      noteAutosaveFoot.innerText = 'Saving...';
+      if (noteAutosaveFootIcon) noteAutosaveFootIcon.innerText = 'sync';
+      
+      setTimeout(() => {
+        noteAutosaveTop.innerText = 'Saved';
+        noteAutosaveFoot.innerText = 'Autosaved';
+        if (noteAutosaveFootIcon) noteAutosaveFootIcon.innerText = 'check_circle';
+      }, 700);
+    }
+  }
+
+  function simulateNoteChange(noteObj) {
+    triggerAutosavePulse();
+
+    if (noteHeading) noteHeading.innerText = noteObj.title;
+    if (noteBadge) noteBadge.innerText = noteObj.badge;
+    if (noteTitleActive) noteTitleActive.innerText = noteObj.title;
+    if (noteTagActive) noteTagActive.innerText = noteObj.badge;
+    if (noteSnippetActive) noteSnippetActive.innerText = noteObj.line1;
+    if (notesStatsCounter) notesStatsCounter.innerText = noteObj.words;
+
+    if (editorLine1) editorLine1.innerText = noteObj.line1;
+    if (editorLine2) editorLine2.innerText = noteObj.line2;
+
+    // Simulated typing effect for the code snippet
+    if (editorCode) {
+      editorCode.innerText = '';
+      let charI = 0;
+      const typingTimer = setInterval(() => {
+        if (charI < noteObj.code.length) {
+          editorCode.innerText += noteObj.code[charI++];
+        } else {
+          clearInterval(typingTimer);
+          triggerAutosavePulse();
+        }
+      }, 14);
+    }
+  }
+
+  if (btnCreateNote) {
+    btnCreateNote.addEventListener('click', () => {
+      currentNoteIdx = (currentNoteIdx + 1) % noteSnippets.length;
+      simulateNoteChange(noteSnippets[currentNoteIdx]);
+    });
+  }
+
+  // Periodic simulated note interaction loop (note typing & occasional undo toast)
+  let notesCycleCount = 0;
+  setInterval(() => {
+    notesCycleCount++;
+    if (notesCycleCount % 2 === 0) {
+      currentNoteIdx = (currentNoteIdx + 1) % noteSnippets.length;
+      simulateNoteChange(noteSnippets[currentNoteIdx]);
+    } else if (notesCycleCount % 5 === 0 && undoToast) {
+      // Flash Toast
+      undoToast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
+      undoToast.classList.add('opacity-100', 'translate-y-0');
+      setTimeout(() => {
+        undoToast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
+        undoToast.classList.remove('opacity-100', 'translate-y-0');
+      }, 3500);
+    }
+  }, 9500);
+
+
+  // ==========================================
+  // ANIMATION 4: Floating Picture-in-Picture Tutor Dialogue & Subtitles
+  // ==========================================
+  const tutorPhrases = [
+    `"Notice how we prune smaller candidates from the back in O(1)..."`,
+    `"Notice how the union-find structure handles edge cycles here in O(α(N))..."`,
+    `"Watch the left window pointer contract as soon as our condition is satisfied."`,
+    `"The indegree queue tracks vertices free of dependencies — Kahn's BFS in action."`,
+    `"Observe the binary search insertion point into our monotonic tail array."`
+  ];
+
+  let phraseIdx = 0;
+  const subtitleEl = document.getElementById('tutor-subtitles');
+
+  function streamTutorSubtitles() {
+    if (!subtitleEl) return;
+    const phrase = tutorPhrases[phraseIdx];
+    phraseIdx = (phraseIdx + 1) % tutorPhrases.length;
+
+    subtitleEl.style.opacity = '0';
+    setTimeout(() => {
+      subtitleEl.innerText = phrase;
+      subtitleEl.style.opacity = '1';
+    }, 280);
+  }
+
+  setInterval(streamTutorSubtitles, 4800);
+
+
+  // Initial boot
+  document.addEventListener('DOMContentLoaded', () => {
+    renderState();
+    renderTaskList();
+  });
+</script>
+</body></html>

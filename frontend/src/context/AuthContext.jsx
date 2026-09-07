@@ -4,6 +4,8 @@ import {
     signInWithEmailAndPassword as firebaseSignIn,
     createUserWithEmailAndPassword as firebaseSignUp,
     signInWithPopup,
+    signInWithRedirect,
+    getRedirectResult,
     signOut as firebaseSignOut,
     updateProfile
 } from 'firebase/auth';
@@ -21,9 +23,29 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState(() => (isFirebaseConfigured ? null : GUEST_USER));
     const [loading, setLoading] = useState(isFirebaseConfigured);
 
-    // Listen for auth state changes
+    // Listen for auth state changes & handle mobile redirect result
     useEffect(() => {
         if (!isFirebaseConfigured) return;
+
+        getRedirectResult(auth).then(async (result) => {
+            if (result && result.user) {
+                localStorage.removeItem(GUEST_FLAG);
+                try {
+                    const userDoc = await getDoc(doc(db, 'users', result.user.uid));
+                    if (!userDoc.exists()) {
+                        await setDoc(doc(db, 'users', result.user.uid), {
+                            name: result.user.displayName || 'User',
+                            email: result.user.email,
+                            createdAt: new Date().toISOString(),
+                        });
+                    }
+                } catch (err) {
+                    console.error('Error saving redirected user:', err);
+                }
+            }
+        }).catch((error) => {
+            console.error('Redirect sign-in error:', error);
+        });
 
         const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
             if (firebaseUser) {
@@ -120,6 +142,14 @@ export function AuthProvider({ children }) {
     const loginWithGoogle = useCallback(async () => {
         if (!isFirebaseConfigured) return NOT_CONFIGURED;
         try {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+                || window.matchMedia('(display-mode: standalone)').matches;
+
+            if (isMobile) {
+                await signInWithRedirect(auth, googleProvider);
+                return { success: true };
+            }
+
             const result = await signInWithPopup(auth, googleProvider);
             localStorage.removeItem(GUEST_FLAG);
             const firebaseUser = result.user;

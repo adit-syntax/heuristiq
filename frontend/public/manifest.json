@@ -23,22 +23,39 @@
       "purpose": "any"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/icon-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-desktop.png",
+      "sizes": "1600x900",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Heuristiq Dashboard on Desktop"
     },
     {
-      "src": "/favicon.png",
-      "sizes": "1254x1254 512x512 192x192",
+      "src": "/screenshot-mobile.png",
+      "sizes": "720x1280",
       "type": "image/png",
-      "purpose": "any"
+      "form_factor": "narrow",
+      "label": "Heuristiq Mobile Workspace"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "DSA Sheets",
+      "short_name": "Sheets",
+      "description": "View your DSA preparation sheets",
+      "url": "/"
     }
   ],
   "categories": [
     "education",
     "productivity",
     "utilities"
-  ],
-  "screenshots": []
+  ]
 }
